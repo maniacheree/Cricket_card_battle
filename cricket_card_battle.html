@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1">
+<title>Cricket Card Battle</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#070b14;color:#fff;font-family:Arial,sans-serif}
+.app{max-width:480px;margin:auto;min-height:100vh;background:linear-gradient(180deg,#0c1220,#070b14);padding-bottom:78px}
+header{padding:18px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:21px;font-weight:800}.wallet{background:#151d2e;border:1px solid #27324a;border-radius:20px;padding:8px 12px;color:#ffd34d;font-weight:700}
+.hero{margin:4px 16px 16px;padding:22px;border-radius:22px;background:linear-gradient(135deg,#142b50,#172036);border:1px solid #2c4165}
+.hero h1{margin:0 0 8px;font-size:28px}.hero p{margin:0;color:#aebbd0;line-height:1.45}
+button{border:0;border-radius:13px;padding:12px 16px;font-weight:800;color:#08101c;background:#ffd34d;cursor:pointer}
+.pack{margin:16px;padding:18px;border-radius:20px;background:#101827;border:1px solid #26334b}
+.packtop{display:flex;justify-content:space-between;align-items:center}.pack h2{margin:0}.price{color:#ffd34d;font-weight:800}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
+.card{min-height:190px;border-radius:16px;padding:12px;background:linear-gradient(160deg,#172338,#0e1523);border:1px solid #30415e;position:relative;overflow:hidden}
+.card:after{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:#2e7dff22;right:-25px;top:-25px}
+.rarity{font-size:10px;color:#8fb6ff;text-transform:uppercase;font-weight:800}.avatar{font-size:42px;text-align:center;margin:15px 0 8px}.name{font-weight:800;text-align:center;font-size:13px}.value{text-align:center;color:#ffd34d;font-weight:800;margin-top:5px}
+.stat{display:flex;justify-content:space-between;font-size:10px;color:#9eabc0;margin-top:8px}
+.section{padding:0 16px}.section h2{font-size:18px}.row{display:flex;gap:10px;overflow:auto;padding-bottom:4px}.smallcard{min-width:145px}.hidden{display:none}
+.battle{margin:16px;padding:18px;border-radius:20px;background:#101827;border:1px solid #26334b}.battle h2{margin-top:0}
+.challenge{font-size:15px;color:#aebbd0}.challenge b{color:#fff}.choice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.choice button{background:#1a2740;color:#fff;border:1px solid #344765}.result{margin-top:14px;padding:12px;border-radius:12px;background:#0b1220;text-align:center;font-weight:800}
+nav{position:fixed;bottom:0;left:0;right:0;margin:auto;max-width:480px;background:#0d1422ee;backdrop-filter:blur(10px);display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #26334b;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+nav button{background:transparent;color:#94a4bc;padding:8px 2px;font-size:11px}nav button.active{color:#ffd34d}
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px;z-index:5}.modalbox{width:min(440px,100%);background:#111a2a;border:1px solid #30415e;border-radius:22px;padding:20px}.modalbox h2{text-align:center}.reveal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.reveal .card{min-height:170px}.close{width:100%;margin-top:8px}
+@media(min-width:600px){body{padding:20px 0}.app{border-radius:24px;overflow:hidden;box-shadow:0 20px 60px #0008}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">🏏 Cricket Card Battle</div><div class="wallet">🪙 <span id="coins">50</span></div></header>
+
+<section class="hero">
+<h1>Play. Collect. Battle.</h1>
+<p>Build your cricket card collection and challenge opponents using player stats.</p>
+<br><button onclick="openPack()">🎁 Open Common Pack · 30</button>
+</section>
+
+<section class="pack">
+<div class="packtop"><h2>🟢 Common Pack</h2><span class="price">30 Coins</span></div>
+<p style="color:#9eabc0;font-size:13px">Contains 3 random common cards. Total card value can vary between 25–40 coins.</p>
+<button onclick="openPack()">Open Pack</button>
+</section>
+
+<section class="section">
+<h2>🃏 My Cards (<span id="count">0</span>)</h2>
+<div id="mycards" class="row"><p style="color:#738199;font-size:13px">Open your first pack to get cards.</p></div>
+</section>
+
+<section class="battle">
+<h2>⚔️ Quick Battle</h2>
+<div class="challenge">Challenge stat: <b id="challenge">Bowling Accuracy</b></div>
+<p style="color:#738199;font-size:12px">Choose one of your cards. The higher challenge stat wins the round.</p>
+<div id="battlechoices" class="choice"></div>
+<div id="result" class="result hidden"></div>
+</section>
+
+<nav>
+<button class="active">🏠<br>Home</button><button onclick="scrollToCards()">🃏<br>Cards</button><button onclick="scrollToBattle()">⚔️<br>Battle</button><button>👤<br>Profile</button>
+</nav>
+</div>
+
+<div id="modal" class="modal hidden">
+<div class="modalbox">
+<h2>🎉 Pack Opened!</h2>
+<p style="text-align:center;color:#aebbd0">You received 3 cards.</p>
+<div id="reveal" class="reveal"></div>
+<button class="close" onclick="closeModal()">Add to Collection</button>
+</div>
+</div>
+
+<script>
+const players=[
+{name:"Gill",value:9,bat:76,bowl:52,catch:75,pace:70},
+{name:"Siraj",value:8,bat:43,bowl:72,catch:73,pace:84},
+{name:"Rahul",value:10,bat:80,bowl:48,catch:78,pace:69},
+{name:"Jaiswal",value:11,bat:82,bowl:45,catch:68,pace:72},
+{name:"Rinku",value:12,bat:78,bowl:42,catch:72,pace:68},
+{name:"Axar",value:13,bat:70,bowl:78,catch:86,pace:76},
+{name:"Shami",value:14,bat:40,bowl:88,catch:80,pace:91},
+{name:"Jadeja",value:14,bat:74,bowl:82,catch:94,pace:79}
+];
+let coins=Number(localStorage.getItem("ccb_coins")||50);
+let collection=JSON.parse(localStorage.getItem("ccb_cards")||"[]");
+let first=localStorage.getItem("ccb_welcome")!=="1";
+function save(){localStorage.setItem("ccb_coins",coins);localStorage.setItem("ccb_cards",JSON.stringify(collection))}
+function render(){
+document.getElementById("coins").textContent=coins;document.getElementById("count").textContent=collection.length;
+const box=document.getElementById("mycards"); box.innerHTML="";
+if(!collection.length){box.innerHTML='<p style="color:#738199;font-size:13px">Open your first pack to get cards.</p>'}
+collection.forEach((p,i)=>{box.innerHTML+=cardHTML(p,i,true)});
+renderBattle();
+}
+function cardHTML(p,i,small=false){
+return `<div class="card ${small?'smallcard':''}"><div class="rarity">Common</div><div class="avatar">🏏</div><div class="name">${p.name}</div><div class="value">🪙 ${p.value} coins</div><div class="stat"><span>BAT ${p.bat}</span><span>BOWL ${p.bowl}</span></div><div class="stat"><span>CATCH ${p.catch}</span><span>PACE ${p.pace}</span></div></div>`
+}
+function openPack(){
+if(first){first=false;localStorage.setItem("ccb_welcome","1");buyPack(true);return}
+buyPack(false)
+}
+function buyPack(free){
+if(!free && coins<30){alert("Not enough coins!");return}
+if(!free)coins-=30;
+let arr=[];
+let total=0;
+for(let i=0;i<3;i++){
+let p=players[Math.floor(Math.random()*players.length)];
+arr.push({...p});total+=p.value;
+}
+while(total<25){let p=players[Math.floor(Math.random()*players.length)];arr[Math.floor(Math.random()*3)]={...p};total=arr.reduce((s,x)=>s+x.value,0)}
+while(total>40){let idx=Math.floor(Math.random()*3);let p=arr[idx];let lower=players.filter(x=>x.value<=p.value-1);if(!lower.length)break;let np=lower[Math.floor(Math.random()*lower.length)];arr[idx]={...np};total=arr.reduce((s,x)=>s+x.value,0)}
+collection.push(...arr);save();showReveal(arr,free)
+}
+function showReveal(arr,free){document.getElementById("modal").classList.remove("hidden");document.getElementById("reveal").innerHTML=arr.map((p,i)=>cardHTML(p,i)).join("");document.querySelector(".modalbox p").textContent=free?"Your first Common Pack is FREE!":"3 cards added from your 30-coin pack."}
+function closeModal(){document.getElementById("modal").classList.add("hidden");render()}
+function renderBattle(){
+const b=document.getElementById("battlechoices");b.innerHTML="";
+collection.slice(0,6).forEach((p,i)=>{b.innerHTML+=`<button onclick="battle(${i})">${p.name}<br><small>BOWL ${p.bowl}</small></button>`})
+}
+function battle(i){
+if(!collection.length)return;
+const me=collection[i], opponent=players[Math.floor(Math.random()*players.length)];
+const stat=document.getElementById("challenge").textContent;
+const mine=me.bowl, theirs=opponent.bowl;
+const win=mine>=theirs;
+const r=document.getElementById("result");r.classList.remove("hidden");
+r.innerHTML=win?`🏆 YOU WIN!<br><small>${me.name}: ${mine} vs ${opponent.name}: ${theirs}</small>`:`❌ YOU LOSE<br><small>${me.name}: ${mine} vs ${opponent.name}: ${theirs}</small>`;
+}
+function scrollToCards(){document.getElementById("mycards").scrollIntoView({behavior:"smooth"})}
+function scrollToBattle(){document.querySelector(".battle").scrollIntoView({behavior:"smooth"})}
+render();
+</script>
+</body>
+</html>
