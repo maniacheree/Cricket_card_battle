@@ -6,763 +6,217 @@
 <title>Cricket Card Arena</title>
 
 <style>
+*{box-sizing:border-box}
 :root{
---bg:#030617;
---panel:#08112b;
---panel2:#0d1635;
---gold:#ffd33d;
---purple:#8a43ff;
---blue:#28a9ff;
---text:#f8faff;
---muted:#9eabc5;
+--bg:#020714;--panel:#071127;--panel2:#0b1732;--line:#233c68;
+--gold:#ffd22e;--purple:#762cff;--blue:#159dff;--green:#35b62d;
+--red:#ef2b2b;--text:#f5f7ff;--muted:#9ca9c2;
 }
-
-*{
-box-sizing:border-box;
-}
-
-html{
-scroll-behavior:smooth;
-}
-
+html{scroll-behavior:smooth}
 body{
-margin:0;
-background:
-radial-gradient(circle at 50% 0,#182a73 0,transparent 25%),
-radial-gradient(circle at 0 35%,#35105b 0,transparent 28%),
-radial-gradient(circle at 100% 55%,#062e55 0,transparent 25%),
-#02040d;
-color:var(--text);
-font-family:Inter,Arial,sans-serif;
+margin:0;background:
+radial-gradient(circle at 50% -10%,#182e71 0,transparent 30%),
+radial-gradient(circle at 100% 35%,#061f45 0,transparent 28%),
+radial-gradient(circle at 0 55%,#24103f 0,transparent 25%),
+#020714;color:var(--text);font-family:Inter,Arial,sans-serif;
 }
-
-body:before{
-content:"";
-position:fixed;
-inset:0;
-pointer-events:none;
-opacity:.25;
-background-image:
-radial-gradient(#fff 1px,transparent 1px);
-background-size:34px 34px;
-mask-image:linear-gradient(#fff,transparent 75%);
-}
-
-.app{
-width:min(100%,520px);
-margin:auto;
-padding-bottom:92px;
-min-height:100vh;
-}
-
-/* HEADER */
-
-.top{
-height:78px;
-padding:12px 14px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-position:sticky;
-top:0;
-z-index:10;
-background:#020612dd;
-backdrop-filter:blur(18px);
-border-bottom:1px solid #ffffff12;
-}
-
-.brand{
-display:flex;
-align-items:center;
-gap:9px;
-}
-
+button{font:inherit;cursor:pointer}
+.app{min-height:100vh;max-width:1450px;margin:auto;padding:0 14px 90px}
+.top{height:76px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
 .crest{
-width:48px;
-height:54px;
-display:grid;
-place-items:center;
-clip-path:polygon(
-50% 0,
-95% 18%,
-86% 78%,
-50% 100%,
-14% 78%,
-5% 18%
-);
-background:
-linear-gradient(
-150deg,
-#ffd83e,
-#7d37ff 70%
-);
-box-shadow:
-0 0 25px #8c4cff55;
-font-size:27px;
+width:54px;height:60px;display:grid;place-items:center;
+clip-path:polygon(50% 0,96% 16%,87% 79%,50% 100%,13% 79%,4% 16%);
+background:linear-gradient(145deg,#ffd52f,#6b27e9);
+box-shadow:0 0 28px #7a38ff55;font-size:29px
 }
-
-.brand h1{
-font-size:18px;
-margin:0;
-font-weight:1000;
-letter-spacing:.2px;
+.logo b{font-size:27px;line-height:.9;display:block}
+.logo b span{color:var(--gold)}
+.logo small{color:var(--gold);font-weight:1000;letter-spacing:1.5px;font-size:12px}
+.topRight{display:flex;align-items:center;gap:20px}
+.balance{
+min-width:130px;padding:9px 17px;border:1px solid #53658c;border-radius:25px;
+background:#071026;display:flex;justify-content:center;gap:9px;font-size:20px;font-weight:1000
 }
-
-.brand small{
-display:block;
-color:#b9a7ff;
-font-size:8px;
-letter-spacing:2px;
-margin-top:2px;
+.balance .coin{color:var(--gold)}
+.plus{color:var(--gold);font-size:26px}
+.bell,.profile{display:grid;place-items:center}
+.bell{width:42px;height:42px;border:1px solid #53617c;border-radius:50%;font-size:20px;background:#071026}
+.profile{display:flex;gap:8px;align-items:center}
+.avatar{
+width:47px;height:47px;border-radius:50%;border:3px solid #7b8192;
+background:linear-gradient(145deg,#cfd4df,#606875);
+display:grid;place-items:center;font-size:25px;color:#313746
 }
-
-.coins{
-display:flex;
-align-items:center;
-gap:7px;
-border:1px solid #e4b93688;
-border-radius:25px;
-padding:8px 12px;
-background:#090e20;
-box-shadow:
-0 0 22px #ffc93314,
-inset 0 1px #fff2;
-font-weight:1000;
-color:var(--gold);
+.profile small{display:block;color:#b8c1d3;font-size:10px}
+.profile b{font-size:15px}
+.layout{display:grid;grid-template-columns:190px 1fr;gap:18px}
+.sidebar{
+background:linear-gradient(180deg,#061025,#061127);
+border:1px solid #20345c;border-radius:13px;padding:10px 8px;height:max-content;
+box-shadow:0 20px 50px #0008
 }
-
-.coin{
-width:27px;
-height:27px;
-border-radius:50%;
-display:grid;
-place-items:center;
-background:
-linear-gradient(
-#ffe36b,
-#d79d16
-);
-color:#5c3a00;
-font-size:15px;
+.sideBtn{
+width:100%;display:flex;align-items:center;gap:13px;padding:14px 15px;
+border:0;border-radius:9px;background:transparent;color:#dce3f1;text-align:left;
+font-weight:800;margin:2px 0
 }
-
-/* HERO */
-
+.sideBtn.active{background:linear-gradient(90deg,#111b2c,#071022);color:var(--gold);box-shadow:inset 4px 0 var(--gold)}
+.sideBtn.deposit{background:linear-gradient(90deg,#6920e8,#4911b4);color:#fff}
+.promo{
+margin-top:12px;border:1px solid #4d24a8;border-radius:12px;padding:18px 10px;text-align:center;
+background:radial-gradient(circle at 50% 70%,#5d20cf44,transparent 55%),#07102a
+}
+.trophy{font-size:62px;filter:drop-shadow(0 0 18px #ffcb2f55)}
+.promo b{font-size:17px}
+.promo span{display:block;color:var(--gold);font-size:20px;font-weight:1000;margin:5px}
+.play{width:100%;background:linear-gradient(135deg,#7c27f1,#5515c4);color:#fff;border:0;border-radius:8px;padding:10px;font-weight:1000}
+.main{min-width:0}
 .hero{
-margin:12px;
-border:1px solid #794fff88;
-border-radius:28px;
-overflow:hidden;
-min-height:355px;
-position:relative;
-padding:24px 20px;
+height:315px;border:1px solid #29549c;border-radius:14px;overflow:hidden;position:relative;
 background:
-radial-gradient(
-circle at 78% 35%,
-#7d31ff33,
-transparent 22%
-),
-radial-gradient(
-circle at 100% 100%,
-#00aaff20,
-transparent 30%
-),
-linear-gradient(
-125deg,
-#080d2b,
-#11184a 55%,
-#080c27
-);
-box-shadow:
-0 25px 70px #000b,
-0 0 35px #6b39ff18,
-inset 0 1px #fff2;
+radial-gradient(circle at 80% 50%,#2655b155,transparent 24%),
+linear-gradient(90deg,#071330dd,#0a1b43cc),
+url("https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1600&q=80") center/cover;
+box-shadow:0 18px 50px #0009
 }
-
-.hero:after{
-content:"";
-position:absolute;
-right:-100px;
-bottom:-120px;
-width:320px;
-height:320px;
-border-radius:50%;
-background:#2c8cff18;
-filter:blur(18px);
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#061027dd 0%,#06102799 45%,transparent 100%)}
+.heroText{position:relative;z-index:2;padding:58px 48px;width:53%}
+.heroText h1{font-style:italic;font-size:42px;line-height:1;margin:0 0 20px;text-transform:uppercase}
+.heroText h1 span{color:var(--gold)}
+.heroText p{font-size:18px;color:#e0e6f1;line-height:1.5;margin-bottom:22px}
+.buy{background:linear-gradient(#ffe82f,#f5b900);border:0;border-radius:10px;padding:14px 30px;font-weight:1000;font-size:17px;color:#111;box-shadow:0 9px 22px #e4b41444}
+.heroCards{position:absolute;z-index:3;right:45px;top:28px;height:270px;width:520px}
+.hcard{
+position:absolute;width:190px;height:265px;border-radius:14px;padding:10px;
+background:#081128ee;border:2px solid;box-shadow:0 20px 45px #000b
 }
-
-.heroTop{
-font-size:9px;
-letter-spacing:2.2px;
-color:#a98cff;
-font-weight:1000;
+.hcard:nth-child(1){left:0;top:30px;transform:rotate(-5deg);border-color:#a73cff}
+.hcard:nth-child(2){left:160px;top:0;z-index:3;border-color:#ffd22e;transform:scale(1.05)}
+.hcard:nth-child(3){right:0;top:27px;transform:rotate(5deg);border-color:#159dff}
+.hcard img{width:100%;height:180px;object-fit:cover;object-position:center top;border-radius:9px;background:#172952}
+.hcard .r{display:flex;justify-content:space-between;font-size:9px;font-weight:1000}
+.hcard .r strong{font-size:24px}
+.hcard b{display:block;text-align:center;margin-top:5px;font-size:13px}
+.hcard small{display:block;text-align:center;color:var(--muted);margin-top:5px}
+.two{display:grid;grid-template-columns:1fr 250px;gap:14px;margin-top:14px}
+.panel{
+border:1px solid #20385f;border-radius:13px;background:linear-gradient(145deg,#071127,#071127ee);
+box-shadow:0 15px 35px #0008;padding:16px
 }
-
-.hero h2{
-font-size:38px;
-line-height:.92;
-margin:13px 0;
-text-transform:uppercase;
-letter-spacing:-1.5px;
-max-width:270px;
-position:relative;
-z-index:2;
-}
-
-.hero h2 span{
-color:var(--gold);
-}
-
-.hero p{
-color:#c1cce0;
-line-height:1.45;
-font-size:13px;
-max-width:280px;
-position:relative;
-z-index:2;
-}
-
-.cta{
-margin-top:15px;
-padding:14px 18px;
-border:0;
-border-radius:15px;
-font-weight:1000;
-font-size:14px;
-color:#141000;
-background:
-linear-gradient(
-135deg,
-#fff0a1,
-#ffc82f
-);
-box-shadow:
-0 10px 30px #ffc52f38;
-position:relative;
-z-index:3;
-cursor:pointer;
-}
-
-/* HERO CARDS */
-
-.heroCards{
-position:absolute;
-right:-8px;
-top:48px;
-width:215px;
-height:245px;
-transform:rotate(4deg);
-z-index:1;
-}
-
-.heroCard{
-position:absolute;
-width:120px;
-height:190px;
-border-radius:16px;
-padding:8px;
-overflow:hidden;
-background:#091127;
-box-shadow:
-0 20px 45px #000b;
-}
-
-.heroCard:nth-child(1){
-left:0;
-top:35px;
-transform:rotate(-16deg);
-border:2px solid #b25dff;
-z-index:1;
-}
-
-.heroCard:nth-child(2){
-left:52px;
-top:0;
-border:2px solid #ffd43d;
-z-index:3;
-transform:scale(1.08);
-}
-
-.heroCard:nth-child(3){
-right:-4px;
-top:42px;
-transform:rotate(15deg);
-border:2px solid #27b6ff;
-z-index:2;
-}
-
-.heroCard img{
-width:100%;
-height:130px;
-object-fit:cover;
-border-radius:11px;
-background:#172650;
-}
-
-.heroCard b{
-display:block;
-text-align:center;
-font-size:11px;
-margin-top:4px;
-}
-
-.heroCard em{
-font-style:normal;
-color:var(--gold);
-font-size:9px;
-display:block;
-text-align:center;
-margin-top:3px;
-}
-
-/* SECTIONS */
-
-.section{
-margin:18px 12px;
-}
-
-.sectionTitle{
-display:flex;
-align-items:end;
-justify-content:space-between;
-margin-bottom:10px;
-}
-
-.sectionTitle h3{
-font-size:21px;
-margin:0;
-}
-
-.sectionTitle span{
-font-size:10px;
-color:var(--gold);
-font-weight:900;
-}
-
-/* PACK */
-
+.panelTitle{font-size:20px;font-weight:1000;margin:0 0 13px}
+.packGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
 .pack{
-display:grid;
-grid-template-columns:115px 1fr;
-gap:15px;
-padding:16px;
-border-radius:23px;
-background:
-linear-gradient(
-135deg,
-#09132f,
-#0c1736 55%,
-#15102e
-);
-border:1px solid #6073ae66;
-box-shadow:
-0 18px 40px #0008,
-inset 0 1px #fff1;
+min-width:0;text-align:center;padding:10px;border-radius:11px;background:#061024;border:1px solid;
+box-shadow:inset 0 0 25px #fff00005
 }
-
+.pack.green{border-color:#35b62d}
+.pack.blue{border-color:#168bff}
+.pack.purple{border-color:#9a32ff}
+.pack.gold{border-color:#d7a80e}
+.pack.red{border-color:#e72727}
+.pack h4{margin:0 0 8px;font-size:14px}
 .packArt{
-height:155px;
-border-radius:15px;
-display:grid;
-place-items:center;
-text-align:center;
-background:
-linear-gradient(
-145deg,
-#14285a,
-#080d24
-);
-border:1px solid #ffc83d77;
-box-shadow:
-inset 0 0 30px #7744ff22,
-0 10px 25px #0008;
-font-size:22px;
-font-weight:1000;
-color:var(--gold);
+height:145px;border-radius:8px;display:grid;place-items:center;
+background:linear-gradient(145deg,#173a12,#071408);font-size:55px;
+box-shadow:inset 0 0 30px #45ff3c18
 }
-
-.packArt div{
-font-size:12px;
-letter-spacing:1px;
-color:white;
-}
-
-.pack h3{
-margin:2px 0 8px;
-font-size:20px;
-}
-
-.info{
-color:#aebbd0;
-font-size:11px;
-line-height:1.8;
-}
-
-.info strong{
-color:#ffd43d;
-}
-
-.open{
-margin-top:9px;
-padding:10px 14px;
-font-size:11px;
-border-radius:12px;
-border:0;
-font-weight:900;
-background:
-linear-gradient(
-135deg,
-#fff0a1,
-#ffc82f
-);
-cursor:pointer;
-}
-
-/* COLLECTION */
-
+.pack.blue .packArt{background:linear-gradient(145deg,#083d70,#061328)}
+.pack.purple .packArt{background:linear-gradient(145deg,#451075,#0d0820)}
+.pack.gold .packArt{background:linear-gradient(145deg,#634c08,#160f03)}
+.pack.red .packArt{background:linear-gradient(145deg,#650f0f,#180606)}
+.pack .range{font-size:11px;color:#00cfff;margin:9px 0 5px;font-weight:900}
+.pack.green .range{color:#47d53a}
+.pack.purple .range{color:#bb63ff}
+.pack.gold .range{color:#ffd22e}
+.pack.red .range{color:#ff4b4b}
+.price{border:0;border-radius:6px;padding:8px;width:100%;font-weight:1000;color:#07100b}
+.pack.green .price{background:#2cae28}
+.pack.blue .price{background:#1677d9;color:#fff}
+.pack.purple .price{background:#6f27d7;color:#fff}
+.pack.gold .price{background:#c49212}
+.pack.red .price{background:#d51d1d;color:#fff}
+.summary .stat{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:9px;background:#08132a;border:1px solid #1b3154;margin:7px 0}
+.stat span{color:#9ba8bf;font-size:12px}
+.stat b{font-size:15px}
+.bottomGrid{display:grid;grid-template-columns:1fr 1fr 190px;gap:14px;margin-top:14px}
+.collectionEmpty{height:270px;border:1px dashed #31496c;border-radius:10px;display:grid;place-items:center;text-align:center;color:#9ba8bf}
+.emptyIcon{font-size:50px;opacity:.4}
 .collection{
-display:flex;
-gap:10px;
-overflow-x:auto;
-padding:3px 2px 10px;
-scrollbar-width:none;
+height:270px;display:flex;gap:10px;overflow-x:auto;padding:5px
 }
-
-.collection::-webkit-scrollbar{
-display:none;
-}
-
-/* PLAYER CARD */
-
 .card{
-flex:0 0 145px;
-height:225px;
-border-radius:18px;
-padding:8px;
-position:relative;
-overflow:hidden;
-background:
-linear-gradient(
-155deg,
-#111c3c,
-#080d1f 70%,
-#180d35
-);
-border:1px solid #6380d966;
-box-shadow:
-0 14px 32px #0009,
-inset 0 1px #fff2;
+min-width:180px;height:255px;border-radius:12px;padding:9px;background:#071127;border:1px solid #31507d;
+box-shadow:0 15px 30px #0008
 }
-
-.card.gold{
-border-color:#ffd43d;
-box-shadow:
-0 0 22px #ffd43d18,
-0 14px 32px #0009;
-}
-
-.card.purple{
-border-color:#a84cff;
-box-shadow:
-0 0 22px #a84cff18,
-0 14px 32px #0009;
-}
-
-.card.blue{
-border-color:#24b8ff;
-box-shadow:
-0 0 22px #24b8ff18,
-0 14px 32px #0009;
-}
-
-.card .rating{
-font-size:20px;
-font-weight:1000;
-color:#fff;
-}
-
-.card .type{
-font-size:7px;
-color:#9ea9c7;
-letter-spacing:1px;
-}
-
-.card img{
-width:100%;
-height:118px;
-object-fit:cover;
-object-position:center top;
-border-radius:12px;
-margin-top:4px;
-background:#13234a;
-}
-
-.card .pname{
-text-align:center;
-font-size:11px;
-font-weight:1000;
-margin-top:5px;
-}
-
-.card .stats{
-display:flex;
-justify-content:space-between;
-font-size:7px;
-color:#c2cbe0;
-margin-top:5px;
-}
-
-.card .v{
-font-size:9px;
-color:var(--gold);
-font-weight:1000;
-text-align:center;
-margin-top:5px;
-}
-
+.card.gold{border-color:#ffd22e}
+.card.purple{border-color:#9a32ff}
+.card.blue{border-color:#159dff}
 .sell{
-width:100%;
-padding:6px;
-border-radius:9px;
-margin-top:5px;
-font-size:8px;
-background:
-linear-gradient(
-135deg,
-#a8ff58,
-#42b91e
-);
-color:#081307;
-box-shadow:none;
-border:0;
-font-weight:900;
-cursor:pointer;
+width:100%;padding:7px;border:0;border-radius:7px;margin-top:6px;
+background:#35b62d;color:#061006;font-weight:1000
 }
-
-/* BATTLE */
-
-.battle{
-padding:17px;
-border-radius:23px;
-background:
-linear-gradient(
-135deg,
-#09152f,
-#120d2b
-);
-border:1px solid #7b57bf66;
-box-shadow:
-0 18px 40px #0008;
+.battleBox{height:270px;display:grid;place-items:center;text-align:center}
+.vs{font-size:45px;font-weight:1000;color:var(--gold);font-style:italic;text-shadow:0 0 20px #ffd22e55}
+.sideQuick button{width:100%;border:1px solid #243c67;border-radius:10px;padding:15px;text-align:left;color:#fff;font-weight:1000;margin-bottom:10px;background:#071127}
+.sideQuick .leader{background:linear-gradient(135deg,#62440b,#271d06);color:#ffe28a}
+.sideQuick .missions{background:linear-gradient(135deg,#0a2354,#071128)}
+.sideQuick .shop{background:linear-gradient(135deg,#006e78,#05303a)}
+.depositFloat{
+position:fixed;right:28px;bottom:78px;width:116px;height:116px;border-radius:50%;
+z-index:30;border:2px solid #a66aff;background:radial-gradient(circle at 40% 30%,#8d50ff,#35117e);
+box-shadow:0 0 35px #8d4cff88,0 15px 30px #000b;color:#fff;font-weight:1000;font-size:16px
 }
-
-.battleTop{
-display:flex;
-justify-content:space-between;
-align-items:center;
+.depositFloat .badge{position:absolute;right:7px;top:7px;width:13px;height:13px;background:red;border-radius:50%}
+.bottomNav{display:none}
+.modal{position:fixed;inset:0;background:#000c;backdrop-filter:blur(13px);z-index:100;display:grid;place-items:center;padding:18px}
+.modal.hidden{display:none}
+.modalBox{width:min(560px,100%);border:1px solid #7147ce;border-radius:16px;background:#071127;padding:20px;box-shadow:0 30px 90px #000}
+.input{width:100%;padding:14px;border-radius:9px;border:1px solid #29436c;background:#040b19;color:#fff;font-size:16px}
+.depositSteps{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:15px 0}
+.step{padding:10px;border-radius:8px;background:#09152d;color:#b8c3d5;font-size:10px}
+.qr{margin:auto;width:145px;height:145px;background:repeating-linear-gradient(45deg,#fff 0 3px,#111 3px 6px);display:grid;place-items:center;color:#000;font-weight:1000;border:8px solid #fff}
+@media(max-width:950px){
+.app{max-width:100%}
+.layout{grid-template-columns:1fr}
+.sidebar{display:none}
+.two{grid-template-columns:1fr}
+.packGrid{grid-template-columns:repeat(5,minmax(130px,1fr));overflow-x:auto}
+.bottomGrid{grid-template-columns:1fr 1fr}
+.sideQuick{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sideQuick button{margin:0}
+.hero{height:330px}
+.heroText{width:55%;padding:45px 30px}
+.heroCards{right:-35px;transform:scale(.82);transform-origin:right top}
+.depositFloat{right:18px}
 }
-
-.battle h3{
-margin:0;
-font-size:20px;
+@media(max-width:650px){
+.app{padding:0 8px 82px}
+.top{height:68px}
+.logo b{font-size:18px}
+.logo small{font-size:7px}
+.crest{width:42px;height:48px;font-size:22px}
+.topRight{gap:7px}
+.balance{min-width:80px;font-size:15px;padding:7px 9px}
+.bell{width:36px;height:36px}
+.profile{display:none}
+.hero{height:370px}
+.heroText{padding:30px 20px;width:72%}
+.heroText h1{font-size:30px}
+.heroText p{font-size:13px}
+.heroCards{right:-105px;top:105px;transform:scale(.62);transform-origin:right top}
+.packGrid{grid-template-columns:repeat(5,135px);overflow-x:auto}
+.bottomGrid{grid-template-columns:1fr}
+.sideQuick{grid-column:auto;grid-template-columns:1fr 1fr 1fr}
+.sideQuick button{font-size:10px;padding:10px}
+.depositFloat{width:86px;height:86px;font-size:12px;bottom:76px;right:12px}
+.bottomNav{
+position:fixed;display:grid;grid-template-columns:repeat(5,1fr);bottom:0;left:0;right:0;height:64px;
+background:#030817ee;z-index:25;border-top:1px solid #20385f
 }
-
-.battleGrid{
-display:grid;
-grid-template-columns:1fr 45px 1fr;
-align-items:center;
-gap:8px;
-margin-top:14px;
+.bottomNav button{background:transparent;border:0;color:#aab4c7;font-size:9px;font-weight:900}
+.bottomNav button.active{color:var(--gold)}
 }
-
-.fighter{
-text-align:center;
-padding:10px;
-border-radius:16px;
-background:#070d20;
-border:1px solid #ffffff12;
-}
-
-.fighter img{
-width:75px;
-height:85px;
-object-fit:cover;
-border-radius:12px;
-background:#13234a;
-}
-
-.fighter b{
-display:block;
-font-size:11px;
-margin-top:5px;
-}
-
-.vs{
-font-size:23px;
-font-weight:1000;
-color:#ffd43d;
-text-align:center;
-text-shadow:
-0 0 18px #ffcb35;
-}
-
-.find{
-width:100%;
-margin-top:12px;
-background:
-linear-gradient(
-135deg,
-#a34cff,
-#6020dc
-);
-color:white;
-box-shadow:
-0 8px 25px #7d36ff38;
-border:0;
-padding:12px;
-border-radius:13px;
-font-weight:900;
-}
-
-/* RESULT */
-
-.result{
-margin-top:12px;
-padding:13px;
-border-radius:14px;
-background:#070d20;
-border:1px solid #ffffff12;
-text-align:center;
-color:#fff;
-}
-
-.hidden{
-display:none!important;
-}
-
-/* NAV */
-
-nav{
-position:fixed;
-bottom:0;
-left:50%;
-transform:translateX(-50%);
-width:min(100%,520px);
-height:70px;
-display:grid;
-grid-template-columns:repeat(4,1fr);
-z-index:20;
-background:#030817ee;
-backdrop-filter:blur(20px);
-border-top:1px solid #ffffff14;
-box-shadow:
-0 -15px 40px #000b;
-}
-
-nav button{
-background:none;
-color:#8290ac;
-border:0;
-border-radius:0;
-padding:6px 2px;
-box-shadow:none;
-font-size:10px;
-font-weight:900;
-cursor:pointer;
-}
-
-nav button.active{
-color:#ffd43d;
-text-shadow:
-0 0 15px #ffd43d44;
-}
-
-/* MODAL */
-
-.modal{
-position:fixed;
-inset:0;
-background:#000c;
-backdrop-filter:blur(15px);
-display:flex;
-align-items:center;
-justify-content:center;
-padding:14px;
-z-index:50;
-}
-
-.modal.hidden{
-display:none!important;
-}
-
-.modalbox{
-width:min(460px,100%);
-border-radius:25px;
-background:
-linear-gradient(
-145deg,
-#101b3b,
-#090d20
-);
-border:1px solid #ffd43d66;
-padding:17px;
-box-shadow:
-0 30px 90px #000;
-}
-
-.reveal{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:7px;
-margin:12px 0;
-}
-
-.reveal .card{
-min-width:0;
-height:215px;
-}
-
-.close{
-width:100%;
-padding:12px;
-border:0;
-border-radius:13px;
-background:
-linear-gradient(
-135deg,
-#fff0a1,
-#ffc82f
-);
-font-weight:900;
-cursor:pointer;
-}
-
-/* MOBILE */
-
-@media(max-width:390px){
-
-.heroCards{
-right:-55px;
-opacity:.9;
-}
-
-.hero h2{
-font-size:32px;
-}
-
-.pack{
-grid-template-columns:95px 1fr;
-}
-
-.packArt{
-height:145px;
-}
-
-.card{
-flex-basis:138px;
-}
-
-}
-
 </style>
 </head>
 
@@ -770,127 +224,152 @@ flex-basis:138px;
 
 <div class="app">
 
-<!-- HEADER -->
-
 <header class="top">
-
-<div class="brand">
-
-<div class="crest">
-🏏
-</div>
-
+<div class="logo">
+<div class="crest">🏏</div>
 <div>
-
-<h1>
-<span style="color:#ffd43d">CRICKET</span> CARD
-</h1>
-
-<small>
-ARENA • BATTLE • COLLECT
-</small>
-
+<b><span>CRICKET</span> CARD</b>
+<small>ARENA</small>
+</div>
 </div>
 
+<div class="topRight">
+<div class="balance">
+<span class="coin">🪙</span>
+<span id="coins">0</span>
+<span class="plus">+</span>
 </div>
-
-<div class="coins">
-
-<div class="coin">
-🪙
+<div class="bell">🔔</div>
+<div class="profile">
+<div>
+<b>Guest</b>
+<small>ID: GUEST001</small>
 </div>
-
-<span id="coins">
-5
-</span>
-
+<div class="avatar">👤</div>
 </div>
-
+</div>
 </header>
 
+<div class="layout">
 
-<!-- HERO -->
+<aside class="sidebar">
+
+<button class="sideBtn active">
+🏠 <span>HOME</span>
+</button>
+
+<button class="sideBtn" onclick="scrollToId('packs')">
+🎁 <span>PACKS</span>
+</button>
+
+<button class="sideBtn" onclick="scrollToId('collection')">
+🃏 <span>COLLECTION</span>
+</button>
+
+<button class="sideBtn" onclick="scrollToId('battle')">
+⚔️ <span>BATTLE</span>
+</button>
+
+<button class="sideBtn deposit" onclick="openDeposit()">
+💳 <span>DEPOSIT</span>
+</button>
+
+<button class="sideBtn">
+📜 <span>TRANSACTIONS</span>
+</button>
+
+<button class="sideBtn">
+🏆 <span>LEADERBOARD</span>
+</button>
+
+<button class="sideBtn">
+👤 <span>PROFILE</span>
+</button>
+
+<button class="sideBtn">
+⚙️ <span>SETTINGS</span>
+</button>
+
+<div class="promo">
+<div class="trophy">🏆</div>
+<b>BATTLE & WIN</b>
+<div>BECOME THE</div>
+<span>CHAMPION!</span>
+<button class="play" onclick="scrollToId('battle')">
+PLAY NOW
+</button>
+</div>
+
+</aside>
+
+<main class="main">
 
 <section class="hero">
 
-<div class="heroTop">
-🏆 CRICKET CARD ARENA
-</div>
+<div class="heroText">
 
-<h2>
-COLLECT.<br>
-<span>BATTLE.</span><br>
-BECOME A LEGEND.
-</h2>
+<h1>
+BUILD YOUR SQUAD.<br>
+<span>DOMINATE THE ARENA.</span>
+</h1>
 
 <p>
-Collect powerful cricket cards, battle opponents and build your ultimate squad.
+Collect powerful cricket cards,
+build your ultimate team and
+win epic battles!
 </p>
 
-<button
-class="cta"
-onclick="openPack()">
-
-💎 OPEN COMMON PACK · 30
-
+<button class="buy" onclick="scrollToId('packs')">
+BUY PACKS
 </button>
 
-
-<!-- HERO PLAYER CARDS -->
+</div>
 
 <div class="heroCards">
 
-<div class="heroCard">
-
-<img
-id="hc1"
-alt="Mohammed Siraj"
->
-
-<b>
-MOHAMMED SIRAJ
-</b>
-
-<em>
-93 BOWLER
-</em>
-
+<div class="hcard">
+<div class="r">
+<strong>87</strong>
+<span>EPIC</span>
 </div>
 
+<img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=400&q=80">
 
-<div class="heroCard">
+<b>ARSHDEEP-INSPIRED</b>
 
-<img
-id="hc2"
-alt="Shubman Gill"
->
-
-<b>
-SHUBMAN GILL
-</b>
-
-<em>
-95 BATTER
-</em>
-
+<small>
+BOW 87 &nbsp; BAT 36 &nbsp; CAR 68 &nbsp; SPE 82
+</small>
 </div>
 
+<div class="hcard">
+<div class="r">
+<strong>94</strong>
+<span>LEGENDARY</span>
+</div>
 
-<div class="heroCard">
+<img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=400&q=80">
 
-<img
-id="hc3"
-alt="Ravindra Jadeja"
->
+<b>VIRAT-INSPIRED</b>
 
-<b>
-RAVINDRA JADEJA
-</b>
+<small>
+BAT 93 &nbsp; BOW 48 &nbsp; CAR 76 &nbsp; SPE 83
+</small>
+</div>
 
-<em>
-92 ALL-ROUNDER
-</em>
+<div class="hcard">
+<div class="r">
+<strong>86</strong>
+<span>RARE</span>
+</div>
 
+<img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=400&q=80">
+
+<b>HARDIK-INSPIRED</b>
+
+<small>
+BAT 71 &nbsp; BOW 72 &nbsp; CAR 84 &nbsp; SPE 75
+</small>
 </div>
 
 </div>
@@ -898,178 +377,258 @@ RAVINDRA JADEJA
 </section>
 
 
-<!-- PACK -->
+<div class="two">
 
-<section class="section">
+<section class="panel" id="packs">
 
-<div class="pack">
+<h2 class="panelTitle">
+PACKAGES
+</h2>
+
+<div class="packGrid">
+
+<div class="pack green">
+
+<h4>COMMON PACK</h4>
 
 <div class="packArt">
-
-🎁
-
-<div>
-COMMON<br>
-PACK
+🟢
 </div>
 
-</div>
-
-
-<div>
-
-<h3>
-🟢 COMMON PACK
-</h3>
-
-<div class="info">
-
-🃏 3 random player cards
-<br>
-
-🎲 Total value:
-<strong>
-20–40 coins
-</strong>
-
-<br>
-
-🔒 Values revealed after opening
-
+<div class="range">
+TOTAL VALUE<br>
+<b>20 - 40</b>
 </div>
 
 <button
-class="open"
-onclick="openPack()">
+class="price"
+onclick="buyPack('Common',30,20,40)">
+30 🪙
+</button>
 
-🎁 OPEN NOW · 30
+</div>
 
+
+<div class="pack blue">
+
+<h4>RARE PACK</h4>
+
+<div class="packArt">
+🔵
+</div>
+
+<div class="range">
+TOTAL VALUE<br>
+<b>60 - 100</b>
+</div>
+
+<button
+class="price"
+onclick="buyPack('Rare',75,60,100)">
+75 🪙
+</button>
+
+</div>
+
+
+<div class="pack purple">
+
+<h4>EPIC PACK</h4>
+
+<div class="packArt">
+🟣
+</div>
+
+<div class="range">
+TOTAL VALUE<br>
+<b>125 - 190</b>
+</div>
+
+<button
+class="price"
+onclick="buyPack('Epic',150,125,190)">
+150 🪙
+</button>
+
+</div>
+
+
+<div class="pack gold">
+
+<h4>LEGENDARY PACK</h4>
+
+<div class="packArt">
+🟡
+</div>
+
+<div class="range">
+TOTAL VALUE<br>
+<b>260 - 400</b>
+</div>
+
+<button
+class="price"
+onclick="buyPack('Legendary',300,260,400)">
+300 🪙
+</button>
+
+</div>
+
+
+<div class="pack red">
+
+<h4>ULTIMATE PACK</h4>
+
+<div class="packArt">
+🔴
+</div>
+
+<div class="range">
+TOTAL VALUE<br>
+<b>550 - 800</b>
+</div>
+
+<button
+class="price"
+onclick="buyPack('Ultimate',600,550,800)">
+600 🪙
 </button>
 
 </div>
 
 </div>
 
-</section>
-
-
-<!-- COLLECTION -->
-
-<section class="section">
-
-<div class="sectionTitle">
-
-<h3>
-💎 MY COLLECTION
-<span style="color:#ffd43d">
-(
-<b id="count">0</b>
-)
-</span>
-</h3>
-
-<span>
-VIEW ALL ›
-</span>
-
-</div>
-
-
-<div
-id="collection"
-class="collection">
-
-</div>
-
-</section>
-
-
-<!-- BATTLE -->
-
-<section class="section">
-
-<div class="battle">
-
-<div class="battleTop">
-
-<h3>
-⚔️ QUICK BATTLE
-</h3>
-
-<span
-style="font-size:9px;color:#9c8bff">
-
-ARENA
-
-</span>
-
-</div>
-
-
-<p
-style="
-font-size:11px;
-color:#9eabc5;
-">
-
-Choose your card and challenge a random opponent.
-
+<p style="font-size:11px;color:#8d9ab2;margin:12px 0 0">
+ⓘ All packs contain 3 random player cards. Total value is shown as a range. Actual value will be revealed after opening.
 </p>
 
+</section>
 
-<div class="battleGrid">
 
-<div class="fighter">
+<aside class="panel summary">
 
-<img
-id="mineImg"
-alt="Your card"
->
+<h2 class="panelTitle">
+MY SUMMARY
+</h2>
 
-<b id="mineName">
-YOUR CARD
-</b>
+<div class="stat">
+<span>🃏 TOTAL CARDS</span>
+<b id="totalCards">0</b>
+</div>
+
+<div class="stat">
+<span>🪙 TOTAL VALUE</span>
+<b id="totalValue">0</b>
+</div>
+
+<div class="stat">
+<span>⚔️ BATTLES WON</span>
+<b>0</b>
+</div>
+
+<div class="stat">
+<span>🔥 BEST STREAK</span>
+<b>0</b>
+</div>
+
+</aside>
 
 </div>
 
+
+<div class="bottomGrid">
+
+<section class="panel" id="collection">
+
+<div style="display:flex;justify-content:space-between;align-items:center">
+
+<h2 class="panelTitle">
+MY COLLECTION
+<span style="color:#ffd22e">
+(<b id="count">0</b>)
+</span>
+</h2>
+
+<span style="color:#4b9dff;font-size:12px">
+View All
+</span>
+
+</div>
+
+<div id="cards" class="collectionEmpty">
+
+<div>
+
+<div class="emptyIcon">
+🃏
+</div>
+
+<b>
+You don't have any cards yet.
+</b>
+
+<br>
+
+<span>
+Buy packs to start your collection!
+</span>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="panel" id="battle">
+
+<h2 class="panelTitle">
+QUICK BATTLE
+</h2>
+
+<p style="color:#9ca9c2;font-size:12px">
+Choose your card and challenge a random opponent.
+</p>
+
+<div class="battleBox">
+
+<div style="display:flex;align-items:center;gap:28px">
+
+<div>
+<div style="font-size:10px;color:#9ca9c2">
+YOUR CARD
+</div>
+
+<div style="font-size:50px">
+🃏
+</div>
+
+</div>
 
 <div class="vs">
 VS
 </div>
 
+<div>
 
-<div class="fighter">
-
-<img
-id="oppImg"
-alt="Opponent"
->
-
-<b id="oppName">
+<div style="font-size:10px;color:#9ca9c2">
 OPPONENT
-</b>
+</div>
 
+<div style="font-size:50px">
+❓
 </div>
 
 </div>
 
-
-<div
-id="battlechoices"
-style="
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:7px;
-margin-top:10px;
-">
-
 </div>
 
+<button class="buy" onclick="startBattle()">
+FIND OPPONENT
+</button>
 
-<div
-id="result"
-class="result hidden">
-
+<div id="battleResult"
+style="font-size:11px;color:#9ca9c2">
 </div>
 
 </div>
@@ -1077,35 +636,126 @@ class="result hidden">
 </section>
 
 
-<!-- BOTTOM NAV -->
+<aside class="sideQuick">
 
-<nav>
-
-<button class="active">
-🏠
-<br>
-Home
+<button class="leader">
+🏆 LEADERBOARD
 </button>
 
-<button onclick="scrollToCards()">
-🃏
-<br>
-Cards
+<button class="missions">
+🎯 MISSIONS
 </button>
 
-<button onclick="scrollToBattle()">
-⚔️
-<br>
-Battle
+<button class="shop">
+🛒 SHOP
 </button>
 
-<button>
-👤
-<br>
-Profile
+</aside>
+
+</div>
+
+</main>
+</div>
+
+
+<!-- SEPARATE DEPOSIT BUTTON -->
+
+<button class="depositFloat" onclick="openDeposit()">
+
+<span class="badge"></span>
+
+💳<br>
+DEPOSIT
+
 </button>
 
-</nav>
+
+<!-- DEPOSIT MODAL -->
+
+<div class="modal hidden" id="depositModal">
+
+<div class="modalBox">
+
+<h2 style="margin-top:0">
+💳 MANUAL DEPOSIT
+</h2>
+
+<p style="color:#9ca9c2;font-size:12px">
+Enter any amount. Payment will remain pending until admin approval.
+</p>
+
+<input
+id="depositAmount"
+class="input"
+type="number"
+min="1"
+placeholder="Enter amount ₹"
+>
+
+<div class="depositSteps">
+
+<div class="step">
+<b>1</b><br>
+Enter any amount
+</div>
+
+<div class="step">
+<b>2</b><br>
+Pay using UPI / QR
+</div>
+
+<div class="step">
+<b>3</b><br>
+Submit UTR + screenshot
+</div>
+
+<div class="step">
+<b>4</b><br>
+Wait for approval
+</div>
+
+</div>
+
+<div style="padding:13px;border:1px solid #263f68;border-radius:10px;text-align:center">
+
+<div style="font-size:10px;color:#9ca9c2">
+UPI ID
+</div>
+
+<b>
+cricketcardarena@upi
+</b>
+
+<div
+class="qr"
+style="margin-top:12px">
+
+SCAN<br>
+&amp;<br>
+PAY
+
+</div>
+
+</div>
+
+<button
+class="buy"
+style="width:100%;margin-top:12px"
+onclick="submitDeposit()">
+
+SUBMIT DEPOSIT
+
+</button>
+
+<button
+style="width:100%;margin-top:8px;padding:11px;border:1px solid #2a4168;border-radius:9px;background:#071127;color:#fff"
+onclick="closeDeposit()">
+
+CLOSE
+
+</button>
+
+</div>
 
 </div>
 
@@ -1113,57 +763,31 @@ Profile
 <!-- PACK MODAL -->
 
 <div
-id="modal"
-class="modal hidden">
+class="modal hidden"
+id="packModal">
 
-<div class="modalbox">
+<div class="modalBox">
 
-<h2
-style="
-text-align:center;
-margin:5px;
-">
-
-🎉 PACK OPENED!
-
+<h2 id="packTitle">
+🎁 PACK OPENED
 </h2>
 
-
 <p
-id="modalText"
-style="
-text-align:center;
-color:#aebbd0;
-font-size:12px;
-">
-
+id="packInfo"
+style="color:#9ca9c2;font-size:12px">
 </p>
-
 
 <div
-id="reveal"
-class="reveal">
-
+id="revealed"
+style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
 </div>
 
-
-<p
-id="status"
-style="
-text-align:center;
-color:#9c8bff;
-font-size:10px;
-min-height:15px;
-">
-
-</p>
-
-
 <button
-class="close"
-onclick="closeModal()">
+class="buy"
+style="width:100%;margin-top:15px"
+onclick="closePack()">
 
-✨ ADD TO COLLECTION
+ADD TO COLLECTION
 
 </button>
 
@@ -1174,713 +798,76 @@ onclick="closeModal()">
 
 <script>
 
-/* ==========================================
-   PLAYER IMAGES
-========================================== */
-
-const img = {
-
-gill:
-"https://commons.wikimedia.org/wiki/Special:Redirect/file/Shubman_Gill.jpg",
-
-siraj:
-"https://commons.wikimedia.org/wiki/Special:Redirect/file/Mohammed_Siraj.jpg",
-
-rahul:
-"https://commons.wikimedia.org/wiki/Special:Redirect/file/KL_Rahul_2022.jpg",
-
-jaiswal:
-"https://commons.wikimedia.org/wiki/Special:Redirect/file/Yashasvi_Jaiswal.jpg",
-
-axar:
-"https://commons.wikimedia.org/wiki/Special:Redirect/file/Axar.Patel.jpg",
-
-shami:
-"https://commons.wikimedia.org/wiki/Special:Redirect/file/Mohammed_Shami.jpg",
-
-jadeja:
-"https://commons.wikimedia.org/wiki/Special:Redirect/file/Ravindra_Jadeja_in_PMO_New_Delhi.jpg"
-
-};
-
-
-/* ==========================================
-   PLAYER DATABASE
-========================================== */
-
-const players = [
+const players=[
 
 {
-name:"Gill",
-full:"Shubman Gill",
-image:img.gill,
+name:"Arjun-Inspired",
 value:9,
-bat:76,
-bowl:52,
-catch:75,
-pace:70,
-rarity:"gold"
+bat:35,
+bowl:87,
+catch:69,
+speed:86,
+img:"https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=400&q=80"
 },
 
 {
-name:"Siraj",
-full:"Mohammed Siraj",
-image:img.siraj,
-value:8,
-bat:43,
-bowl:72,
-catch:73,
-pace:84,
-rarity:"purple"
-},
-
-{
-name:"Rahul",
-full:"KL Rahul",
-image:img.rahul,
-value:10,
-bat:80,
+name:"Virat-Inspired",
+value:14,
+bat:92,
 bowl:48,
-catch:78,
-pace:69,
-rarity:"blue"
+catch:76,
+speed:82,
+img:"https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=400&q=80"
 },
 
 {
-name:"Jaiswal",
-full:"Yashasvi Jaiswal",
-image:img.jaiswal,
-value:11,
-bat:82,
-bowl:45,
-catch:68,
-pace:72,
-rarity:"blue"
+name:"Kartik-Inspired",
+value:10,
+bat:72,
+bowl:71,
+catch:84,
+speed:75,
+img:"https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=400&q=80"
 },
 
 {
-name:"Axar",
-full:"Axar Patel",
-image:img.axar,
-value:13,
-bat:70,
-bowl:78,
-catch:86,
-pace:76,
-rarity:"purple"
-},
-
-{
-name:"Shami",
-full:"Mohammed Shami",
-image:img.shami,
-value:14,
-bat:40,
-bowl:88,
+name:"Rohan-Inspired",
+value:12,
+bat:78,
+bowl:55,
 catch:80,
-pace:91,
-rarity:"gold"
+speed:77,
+img:"https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=400&q=80"
 },
 
 {
-name:"Jadeja",
-full:"Ravindra Jadeja",
-image:img.jadeja,
-value:14,
-bat:74,
-bowl:82,
-catch:94,
-pace:79,
-rarity:"blue"
+name:"Aarav-Inspired",
+value:13,
+bat:66,
+bowl:83,
+catch:88,
+speed:90,
+img:"https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=400&q=80"
+},
+
+{
+name:"Kabir-Inspired",
+value:15,
+bat:86,
+bowl:69,
+catch:91,
+speed:84,
+img:"https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=400&q=80"
 }
 
 ];
 
 
-/* ==========================================
-   USER DATA
-========================================== */
-
-let coins =
-localStorage.getItem("ccb_coins") === null
-?
-5
-:
+let coins=
 Number(
-localStorage.getItem("ccb_coins")
+localStorage.getItem("cca_coins")||0
 );
 
-
-let collection =
+let collection=
 JSON.parse(
-localStorage.getItem("ccb_cards") || "[]"
-);
-
-
-let firstPack =
-localStorage.getItem("ccb_welcome") !== "1";
-
-
-/* ==========================================
-   SAVE DATA
-========================================== */
-
-function save(){
-
-localStorage.setItem(
-"ccb_coins",
-coins
-);
-
-localStorage.setItem(
-"ccb_cards",
-JSON.stringify(collection)
-);
-
-}
-
-
-/* ==========================================
-   HERO IMAGES
-========================================== */
-
-function setImage(id,url){
-
-const element =
-document.getElementById(id);
-
-if(element){
-
-element.src = url;
-
-}
-
-}
-
-
-setImage(
-"hc1",
-img.siraj
-);
-
-setImage(
-"hc2",
-img.gill
-);
-
-setImage(
-"hc3",
-img.jadeja
-);
-
-
-/* ==========================================
-   PLAYER CARD HTML
-========================================== */
-
-function cardHTML(player,index){
-
-return `
-
-<div
-class="card ${player.rarity || "blue"}">
-
-<div
-style="
-display:flex;
-justify-content:space-between;
-">
-
-<span class="rating">
-${Math.max(
-player.bat,
-player.bowl,
-player.catch,
-player.pace
-)}
-</span>
-
-<span class="type">
-COMMON
-</span>
-
-</div>
-
-
-<img
-src="${player.image}"
-alt="${player.full}"
-onerror="
-this.style.opacity='.2'
-"
->
-
-
-<div class="pname">
-
-${player.full}
-
-</div>
-
-
-<div class="stats">
-
-<span>
-BAT ${player.bat}
-</span>
-
-<span>
-BOWL ${player.bowl}
-</span>
-
-</div>
-
-
-<div class="stats">
-
-<span>
-CATCH ${player.catch}
-</span>
-
-<span>
-PACE ${player.pace}
-</span>
-
-</div>
-
-
-<div class="v">
-
-🪙 VALUE ${player.value}
-
-</div>
-
-
-<button
-class="sell"
-onclick="sellCard(${index})">
-
-💰 SELL · ${player.value}
-
-</button>
-
-</div>
-
-`;
-
-}
-
-
-/* ==========================================
-   MAIN RENDER
-========================================== */
-
-function render(){
-
-document.getElementById(
-"coins"
-).textContent =
-coins;
-
-
-document.getElementById(
-"count"
-).textContent =
-collection.length;
-
-
-const box =
-document.getElementById(
-"collection"
-);
-
-
-if(
-collection.length
-){
-
-box.innerHTML =
-collection
-.map(
-(player,index)=>
-cardHTML(
-player,
-index
-)
-)
-.join("");
-
-}
-
-else{
-
-box.innerHTML = `
-
-<div
-style="
-color:#7f8ca5;
-font-size:12px;
-padding:12px;
-">
-
-🎁 Open your free welcome pack
-to start collecting.
-
-</div>
-
-`;
-
-}
-
-
-renderBattle();
-
-}
-
-
-/* ==========================================
-   OPEN PACK
-========================================== */
-
-function openPack(){
-
-if(firstPack){
-
-firstPack = false;
-
-localStorage.setItem(
-"ccb_welcome",
-"1"
-);
-
-createPack(true);
-
-}
-
-else{
-
-createPack(false);
-
-}
-
-}
-
-
-/* ==========================================
-   CREATE PACK
-   TOTAL = 20–40
-========================================== */
-
-function createPack(free){
-
-if(
-!free &&
-coins < 30
-){
-
-alert(
-"💰 You need 30 coins to open this pack."
-);
-
-return;
-
-}
-
-
-if(!free){
-
-coins -= 30;
-
-}
-
-
-let cards;
-
-let total;
-
-
-/*
-Generate 3 cards until
-their combined value is
-between 20 and 40.
-*/
-
-do{
-
-cards = [];
-
-total = 0;
-
-
-for(
-let i=0;
-i<3;
-i++
-){
-
-const player =
-players[
-Math.floor(
-Math.random() *
-players.length
-)
-];
-
-
-cards.push(
-{
-...player
-}
-);
-
-
-total +=
-player.value;
-
-}
-
-}
-while(
-total < 20 ||
-total > 40
-);
-
-
-/*
-Cards are added to the
-collection after pack creation.
-*/
-
-collection.push(
-...cards
-);
-
-
-save();
-
-showPack(
-cards,
-free
-);
-
-}
-
-
-/* ==========================================
-   PACK REVEAL
-========================================== */
-
-function showPack(
-cards,
-free
-){
-
-const modal =
-document.getElementById(
-"modal"
-);
-
-
-const reveal =
-document.getElementById(
-"reveal"
-);
-
-
-modal.classList.remove(
-"hidden"
-);
-
-
-reveal.innerHTML =
-"";
-
-
-document.getElementById(
-"modalText"
-).textContent =
-
-free
-
-?
-
-"🎁 Your 3-card welcome pack is FREE!"
-
-:
-
-"💎 3 cards received from your pack.";
-
-
-document.getElementById(
-"status"
-).textContent =
-"✨ REVEALING...";
-
-
-cards.forEach(
-(player,index)=>{
-
-setTimeout(
-
-()=>{
-
-reveal.insertAdjacentHTML(
-"beforeend",
-cardHTML(
-player,
-index
-)
-);
-
-
-if(
-index === 2
-){
-
-document.getElementById(
-"status"
-).textContent =
-"🎉 ALL CARDS REVEALED!";
-
-}
-
-},
-
-350 * index
-
-);
-
-}
-
-);
-
-}
-
-
-/* ==========================================
-   CLOSE MODAL
-========================================== */
-
-function closeModal(){
-
-document.getElementById(
-"modal"
-).classList.add(
-"hidden"
-);
-
-render();
-
-}
-
-
-/* ==========================================
-   SELL CARD
-========================================== */
-
-function sellCard(index){
-
-if(
-!collection[index]
-){
-
-return;
-
-}
-
-
-const player =
-collection[index];
-
-
-const confirmed =
-confirm(
-`Sell ${player.full} for ${player.value} coins?`
-);
-
-
-if(!confirmed){
-
-return;
-
-}
-
-
-coins +=
-Number(
-player.value
-);
-
-
-collection.splice(
-index,
-1
-);
-
-
-save();
-
-render();
-
-
-alert(
-`💰 ${player.full} sold for ${player.value} coins!`
-);
-
-}
-
-
-/* ==========================================
-   BATTLE
-========================================== */
-
-function renderBattle(){
-
-const box =
-document.getElementById(
-"battlechoices"
-);
-
-
-box.innerHTML =
-"";
-
-
-if(
-!collection.length
-){
-
-box.innerHTML = `
-
-<div
-style="
-grid-column:1/-1;
-color:#7f8ca5;
-font-size:11px;
-padding:5px;
-">
-
-🃏 Open a pack first to enter battle.
-
-</div>
-
-`;
-
-return;
-
-}
-
-
-collection
-.slice(
-0,
-6
-)
-.forEach(
-(player,index)=>{
-
-box.innerHTML += `
-
-<button
-onclick="battle(${index})"
-st
+localStorage.getItem("cca_cards")||
