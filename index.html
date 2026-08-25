@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1">
 <title>Cricket Card Battle</title>
 
 <style>
@@ -10,75 +10,81 @@
 
 body{
 margin:0;
-background:
-radial-gradient(circle at 15% 5%,#203b70 0,transparent 28%),
-radial-gradient(circle at 90% 15%,#4a2a6d 0,transparent 24%),
-radial-gradient(circle at 50% 80%,#1b3155 0,transparent 25%),
-linear-gradient(145deg,#03050a,#090e19 48%,#050810);
 color:#fff;
 font-family:Inter,Arial,sans-serif;
 min-height:100vh;
+background:
+radial-gradient(circle at 15% 5%,#3d2175 0,transparent 27%),
+radial-gradient(circle at 90% 12%,#164b82 0,transparent 25%),
+radial-gradient(circle at 50% 65%,#40145d 0,transparent 24%),
+linear-gradient(135deg,#02030a,#060b18 50%,#03040b);
 }
 
 .app{
 max-width:480px;
 margin:auto;
 min-height:100vh;
-background:linear-gradient(180deg,#0a1120e8,#050912f5);
 padding-bottom:90px;
-box-shadow:0 0 100px #000b;
+background:
+linear-gradient(180deg,#060a16e8,#030611f7);
+box-shadow:0 0 120px #000c;
+position:relative;
+}
+
+.app:before{
+content:"";
+position:fixed;
+inset:0;
+pointer-events:none;
+background-image:
+radial-gradient(#ffffff0d 1px,transparent 1px);
+background-size:26px 26px;
 }
 
 header{
-padding:18px 16px;
+padding:18px 15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+position:relative;
+z-index:2;
 }
 
 .logo{
-position:relative;
-font-size:20px;
-font-weight:900;
+font-size:19px;
+font-weight:1000;
 letter-spacing:.3px;
-text-shadow:0 0 18px #77a9ff66;
+text-shadow:0 0 20px #7c4dff66;
 }
 
 .logo span{
-color:#ffe08a;
+color:#ffd84d;
 }
 
 .wallet{
-position:relative;
-background:linear-gradient(135deg,#1c2539,#0c1321);
-border:1px solid #d9b65b66;
-border-radius:22px;
+background:
+linear-gradient(135deg,#1b2038,#090f20);
+border:1px solid #e2b83f88;
+border-radius:25px;
 padding:9px 14px;
-color:#ffd75a;
+color:#ffd84d;
 font-weight:900;
 box-shadow:
-0 8px 25px #0007,
-inset 0 1px #ffffff16;
-}
-
-.wallet:before{
-content:"✦";
-position:absolute;
-left:7px;
-top:-7px;
-color:#fff1a8;
-font-size:9px;
+0 8px 25px #0009,
+0 0 20px #ffc83d15,
+inset 0 1px #ffffff15;
 }
 
 .hero{
-margin:4px 16px 17px;
-padding:25px;
-border-radius:27px;
+margin:5px 12px 18px;
+padding:24px 20px 21px;
+border-radius:29px;
 background:
-linear-gradient(135deg,#142f5ddd,#171d37ee 55%,#29163ddd);
-border:1px solid #9bc1ff3d;
+linear-gradient(115deg,#0b1230ee,#1c1141e8 48%,#0a2945e8);
+border:1px solid #9b6cff55;
 box-shadow:
-0 20px 50px #0008,
+0 22px 55px #000b,
+0 0 40px #713cff18,
 inset 0 1px #ffffff18;
 position:relative;
 overflow:hidden;
@@ -92,33 +98,48 @@ height:300px;
 right:-150px;
 top:-150px;
 border-radius:50%;
-background:#ffe18a12;
-filter:blur(10px);
+background:#ffd84d12;
+filter:blur(5px);
 }
 
 .hero h1{
-margin:0 0 9px;
-font-size:31px;
-line-height:1.05;
+margin:0 0 10px;
+font-size:34px;
+line-height:.98;
+letter-spacing:-1px;
+text-transform:uppercase;
 position:relative;
+text-shadow:0 5px 25px #000a;
+}
+
+.hero h1 span{
+color:#ffd43d;
+}
+
+.hero h1:after{
+content:"";
+display:block;
+width:95px;
+height:3px;
+margin-top:14px;
+border-radius:5px;
+background:linear-gradient(90deg,#ffd43d,#8b4dff);
+box-shadow:0 0 16px #ffc83d88;
 }
 
 .hero p{
-margin:0 0 15px;
-color:#bac7da;
+color:#bdc9dc;
 line-height:1.5;
-font-size:14px;
+font-size:13px;
 position:relative;
 }
 
-.hero:after{
-content:"✦  PREMIUM CRICKET COLLECTION  ✦";
-display:block;
-margin-top:16px;
-color:#ffe38a;
+.badge{
 font-size:9px;
-letter-spacing:2px;
+letter-spacing:2.5px;
+color:#ae9bff;
 font-weight:900;
+margin-bottom:10px;
 }
 
 button{
@@ -127,15 +148,15 @@ border-radius:14px;
 padding:12px 16px;
 font-weight:900;
 cursor:pointer;
-background:linear-gradient(135deg,#ffe9a4,#f4c33f);
+background:linear-gradient(135deg,#ffeaa3,#f2c43e);
 color:#080e18;
-box-shadow:0 8px 24px #ffca3a22;
+box-shadow:0 9px 24px #ffca3a22;
 transition:.18s;
 }
 
 button:hover{
 transform:translateY(-2px);
-box-shadow:0 12px 30px #ffca3a35;
+box-shadow:0 13px 30px #ffca3a38;
 }
 
 button:active{
@@ -145,22 +166,23 @@ transform:scale(.97);
 .pack{
 position:relative;
 overflow:hidden;
-margin:16px;
+margin:16px 12px;
 padding:20px;
-border-radius:24px;
+border-radius:25px;
 background:
-linear-gradient(145deg,#121d31,#0a111e);
-border:1px solid #ffffff13;
+linear-gradient(135deg,#101a31,#090f20 55%,#1b1031);
+border:1px solid #5267a855;
 box-shadow:
-0 17px 38px #0006,
-inset 0 1px #ffffff0b;
+0 18px 45px #0008,
+0 0 30px #4e65ff12,
+inset 0 1px #ffffff12;
 }
 
 .pack:before{
 content:"💎";
 position:absolute;
-right:17px;
-top:45px;
+right:15px;
+top:47px;
 font-size:52px;
 opacity:.07;
 }
@@ -174,28 +196,28 @@ position:relative;
 
 .pack h2{
 margin:0;
-font-size:20px;
+font-size:19px;
 }
 
 .price{
-color:#ffd34d;
+color:#ffd84d;
 font-weight:900;
 }
 
 .section{
-padding:0 16px;
+padding:0 12px;
 }
 
 .section h2{
 font-size:19px;
-margin-bottom:8px;
+margin-bottom:6px;
 }
 
 .row{
 display:flex;
 gap:12px;
 overflow-x:auto;
-padding:4px 2px 12px;
+padding:4px 2px 13px;
 scrollbar-width:none;
 }
 
@@ -204,36 +226,34 @@ display:none;
 }
 
 .card{
-min-width:165px;
-border-radius:20px;
-padding:12px;
+min-width:166px;
+border-radius:21px;
+padding:11px;
 background:
-linear-gradient(160deg,#1c2b45,#0a101d 78%);
-border:1px solid #8aa9d333;
+linear-gradient(155deg,#111c37,#080d1b 65%,#17102d);
+border:1px solid #6075b866;
 box-shadow:
-0 14px 30px #0008,
-inset 0 1px #ffffff10;
+0 16px 34px #0009,
+0 0 22px #633cff0d,
+inset 0 1px #ffffff15;
 position:relative;
 overflow:hidden;
-transition:.2s;
+transition:.22s;
 }
 
 .card:hover{
 transform:translateY(-4px);
-border-color:#ffd35a66;
-box-shadow:
-0 18px 35px #0009,
-0 0 20px #ffd34d0d;
+border-color:#ffd45a88;
 }
 
 .card:before{
 content:"✦";
 position:absolute;
-right:11px;
+right:10px;
 top:8px;
 color:#ffe18a;
 font-size:13px;
-opacity:.85;
+z-index:2;
 }
 
 .card:after{
@@ -244,18 +264,22 @@ height:100px;
 right:-55px;
 top:-55px;
 border-radius:50%;
-background:#4e8cff15;
+background:#5d72ff18;
 }
 
 .rarity{
+display:flex;
+justify-content:space-between;
+align-items:center;
 font-size:9px;
-color:#8fb6ff;
+color:#b49dff;
 font-weight:900;
-letter-spacing:1.4px;
+letter-spacing:1.5px;
+text-transform:uppercase;
 }
 
 .avatar{
-height:105px;
+height:108px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -263,12 +287,14 @@ margin:8px 0;
 }
 
 .avatar img{
-width:78px;
-height:94px;
+width:80px;
+height:96px;
 object-fit:cover;
-border-radius:16px;
-border:1px solid #ffd45a66;
-box-shadow:0 10px 22px #0009;
+border-radius:17px;
+border:2px solid #d7aa4477;
+box-shadow:
+0 12px 25px #000b,
+0 0 18px #8d55ff22;
 }
 
 .avatar-fallback{
@@ -277,17 +303,17 @@ font-size:48px;
 
 .name{
 text-align:center;
-font-weight:900;
+font-weight:1000;
 font-size:14px;
-letter-spacing:.3px;
+letter-spacing:.4px;
 }
 
 .role{
 text-align:center;
-color:#7f93b0;
-font-size:9px;
+color:#8192b0;
+font-size:8px;
 margin-top:3px;
-letter-spacing:1px;
+letter-spacing:1.5px;
 }
 
 .value{
@@ -301,8 +327,8 @@ margin-top:6px;
 .stat{
 display:flex;
 justify-content:space-between;
-font-size:10px;
-color:#9eabc0;
+font-size:9px;
+color:#a5b1c4;
 margin-top:8px;
 }
 
@@ -311,38 +337,40 @@ width:100%;
 margin-top:12px;
 padding:9px;
 font-size:10px;
-background:linear-gradient(135deg,#ffe9a3,#e9b933);
+background:linear-gradient(135deg,#b9ff69,#55bc22);
+color:#081306;
+box-shadow:0 7px 18px #56d52c22;
 }
 
 .battle{
 position:relative;
 overflow:hidden;
-margin:17px 16px;
+margin:18px 12px;
 padding:20px;
-border-radius:24px;
+border-radius:25px;
 background:
-linear-gradient(145deg,#121d31,#0a111e);
-border:1px solid #ffffff13;
-box-shadow:0 17px 38px #0006;
+linear-gradient(135deg,#0d1830,#090e20 55%,#1a1030);
+border:1px solid #5c55a555;
+box-shadow:
+0 20px 45px #0009,
+0 0 30px #714cff12;
 }
 
 .battle:before{
 content:"⚔";
 position:absolute;
-right:20px;
-top:5px;
+right:18px;
+top:4px;
 font-size:65px;
 opacity:.05;
 }
 
 .battle h2{
 margin-top:0;
-position:relative;
 }
 
 .challenge{
 color:#aebbd0;
-position:relative;
 }
 
 .challenge b{
@@ -354,15 +382,16 @@ display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:8px;
 margin-top:15px;
-position:relative;
 }
 
 .choice button{
-background:linear-gradient(145deg,#1b2b45,#101b2d);
+background:linear-gradient(145deg,#1b2d51,#11152c);
 color:#fff;
-border:1px solid #3b5273;
+border:1px solid #5669a5;
 font-size:11px;
-box-shadow:none;
+box-shadow:
+inset 0 1px #ffffff12,
+0 8px 18px #0005;
 }
 
 .result{
@@ -411,8 +440,8 @@ color:#ffd34d;
 .modal{
 position:fixed;
 inset:0;
-background:#02040ad9;
-backdrop-filter:blur(14px);
+background:#02040add;
+backdrop-filter:blur(15px);
 display:flex;
 align-items:center;
 justify-content:center;
@@ -425,7 +454,7 @@ width:min(440px,100%);
 background:
 linear-gradient(145deg,#192740,#0b1321);
 border:1px solid #ffd45a55;
-border-radius:27px;
+border-radius:28px;
 padding:21px;
 box-shadow:
 0 30px 90px #000c,
@@ -465,11 +494,15 @@ grid-template-columns:repeat(2,1fr);
 }
 
 .hero h1{
-font-size:27px;
+font-size:28px;
 }
 
 }
 
+@keyframes glow{
+0%,100%{opacity:.7}
+50%{opacity:1}
+}
 </style>
 </head>
 
@@ -484,7 +517,7 @@ font-size:27px;
 </div>
 
 <div class="wallet">
-🪙 <span id="coins">15</span>
+🪙 <span id="coins">5</span>
 </div>
 
 </header>
@@ -492,16 +525,22 @@ font-size:27px;
 
 <section class="hero">
 
+<div class="badge">
+🏆 CRICKET CARD ARENA
+</div>
+
 <h1>
-Play. Collect. Battle.
+Collect.<br>
+<span>Battle.</span><br>
+Become A Legend.
 </h1>
 
 <p>
-Build your premium cricket card collection, battle opponents and grow your collection.
+Collect powerful cricket cards, battle opponents and build your ultimate squad.
 </p>
 
 <button onclick="openPack()">
-💎 Open Common Pack · 30
+💎 OPEN COMMON PACK · 30
 </button>
 
 </section>
@@ -512,7 +551,7 @@ Build your premium cricket card collection, battle opponents and grow your colle
 <div class="packtop">
 
 <h2>
-🟢 ✦ Common Pack
+🎁 ✦ COMMON PACK
 </h2>
 
 <span class="price">
@@ -522,12 +561,15 @@ Build your premium cricket card collection, battle opponents and grow your colle
 </div>
 
 <p style="color:#9eabc0;font-size:13px;line-height:1.5">
-🎁 3 random cricket cards per pack.<br>
-💰 Total card value: 25–40 coins.
+
+🃏 3 random player cards<br>
+🎲 Total value can be <b style="color:#ffd84d">20–40 coins</b><br>
+🔒 Values revealed only after opening
+
 </p>
 
 <button onclick="openPack()">
-🎁 Open Pack
+✨ OPEN NOW
 </button>
 
 </section>
@@ -536,11 +578,11 @@ Build your premium cricket card collection, battle opponents and grow your colle
 <section class="section">
 
 <h2>
-🃏 My Cards
+💎 My Collection
 (<span id="count">0</span>)
 </h2>
 
-<p style="color:#738199;font-size:11px;margin-top:-3px">
+<p style="color:#738199;font-size:11px">
 ✦ Sell any card instantly for its displayed value.
 </p>
 
@@ -552,7 +594,7 @@ Build your premium cricket card collection, battle opponents and grow your colle
 <section class="battle">
 
 <h2>
-⚔️ Quick Battle
+⚔️ QUICK BATTLE
 </h2>
 
 <div class="challenge">
@@ -565,7 +607,7 @@ Bowling Accuracy
 </div>
 
 <p style="color:#738199;font-size:12px">
-Choose your player. Higher stat wins the round.
+Choose your card. Higher challenge stat wins.
 </p>
 
 <div id="battlechoices" class="choice"></div>
@@ -598,12 +640,14 @@ Choose your player. Higher stat wins the round.
 </div>
 
 
+<!-- PACK REVEAL -->
+
 <div id="modal" class="modal hidden">
 
 <div class="modalbox">
 
 <h2>
-🎉 Pack Opened!
+🎉 PACK OPENED!
 </h2>
 
 <p id="modalText"
@@ -614,14 +658,14 @@ style="text-align:center;color:#aebbd0">
 <div id="reveal" class="reveal"></div>
 
 <p id="packStatus"
-style="text-align:center;color:#91a4c1;font-size:12px">
+style="text-align:center;color:#91a4c1;font-size:12px;min-height:16px">
 </p>
 
 <button
 class="close"
 id="collectionBtn">
 
-✨ Add to Collection
+✨ ADD TO COLLECTION
 
 </button>
 
@@ -631,6 +675,10 @@ id="collectionBtn">
 
 
 <script>
+
+/* ==========================================
+   PLAYER DATABASE
+========================================== */
 
 const fallbackImage =
 "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=300&q=80";
@@ -690,7 +738,7 @@ pace:68
 
 {
 name:"Axar",
-image:fallbackImage,
+image:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Axar.Patel.jpg",
 value:13,
 bat:70,
 bowl:78,
@@ -721,9 +769,13 @@ pace:79
 ];
 
 
+/* ==========================================
+   USER DATA
+========================================== */
+
 let coins =
 localStorage.getItem("ccb_coins") === null
-? 15
+? 5
 : Number(localStorage.getItem("ccb_coins"));
 
 
@@ -733,9 +785,13 @@ localStorage.getItem("ccb_cards") || "[]"
 );
 
 
-let isFirstPack =
+let firstPack =
 localStorage.getItem("ccb_welcome") !== "1";
 
+
+/* ==========================================
+   SAVE
+========================================== */
 
 function save(){
 
@@ -752,6 +808,10 @@ JSON.stringify(collection)
 }
 
 
+/* ==========================================
+   CARD HTML
+========================================== */
+
 function cardHTML(player,index){
 
 return `
@@ -767,13 +827,17 @@ return `
 <img
 src="${player.image || fallbackImage}"
 alt="${player.name}"
-onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
->
+onerror="
+this.style.display='none';
+this.nextElementSibling.style.display='block'
+">
 
 <span
 class="avatar-fallback"
 style="display:none">
+
 🏏
+
 </span>
 
 </div>
@@ -787,24 +851,38 @@ ${player.name}
 </div>
 
 <div class="value">
-💰 ${player.value} Coins
+💰 ${player.value} COINS
 </div>
 
 <div class="stat">
-<span>🏏 BAT ${player.bat}</span>
-<span>🎯 BOWL ${player.bowl}</span>
+
+<span>
+🏏 BAT ${player.bat}
+</span>
+
+<span>
+🎯 BOWL ${player.bowl}
+</span>
+
 </div>
 
 <div class="stat">
-<span>🧤 CATCH ${player.catch}</span>
-<span>⚡ PACE ${player.pace}</span>
+
+<span>
+🧤 CATCH ${player.catch}
+</span>
+
+<span>
+⚡ PACE ${player.pace}
+</span>
+
 </div>
 
 <button
 class="sell"
 onclick="sellCard(${index})">
 
-💎 Instant Sell · ${player.value}
+💎 INSTANT SELL · ${player.value}
 
 </button>
 
@@ -814,6 +892,10 @@ onclick="sellCard(${index})">
 
 }
 
+
+/* ==========================================
+   RENDER
+========================================== */
 
 function render(){
 
@@ -835,8 +917,7 @@ box.innerHTML = `
 <p style="
 color:#738199;
 font-size:13px;
-padding:10px 0;
-">
+padding:10px">
 
 🎁 Open your FREE welcome pack
 to start your collection.
@@ -862,11 +943,15 @@ renderBattle();
 }
 
 
+/* ==========================================
+   OPEN PACK
+========================================== */
+
 function openPack(){
 
-if(isFirstPack){
+if(firstPack){
 
-isFirstPack=false;
+firstPack = false;
 
 localStorage.setItem(
 "ccb_welcome",
@@ -883,6 +968,11 @@ createPack(false);
 
 }
 
+
+/* ==========================================
+   CREATE PACK
+   TOTAL VALUE = 20–40
+========================================== */
 
 function createPack(free){
 
@@ -905,95 +995,62 @@ coins -= 30;
 
 
 let cards = [];
-
 let total = 0;
+
+
+/*
+   Generate 3 random cards.
+   Repeat until total value is
+   between 20 and 40.
+*/
+
+do{
+
+cards = [];
+
+total = 0;
 
 
 for(let i=0;i<3;i++){
 
-let player =
+const player =
 players[
 Math.floor(
 Math.random()*players.length
 )
 ];
 
-cards.push({...player});
+cards.push({
+...player
+});
 
 total += player.value;
 
 }
 
-
-/* Total value 25-40 */
-
-while(total < 25){
-
-let p =
-players[
-Math.floor(
-Math.random()*players.length
-)
-];
-
-let index =
-Math.floor(Math.random()*3);
-
-cards[index] =
-{...p};
-
-total =
-cards.reduce(
-(sum,x)=>sum+x.value,
-0
-);
-
 }
+while(total < 20 || total > 40);
 
 
-while(total > 40){
-
-let index =
-Math.floor(Math.random()*3);
-
-let current =
-cards[index];
-
-let lower =
-players.filter(
-x=>x.value < current.value
-);
-
-if(!lower.length)
-break;
-
-let replacement =
-lower[
-Math.floor(
-Math.random()*lower.length
-)
-];
-
-cards[index] =
-{...replacement};
-
-total =
-cards.reduce(
-(sum,x)=>sum+x.value,
-0
-);
-
-}
-
+/*
+   Add cards to collection.
+*/
 
 collection.push(...cards);
 
 save();
 
-showPack(cards,free);
+showPack(
+cards,
+free
+);
 
 }
 
+
+/* ==========================================
+   SHOW PACK
+========================================== */
 
 function showPack(cards,free){
 
@@ -1009,7 +1066,7 @@ document.getElementById("packStatus");
 
 modal.classList.remove("hidden");
 
-reveal.innerHTML="";
+reveal.innerHTML = "";
 
 
 document.getElementById(
@@ -1017,20 +1074,25 @@ document.getElementById(
 ).textContent =
 
 free
+
 ?
-"🎁 Your first Common Pack is FREE!"
+
+"🎁 Your 3-card welcome pack is FREE!"
+
 :
+
 "💎 3 cards received from your pack.";
 
 
 status.textContent =
-"✨ Revealing cards...";
+"✨ REVEALING CARDS...";
 
 
 cards.forEach(
 (player,index)=>{
 
 setTimeout(
+
 ()=>{
 
 reveal.insertAdjacentHTML(
@@ -1039,23 +1101,31 @@ cardHTML(player,index)
 );
 
 
-if(index === cards.length-1){
+if(
+index === cards.length-1
+){
 
 status.textContent =
-"🎉 All cards revealed!";
+"🎉 ALL 3 CARDS REVEALED!";
 
 }
 
 },
-350*index
-);
 
-}
+400 * index
 
 );
 
 }
 
+);
+
+}
+
+
+/* ==========================================
+   CLOSE PACK
+========================================== */
 
 document
 .getElementById("collectionBtn")
@@ -1072,6 +1142,10 @@ render();
 }
 );
 
+
+/* ==========================================
+   SELL CARD
+========================================== */
 
 function sellCard(index){
 
@@ -1091,7 +1165,9 @@ collection[index];
 
 const confirmed =
 confirm(
-`💎 Sell ${card.name} for ${card.value} coins?`
+
+`💎 Sell ${card.name} card for ${card.value} coins?`
+
 );
 
 
@@ -1102,12 +1178,15 @@ return;
 }
 
 
-coins += Number(card.value);
+coins +=
+Number(card.value);
+
 
 collection.splice(
 index,
 1
 );
+
 
 save();
 
@@ -1115,11 +1194,17 @@ render();
 
 
 alert(
+
 `💰 ${card.name} sold for ${card.value} coins!`
+
 );
 
 }
 
+
+/* ==========================================
+   BATTLE
+========================================== */
 
 function renderBattle(){
 
@@ -1128,18 +1213,19 @@ document.getElementById(
 "battlechoices"
 );
 
-box.innerHTML="";
+box.innerHTML = "";
 
 
-if(collection.length === 0){
+if(
+collection.length === 0
+){
 
 box.innerHTML = `
 
 <p style="
 grid-column:1/-1;
 color:#738199;
-font-size:12px
-">
+font-size:12px">
 
 🃏 Get cards first to battle.
 
@@ -1167,7 +1253,7 @@ ${player.name}
 <br>
 
 <small>
-⚔ Choose Card
+⚔ CHOOSE CARD
 </small>
 
 </button>
@@ -1175,6 +1261,7 @@ ${player.name}
 `;
 
 }
+
 );
 
 }
@@ -1182,8 +1269,13 @@ ${player.name}
 
 function battle(index){
 
-if(!collection.length)
+if(
+!collection.length
+){
+
 return;
+
+}
 
 
 const myCard =
@@ -1238,11 +1330,15 @@ challenge[0];
 
 
 const myScore =
-myCard[challenge[1]];
+myCard[
+challenge[1]
+];
 
 
 const opponentScore =
-opponent[challenge[1]];
+opponent[
+challenge[1]
+];
 
 
 const result =
@@ -1256,7 +1352,9 @@ result.classList.remove(
 );
 
 
-if(myScore >= opponentScore){
+if(
+myScore >= opponentScore
+){
 
 result.innerHTML = `
 
@@ -1265,9 +1363,15 @@ result.innerHTML = `
 <br>
 
 <small>
-${myCard.name} ${myScore}
+
+${myCard.name}
+<strong>${myScore}</strong>
+
 ⚔
-${opponent.name} ${opponentScore}
+
+${opponent.name}
+<strong>${opponentScore}</strong>
+
 </small>
 
 `;
@@ -1283,9 +1387,15 @@ result.innerHTML = `
 <br>
 
 <small>
-${myCard.name} ${myScore}
+
+${myCard.name}
+<strong>${myScore}</strong>
+
 ⚔
-${opponent.name} ${opponentScore}
+
+${opponent.name}
+<strong>${opponentScore}</strong>
+
 </small>
 
 `;
@@ -1294,6 +1404,10 @@ ${opponent.name} ${opponentScore}
 
 }
 
+
+/* ==========================================
+   NAVIGATION
+========================================== */
 
 function scrollCards(){
 
@@ -1316,6 +1430,10 @@ behavior:"smooth"
 
 }
 
+
+/* ==========================================
+   START
+========================================== */
 
 render();
 
