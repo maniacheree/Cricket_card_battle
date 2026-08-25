@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Cricket Card Battle</title>
 
 <style>
@@ -15,7 +15,7 @@ radial-gradient(circle at 15% 5%,#203b70 0,transparent 28%),
 radial-gradient(circle at 90% 15%,#4a2a6d 0,transparent 24%),
 linear-gradient(145deg,#05070d,#0a0f1c 48%,#060912);
 color:#fff;
-font-family:Inter,Arial,sans-serif;
+font-family:Arial,sans-serif;
 min-height:100vh
 }
 
@@ -23,10 +23,8 @@ min-height:100vh
 max-width:480px;
 margin:auto;
 min-height:100vh;
-background:
-linear-gradient(180deg,#0b1220e8,#070b14f5),
-radial-gradient(circle at 50% 0,#263e6a44,transparent 45%);
-padding-bottom:82px;
+background:linear-gradient(180deg,#0b1220e8,#070b14f5);
+padding-bottom:85px;
 box-shadow:0 0 80px #0008
 }
 
@@ -40,7 +38,6 @@ align-items:center
 .logo{
 font-size:21px;
 font-weight:900;
-letter-spacing:.2px;
 text-shadow:0 0 18px #77a9ff55
 }
 
@@ -50,48 +47,24 @@ border:1px solid #d9b65b55;
 border-radius:22px;
 padding:9px 13px;
 color:#ffd75a;
-font-weight:900;
-box-shadow:0 8px 25px #0005,inset 0 1px #ffffff12
+font-weight:900
 }
 
 .hero{
 margin:4px 16px 16px;
-padding:24px;
+padding:25px;
 border-radius:26px;
-background:
-linear-gradient(135deg,#142e59dd,#171d36ee 55%,#27183cdd);
+background:linear-gradient(135deg,#142e59,#171d36 55%,#27183c);
 border:1px solid #8fb8ff3b;
-box-shadow:0 18px 45px #0007,inset 0 1px #ffffff18;
-position:relative;
-overflow:hidden
-}
-
-.hero:before{
-content:"";
-position:absolute;
-inset:-60%;
-background:conic-gradient(
-from 90deg,
-transparent,
-#8bb9ff22,
-transparent 30%
-);
-animation:shine 7s linear infinite
-}
-
-.hero>*{
-position:relative;
-z-index:1
+box-shadow:0 18px 45px #0007,inset 0 1px #ffffff18
 }
 
 .hero h1{
 margin:0 0 8px;
-font-size:30px;
-line-height:1.05
+font-size:30px
 }
 
 .hero p{
-margin:0;
 color:#b8c6db;
 line-height:1.5
 }
@@ -101,16 +74,10 @@ border:0;
 border-radius:14px;
 padding:12px 16px;
 font-weight:900;
-color:#0a101b;
-background:linear-gradient(135deg,#ffe48a,#ffc93d);
 cursor:pointer;
-box-shadow:0 8px 22px #ffca3a20;
-transition:transform .18s,box-shadow .18s
-}
-
-button:hover{
-transform:translateY(-1px);
-box-shadow:0 11px 28px #ffca3a35
+background:linear-gradient(135deg,#ffe48a,#ffc93d);
+color:#0a101b;
+box-shadow:0 8px 22px #ffca3a20
 }
 
 button:active{
@@ -123,7 +90,7 @@ padding:19px;
 border-radius:23px;
 background:linear-gradient(145deg,#111b2d,#0c1320);
 border:1px solid #ffffff12;
-box-shadow:0 15px 35px #0005,inset 0 1px #ffffff0c
+box-shadow:0 15px 35px #0005
 }
 
 .packtop{
@@ -138,78 +105,7 @@ margin:0
 
 .price{
 color:#ffd34d;
-font-weight:800
-}
-
-.cards{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px;
-margin-top:15px
-}
-
-.card{
-min-height:190px;
-border-radius:18px;
-padding:12px;
-background:
-linear-gradient(160deg,#1b2942,#0b111e 75%);
-border:1px solid #7d9fcf36;
-position:relative;
-overflow:hidden;
-box-shadow:0 12px 28px #0006,inset 0 1px #ffffff12;
-transition:transform .2s,border-color .2s
-}
-
-.card:hover{
-transform:translateY(-3px);
-border-color:#ffd35a55
-}
-
-.card:after{
-content:"";
-position:absolute;
-width:80px;
-height:80px;
-border-radius:50%;
-background:#2e7dff22;
-right:-25px;
-top:-25px
-}
-
-.rarity{
-font-size:10px;
-color:#8fb6ff;
-text-transform:uppercase;
-font-weight:800
-}
-
-.avatar{
-font-size:42px;
-text-align:center;
-margin:15px 0 8px;
-filter:drop-shadow(0 5px 10px #0008)
-}
-
-.name{
-font-weight:800;
-text-align:center;
-font-size:13px
-}
-
-.value{
-text-align:center;
-color:#ffd34d;
-font-weight:800;
-margin-top:5px
-}
-
-.stat{
-display:flex;
-justify-content:space-between;
-font-size:10px;
-color:#9eabc0;
-margin-top:8px
+font-weight:900
 }
 
 .section{
@@ -222,21 +118,79 @@ font-size:18px
 
 .row{
 display:flex;
-gap:10px;
-overflow:auto;
-padding-bottom:4px
+gap:12px;
+overflow-x:auto;
+padding-bottom:8px
 }
 
-.smallcard{
-min-width:145px
+.card{
+min-width:160px;
+border-radius:19px;
+padding:12px;
+background:linear-gradient(160deg,#1b2942,#0b111e);
+border:1px solid #7d9fcf36;
+box-shadow:0 12px 28px #0006;
+position:relative
 }
 
-.hidden{
-display:none!important
+.card:hover{
+border-color:#ffd35a66
 }
 
-.modal.hidden{
-display:none!important
+.rarity{
+font-size:10px;
+color:#8fb6ff;
+font-weight:900;
+text-transform:uppercase
+}
+
+.avatar{
+height:100px;
+display:flex;
+align-items:center;
+justify-content:center;
+margin:8px 0
+}
+
+.avatar img{
+width:76px;
+height:90px;
+object-fit:cover;
+border-radius:15px;
+border:1px solid #ffd45a55;
+box-shadow:0 8px 20px #0008
+}
+
+.avatar-fallback{
+font-size:48px
+}
+
+.name{
+text-align:center;
+font-weight:900;
+font-size:14px
+}
+
+.value{
+text-align:center;
+color:#ffd34d;
+font-weight:900;
+margin-top:5px
+}
+
+.stat{
+display:flex;
+justify-content:space-between;
+font-size:10px;
+color:#9eabc0;
+margin-top:8px
+}
+
+.sell{
+width:100%;
+margin-top:12px;
+padding:9px;
+font-size:11px
 }
 
 .battle{
@@ -248,12 +202,7 @@ border:1px solid #ffffff12;
 box-shadow:0 15px 35px #0005
 }
 
-.battle h2{
-margin-top:0
-}
-
 .challenge{
-font-size:15px;
 color:#aebbd0
 }
 
@@ -278,11 +227,13 @@ border:1px solid #344765
 margin-top:14px;
 padding:14px;
 border-radius:14px;
-background:linear-gradient(135deg,#0c1626,#101b2d);
-border:1px solid #ffffff10;
+background:#0c1626;
 text-align:center;
-font-weight:900;
-box-shadow:inset 0 1px #ffffff0b
+font-weight:900
+}
+
+.hidden{
+display:none!important
 }
 
 nav{
@@ -297,15 +248,15 @@ backdrop-filter:blur(18px);
 display:grid;
 grid-template-columns:repeat(4,1fr);
 border-top:1px solid #ffffff12;
-padding:8px 8px calc(8px + env(safe-area-inset-bottom));
-box-shadow:0 -12px 35px #0008
+padding:8px
 }
 
 nav button{
 background:transparent;
 color:#94a4bc;
 padding:8px 2px;
-font-size:11px
+font-size:11px;
+box-shadow:none
 }
 
 nav button.active{
@@ -321,8 +272,7 @@ display:flex;
 align-items:center;
 justify-content:center;
 padding:20px;
-z-index:5;
-animation:fadeIn .2s ease
+z-index:10
 }
 
 .modalbox{
@@ -331,12 +281,7 @@ background:linear-gradient(145deg,#17243a,#0c1320);
 border:1px solid #ffd45a45;
 border-radius:26px;
 padding:21px;
-box-shadow:0 25px 80px #000b,inset 0 1px #ffffff14;
-animation:pop .25s ease
-}
-
-.modalbox h2{
-text-align:center
+box-shadow:0 25px 80px #000b
 }
 
 .reveal{
@@ -347,50 +292,13 @@ margin:16px 0
 }
 
 .reveal .card{
-min-height:170px
+min-width:0;
+padding:8px
 }
 
 .close{
 width:100%;
 margin-top:8px
-}
-
-@media(min-width:600px){
-body{
-padding:20px 0
-}
-
-.app{
-border-radius:24px;
-overflow:hidden;
-box-shadow:0 20px 60px #0008
-}
-}
-
-@keyframes shine{
-to{
-transform:rotate(360deg)
-}
-}
-
-@keyframes fadeIn{
-from{
-opacity:0
-}
-to{
-opacity:1
-}
-}
-
-@keyframes pop{
-from{
-transform:scale(.96);
-opacity:.4
-}
-to{
-transform:scale(1);
-opacity:1
-}
 }
 </style>
 </head>
@@ -400,11 +308,15 @@ opacity:1
 <div class="app">
 
 <header>
-<div class="logo">🏏 Cricket Card Battle</div>
+
+<div class="logo">
+🏏 Cricket Card Battle
+</div>
 
 <div class="wallet">
-🪙 <span id="coins">50</span>
+🪙 <span id="coins">15</span>
 </div>
+
 </header>
 
 
@@ -415,10 +327,8 @@ Play. Collect. Battle.
 </h1>
 
 <p>
-Build your cricket card collection and challenge opponents using player stats.
+Build your cricket card collection, sell cards instantly and battle opponents using player stats.
 </p>
-
-<br>
 
 <button onclick="openPack()">
 🎁 Open Common Pack · 30
@@ -442,10 +352,8 @@ Build your cricket card collection and challenge opponents using player stats.
 </div>
 
 <p style="color:#9eabc0;font-size:13px">
-
-Contains 3 random common cards.
-Total card value can vary between 25–40 coins.
-
+3 random cricket cards per pack.
+Total card value can be between 25–40 coins.
 </p>
 
 <button onclick="openPack()">
@@ -461,13 +369,11 @@ Open Pack
 🃏 My Cards (<span id="count">0</span>)
 </h2>
 
-<div id="mycards" class="row">
-
-<p style="color:#738199;font-size:13px">
-Open your first pack to get cards.
+<p style="color:#738199;font-size:11px">
+You can instantly sell any card from your collection.
 </p>
 
-</div>
+<div id="mycards" class="row"></div>
 
 </section>
 
@@ -480,7 +386,7 @@ Open your first pack to get cards.
 
 <div class="challenge">
 
-Challenge stat:
+Challenge:
 <b id="challenge">
 Bowling Accuracy
 </b>
@@ -488,17 +394,12 @@ Bowling Accuracy
 </div>
 
 <p style="color:#738199;font-size:12px">
-
-Choose one of your cards.
-The higher challenge stat wins the round.
-
+Choose your player. Higher stat wins.
 </p>
 
-<div id="battlechoices" class="choice">
-</div>
+<div id="battlechoices" class="choice"></div>
 
-<div id="result" class="result hidden">
-</div>
+<div id="result" class="result hidden"></div>
 
 </section>
 
@@ -506,27 +407,19 @@ The higher challenge stat wins the round.
 <nav>
 
 <button class="active">
-🏠
-<br>
-Home
+🏠<br>Home
 </button>
 
-<button onclick="scrollToCards()">
-🃏
-<br>
-Cards
+<button onclick="scrollCards()">
+🃏<br>Cards
 </button>
 
-<button onclick="scrollToBattle()">
-⚔️
-<br>
-Battle
+<button onclick="scrollBattle()">
+⚔️<br>Battle
 </button>
 
 <button>
-👤
-<br>
-Profile
+👤<br>Profile
 </button>
 
 </nav>
@@ -544,29 +437,21 @@ Profile
 🎉 Pack Opened!
 </h2>
 
-<p style="text-align:center;color:#aebbd0">
-You received 3 cards.
+<p id="modalText"
+style="text-align:center;color:#aebbd0">
+3 cards received.
 </p>
 
-<div id="reveal" class="reveal">
-</div>
+<div id="reveal" class="reveal"></div>
 
-<div
-id="packStatus"
-style="
-text-align:center;
-color:#91a4c1;
-font-size:12px;
-min-height:16px
-">
-</div>
+<p id="packStatus"
+style="text-align:center;color:#91a4c1;font-size:12px">
+</p>
 
 <button
 class="close"
-onclick="closeModal()">
-
+id="collectionBtn">
 Add to Collection
-
 </button>
 
 </div>
@@ -576,7 +461,11 @@ Add to Collection
 
 <script>
 
-const players=[
+const fallbackImage =
+"https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=300&q=80";
+
+
+const players = [
 
 {
 name:"Gill",
@@ -653,19 +542,19 @@ pace:79
 ];
 
 
-let coins=
-Number(
-localStorage.getItem("ccb_coins") || 50
-);
+let coins =
+localStorage.getItem("ccb_coins") === null
+? 15
+: Number(localStorage.getItem("ccb_coins"));
 
 
-let collection=
+let collection =
 JSON.parse(
 localStorage.getItem("ccb_cards") || "[]"
 );
 
 
-let first=
+let isFirstPack =
 localStorage.getItem("ccb_welcome") !== "1";
 
 
@@ -684,40 +573,94 @@ JSON.stringify(collection)
 }
 
 
-function render(){
+function cardHTML(player,index){
 
-document.getElementById("coins").textContent=coins;
+return `
 
-document.getElementById("count").textContent=
-collection.length;
+<div class="card">
 
+<div class="rarity">
+COMMON
+</div>
 
-const box=
-document.getElementById("mycards");
+<div class="avatar">
 
-box.innerHTML="";
+<img
+src="${player.image || fallbackImage}"
+alt="${player.name}"
+onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+>
 
+<span
+class="avatar-fallback"
+style="display:none">
+🏏
+</span>
 
-if(!collection.length){
+</div>
 
-box.innerHTML=
-`
-<p style="color:#738199;font-size:13px">
-Open your first pack to get cards.
-</p>
+<div class="name">
+${player.name}
+</div>
+
+<div class="value">
+🪙 ${player.value} Coins
+</div>
+
+<div class="stat">
+<span>BAT ${player.bat}</span>
+<span>BOWL ${player.bowl}</span>
+</div>
+
+<div class="stat">
+<span>CATCH ${player.catch}</span>
+<span>PACE ${player.pace}</span>
+</div>
+
+<button
+class="sell"
+onclick="sellCard(${index})">
+
+💰 Instant Sell · ${player.value}
+
+</button>
+
+</div>
+
 `;
 
 }
 
 
-collection.forEach(
-(p,i)=>{
+function render(){
 
-box.innerHTML+=
-cardHTML(p,i,true);
+document.getElementById("coins").textContent =
+coins;
+
+document.getElementById("count").textContent =
+collection.length;
+
+
+const box =
+document.getElementById("mycards");
+
+if(collection.length === 0){
+
+box.innerHTML = `
+<p style="color:#738199;font-size:13px">
+No cards yet. Open your FREE welcome pack!
+</p>
+`;
 
 }
-);
+
+else{
+
+box.innerHTML = collection
+.map((p,i)=>cardHTML(p,i))
+.join("");
+
+}
 
 
 renderBattle();
@@ -725,85 +668,34 @@ renderBattle();
 }
 
 
-function cardHTML(p,i,small=false){
-
-return `
-
-<div class="card ${small?'smallcard':''}">
-
-<div class="rarity">
-Common
-</div>
-
-<div class="avatar">
-🏏
-</div>
-
-<div class="name">
-${p.name}
-</div>
-
-<div class="value">
-🪙 ${p.value} coins
-</div>
-
-<div class="stat">
-<span>
-BAT ${p.bat}
-</span>
-
-<span>
-BOWL ${p.bowl}
-</span>
-</div>
-
-<div class="stat">
-
-<span>
-CATCH ${p.catch}
-</span>
-
-<span>
-PACE ${p.pace}
-</span>
-
-</div>
-
-</div>
-
-`;
-
-}
-
-
 function openPack(){
 
-if(first){
+if(isFirstPack){
 
-first=false;
+isFirstPack=false;
 
 localStorage.setItem(
 "ccb_welcome",
 "1"
 );
 
-buyPack(true);
+createPack(true);
 
 return;
 
 }
 
-buyPack(false);
+createPack(false);
 
 }
 
 
-function buyPack(free){
+function createPack(free){
 
-if(!free && coins<30){
+if(!free && coins < 30){
 
 alert(
-"Not enough coins!"
+"You need 30 coins to open this pack."
 );
 
 return;
@@ -813,174 +705,152 @@ return;
 
 if(!free){
 
-coins-=30;
+coins -= 30;
 
 }
 
 
-let arr=[];
+let cards = [];
 
-let total=0;
+let total = 0;
 
 
 for(let i=0;i<3;i++){
 
-let p=
+let player =
 players[
 Math.floor(
 Math.random()*players.length
 )
 ];
 
-arr.push({...p});
+cards.push({...player});
 
-total+=p.value;
+total += player.value;
 
 }
 
 
-/* Keep total card value between 25 and 40 */
+/* Keep total value 25-40 */
 
-while(total<25){
+while(total < 25){
 
-let p=
+let p =
 players[
 Math.floor(
 Math.random()*players.length
 )
 ];
 
-arr[
-Math.floor(
-Math.random()*3
-)
-]=
-{...p};
+let index =
+Math.floor(Math.random()*3);
 
-total=
-arr.reduce(
-(s,x)=>s+x.value,
+cards[index] = {...p};
+
+total =
+cards.reduce(
+(sum,x)=>sum+x.value,
 0
 );
 
 }
 
 
-while(total>40){
+while(total > 40){
 
-let idx=
-Math.floor(
-Math.random()*3
-);
+let index =
+Math.floor(Math.random()*3);
 
-let p=
-arr[idx];
+let current =
+cards[index];
 
-let lower=
+let lower =
 players.filter(
-x=>x.value<=p.value-1
+x=>x.value < current.value
 );
 
-if(!lower.length)
-break;
+if(!lower.length) break;
 
-let np=
+let replacement =
 lower[
 Math.floor(
 Math.random()*lower.length
 )
 ];
 
-arr[idx]={...np};
+cards[index] = {...replacement};
 
-total=
-arr.reduce(
-(s,x)=>s+x.value,
+total =
+cards.reduce(
+(sum,x)=>sum+x.value,
 0
 );
 
 }
 
 
-collection.push(...arr);
+collection.push(...cards);
 
 save();
 
-showReveal(
-arr,
-free
-);
+showPack(cards,free);
 
 }
 
 
-function showReveal(arr,free){
+function showPack(cards,free){
 
-const modal=
+const modal =
 document.getElementById("modal");
 
-const reveal=
+const reveal =
 document.getElementById("reveal");
 
-const status=
+const status =
 document.getElementById("packStatus");
 
-
-modal.classList.remove(
-"hidden"
-);
+modal.classList.remove("hidden");
 
 reveal.innerHTML="";
 
-status.textContent=
-"✨ Revealing your cards...";
-
-
-document.querySelector(
-".modalbox p"
-).textContent=
-
+document.getElementById("modalText").textContent =
 free
-?
-"Your first Common Pack is FREE!"
-:
-"3 cards added from your 30-coin pack.";
+? "🎁 Your first Common Pack is FREE!"
+: "3 cards received from your 30-coin pack.";
 
 
-arr.forEach(
-(p,i)=>{
+status.textContent =
+"✨ Revealing cards...";
 
-setTimeout(
 
-()=>{
+cards.forEach((player,index)=>{
+
+setTimeout(()=>{
 
 reveal.insertAdjacentHTML(
 "beforeend",
-cardHTML(p,i)
+cardHTML(player,index)
 );
 
+if(index === cards.length-1){
 
-if(i===arr.length-1){
-
-status.textContent=
-"🎉 All 3 cards revealed!";
+status.textContent =
+"🎉 All cards revealed!";
 
 }
 
-},
+},350*index);
 
-350*i
-
-);
-
-}
-
-);
+});
 
 }
 
 
-function closeModal(){
+document
+.getElementById("collectionBtn")
+.addEventListener(
+"click",
+function(){
 
 document
 .getElementById("modal")
@@ -989,59 +859,109 @@ document
 render();
 
 }
+);
+
+
+function sellCard(index){
+
+if(index < 0 ||
+index >= collection.length){
+
+return;
+
+}
+
+
+const card =
+collection[index];
+
+
+const confirmed =
+confirm(
+`Sell ${card.name} for ${card.value} coins?`
+);
+
+
+if(!confirmed){
+
+return;
+
+}
+
+
+coins += Number(card.value);
+
+collection.splice(index,1);
+
+save();
+
+render();
+
+alert(
+`💰 ${card.name} sold for ${card.value} coins!`
+);
+
+}
 
 
 function renderBattle(){
 
-const b=
-document.getElementById(
-"battlechoices"
-);
+const box =
+document.getElementById("battlechoices");
 
-b.innerHTML="";
+box.innerHTML="";
+
+
+if(collection.length === 0){
+
+box.innerHTML =
+`
+<p style="grid-column:1/-1;color:#738199;font-size:12px">
+Get cards first to battle.
+</p>
+`;
+
+return;
+
+}
 
 
 collection
 .slice(0,6)
-.forEach(
+.forEach((player,index)=>{
 
-(p,i)=>{
+box.innerHTML += `
 
-b.innerHTML+=`
+<button onclick="battle(${index})">
 
-<button
-onclick="battle(${i})">
-
-${p.name}
+${player.name}
 
 <br>
 
 <small>
-BOWL ${p.bowl}
+Choose Card
 </small>
 
 </button>
 
 `;
 
-}
-
-);
+});
 
 }
 
 
-function battle(i){
+function battle(index){
 
 if(!collection.length)
 return;
 
 
-const me=
-collection[i];
+const myCard =
+collection[index];
 
 
-const opponent=
+const opponent =
 players[
 Math.floor(
 Math.random()*players.length
@@ -1049,7 +969,7 @@ Math.random()*players.length
 ];
 
 
-const challenges=[
+const challenges = [
 
 [
 "Bowling Accuracy",
@@ -1074,7 +994,7 @@ const challenges=[
 ];
 
 
-const c=
+const challenge =
 challenges[
 Math.floor(
 Math.random()*challenges.length
@@ -1084,46 +1004,34 @@ Math.random()*challenges.length
 
 document.getElementById(
 "challenge"
-).textContent=
-c[0];
+).textContent =
+challenge[0];
 
 
-const mine=
-me[c[1]];
+const myScore =
+myCard[challenge[1]];
 
 
-const theirs=
-opponent[c[1]];
+const opponentScore =
+opponent[challenge[1]];
 
 
-const win=
-mine>=theirs;
+const result =
+document.getElementById("result");
 
 
-const r=
-document.getElementById(
-"result"
-);
+result.classList.remove("hidden");
 
 
-r.classList.remove(
-"hidden"
-);
+if(myScore >= opponentScore){
 
-
-if(win){
-
-r.innerHTML=
-
-`
+result.innerHTML = `
 🏆 YOU WIN!
-
 <br>
-
 <small>
-${me.name}: ${mine}
+${myCard.name} ${myScore}
 vs
-${opponent.name}: ${theirs}
+${opponent.name} ${opponentScore}
 </small>
 `;
 
@@ -1131,17 +1039,13 @@ ${opponent.name}: ${theirs}
 
 else{
 
-r.innerHTML=
-
-`
+result.innerHTML = `
 ❌ YOU LOSE
-
 <br>
-
 <small>
-${me.name}: ${mine}
+${myCard.name} ${myScore}
 vs
-${opponent.name}: ${theirs}
+${opponent.name} ${opponentScore}
 </small>
 `;
 
@@ -1150,7 +1054,7 @@ ${opponent.name}: ${theirs}
 }
 
 
-function scrollToCards(){
+function scrollCards(){
 
 document
 .getElementById("mycards")
@@ -1161,7 +1065,7 @@ behavior:"smooth"
 }
 
 
-function scrollToBattle(){
+function scrollBattle(){
 
 document
 .querySelector(".battle")
