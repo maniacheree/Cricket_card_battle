@@ -2,311 +2,878 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
 <title>Cricket Card Arena</title>
 
 <style>
-*{box-sizing:border-box}
-:root{
---bg:#020714;--panel:#071127;--panel2:#0b1732;--line:#233c68;
---gold:#ffd22e;--purple:#762cff;--blue:#159dff;--green:#35b62d;
---red:#ef2b2b;--text:#f5f7ff;--muted:#9ca9c2;
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
-html{scroll-behavior:smooth}
+
+html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+    overflow-x:hidden;
+}
+
 body{
-margin:0;background:
-radial-gradient(circle at 50% -10%,#182e71 0,transparent 30%),
-radial-gradient(circle at 100% 35%,#061f45 0,transparent 28%),
-radial-gradient(circle at 0 55%,#24103f 0,transparent 25%),
-#020714;color:var(--text);font-family:Inter,Arial,sans-serif;
+    background:
+    radial-gradient(circle at 50% -15%,#1d3c80 0,transparent 35%),
+    radial-gradient(circle at 100% 40%,#281052 0,transparent 30%),
+    #030814;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
 }
-button{font:inherit;cursor:pointer}
-.app{min-height:100vh;max-width:1450px;margin:auto;padding:0 14px 90px}
-.top{height:76px;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:10px}
-.crest{
-width:54px;height:60px;display:grid;place-items:center;
-clip-path:polygon(50% 0,96% 16%,87% 79%,50% 100%,13% 79%,4% 16%);
-background:linear-gradient(145deg,#ffd52f,#6b27e9);
-box-shadow:0 0 28px #7a38ff55;font-size:29px
+
+button{
+    border:0;
+    font:inherit;
+    cursor:pointer;
 }
-.logo b{font-size:27px;line-height:.9;display:block}
-.logo b span{color:var(--gold)}
-.logo small{color:var(--gold);font-weight:1000;letter-spacing:1.5px;font-size:12px}
-.topRight{display:flex;align-items:center;gap:20px}
-.balance{
-min-width:130px;padding:9px 17px;border:1px solid #53658c;border-radius:25px;
-background:#071026;display:flex;justify-content:center;gap:9px;font-size:20px;font-weight:1000
+
+.app{
+    width:100%;
+    max-width:520px;
+    margin:auto;
+    padding:0 12px 88px;
 }
-.balance .coin{color:var(--gold)}
-.plus{color:var(--gold);font-size:26px}
-.bell,.profile{display:grid;place-items:center}
-.bell{width:42px;height:42px;border:1px solid #53617c;border-radius:50%;font-size:20px;background:#071026}
-.profile{display:flex;gap:8px;align-items:center}
-.avatar{
-width:47px;height:47px;border-radius:50%;border:3px solid #7b8192;
-background:linear-gradient(145deg,#cfd4df,#606875);
-display:grid;place-items:center;font-size:25px;color:#313746
+
+
+/* ================= HEADER ================= */
+
+.header{
+    height:68px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 }
-.profile small{display:block;color:#b8c1d3;font-size:10px}
-.profile b{font-size:15px}
-.layout{display:grid;grid-template-columns:190px 1fr;gap:18px}
-.sidebar{
-background:linear-gradient(180deg,#061025,#061127);
-border:1px solid #20345c;border-radius:13px;padding:10px 8px;height:max-content;
-box-shadow:0 20px 50px #0008
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:8px;
 }
-.sideBtn{
-width:100%;display:flex;align-items:center;gap:13px;padding:14px 15px;
-border:0;border-radius:9px;background:transparent;color:#dce3f1;text-align:left;
-font-weight:800;margin:2px 0
+
+.logo{
+    width:42px;
+    height:46px;
+    display:grid;
+    place-items:center;
+    clip-path:polygon(
+        50% 0,
+        94% 17%,
+        87% 78%,
+        50% 100%,
+        13% 78%,
+        6% 17%
+    );
+    background:linear-gradient(
+        145deg,
+        #ffd52f,
+        #762cff
+    );
+    font-size:22px;
+    box-shadow:0 0 22px #7a39ff66;
 }
-.sideBtn.active{background:linear-gradient(90deg,#111b2c,#071022);color:var(--gold);box-shadow:inset 4px 0 var(--gold)}
-.sideBtn.deposit{background:linear-gradient(90deg,#6920e8,#4911b4);color:#fff}
-.promo{
-margin-top:12px;border:1px solid #4d24a8;border-radius:12px;padding:18px 10px;text-align:center;
-background:radial-gradient(circle at 50% 70%,#5d20cf44,transparent 55%),#07102a
+
+.brand-title{
+    font-size:17px;
+    font-weight:1000;
+    line-height:16px;
 }
-.trophy{font-size:62px;filter:drop-shadow(0 0 18px #ffcb2f55)}
-.promo b{font-size:17px}
-.promo span{display:block;color:var(--gold);font-size:20px;font-weight:1000;margin:5px}
-.play{width:100%;background:linear-gradient(135deg,#7c27f1,#5515c4);color:#fff;border:0;border-radius:8px;padding:10px;font-weight:1000}
-.main{min-width:0}
+
+.brand-title span{
+    color:#ffd52f;
+}
+
+.brand-sub{
+    color:#ffd52f;
+    font-size:7px;
+    font-weight:1000;
+    letter-spacing:2px;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.wallet{
+    height:40px;
+    min-width:78px;
+    padding:0 11px;
+    border-radius:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    background:#071126;
+    border:1px solid #59698d;
+    box-shadow:0 5px 20px #0007;
+    font-weight:1000;
+}
+
+.wallet .coin{
+    color:#ffd52f;
+}
+
+.wallet .plus{
+    color:#ffd52f;
+    font-size:22px;
+}
+
+.bell{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:#071126;
+    border:1px solid #59698d;
+    font-size:18px;
+}
+
+
+/* ================= HERO ================= */
+
 .hero{
-height:315px;border:1px solid #29549c;border-radius:14px;overflow:hidden;position:relative;
-background:
-radial-gradient(circle at 80% 50%,#2655b155,transparent 24%),
-linear-gradient(90deg,#071330dd,#0a1b43cc),
-url("https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1600&q=80") center/cover;
-box-shadow:0 18px 50px #0009
+    position:relative;
+    width:100%;
+    min-height:390px;
+    overflow:hidden;
+    border-radius:20px;
+    border:1px solid #315b9e;
+
+    background:
+    linear-gradient(
+        180deg,
+        rgba(5,18,52,.70),
+        rgba(5,13,34,.95)
+    ),
+    url("https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=900&q=85")
+    center/cover;
+
+    box-shadow:
+    0 20px 55px #000b,
+    inset 0 0 50px #1753a833;
 }
-.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#061027dd 0%,#06102799 45%,transparent 100%)}
-.heroText{position:relative;z-index:2;padding:58px 48px;width:53%}
-.heroText h1{font-style:italic;font-size:42px;line-height:1;margin:0 0 20px;text-transform:uppercase}
-.heroText h1 span{color:var(--gold)}
-.heroText p{font-size:18px;color:#e0e6f1;line-height:1.5;margin-bottom:22px}
-.buy{background:linear-gradient(#ffe82f,#f5b900);border:0;border-radius:10px;padding:14px 30px;font-weight:1000;font-size:17px;color:#111;box-shadow:0 9px 22px #e4b41444}
-.heroCards{position:absolute;z-index:3;right:45px;top:28px;height:270px;width:520px}
-.hcard{
-position:absolute;width:190px;height:265px;border-radius:14px;padding:10px;
-background:#081128ee;border:2px solid;box-shadow:0 20px 45px #000b
+
+.hero:after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:45%;
+    background:
+    linear-gradient(
+        transparent,
+        #050b1bd9
+    );
 }
-.hcard:nth-child(1){left:0;top:30px;transform:rotate(-5deg);border-color:#a73cff}
-.hcard:nth-child(2){left:160px;top:0;z-index:3;border-color:#ffd22e;transform:scale(1.05)}
-.hcard:nth-child(3){right:0;top:27px;transform:rotate(5deg);border-color:#159dff}
-.hcard img{width:100%;height:180px;object-fit:cover;object-position:center top;border-radius:9px;background:#172952}
-.hcard .r{display:flex;justify-content:space-between;font-size:9px;font-weight:1000}
-.hcard .r strong{font-size:24px}
-.hcard b{display:block;text-align:center;margin-top:5px;font-size:13px}
-.hcard small{display:block;text-align:center;color:var(--muted);margin-top:5px}
-.two{display:grid;grid-template-columns:1fr 250px;gap:14px;margin-top:14px}
-.panel{
-border:1px solid #20385f;border-radius:13px;background:linear-gradient(145deg,#071127,#071127ee);
-box-shadow:0 15px 35px #0008;padding:16px
+
+.hero-content{
+    position:relative;
+    z-index:5;
+    padding:30px 23px 0;
 }
-.panelTitle{font-size:20px;font-weight:1000;margin:0 0 13px}
-.packGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+
+.hero-label{
+    color:#ffd52f;
+    font-size:10px;
+    letter-spacing:2px;
+    font-weight:1000;
+}
+
+.hero h1{
+    margin:8px 0 12px;
+    font-size:34px;
+    line-height:1.02;
+    font-style:italic;
+    text-transform:uppercase;
+}
+
+.hero h1 span{
+    color:#ffd52f;
+}
+
+.hero p{
+    margin:0;
+    max-width:270px;
+    color:#c9d2e4;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.hero-button{
+    margin-top:20px;
+    padding:13px 22px;
+    border-radius:11px;
+    background:
+    linear-gradient(
+        135deg,
+        #ffe94b,
+        #f2bd18
+    );
+    color:#111;
+    font-size:13px;
+    font-weight:1000;
+    box-shadow:0 10px 25px #eab91c55;
+}
+
+
+/* ================= HERO CARDS ================= */
+
+.hero-cards{
+    position:absolute;
+    z-index:6;
+    left:50%;
+    bottom:-4px;
+    transform:translateX(-50%);
+    width:310px;
+    height:205px;
+}
+
+.hero-card{
+    position:absolute;
+    width:135px;
+    height:195px;
+    padding:7px;
+    border-radius:11px;
+    background:#071128;
+    border:2px solid;
+    box-shadow:0 18px 35px #000b;
+}
+
+.hero-card:nth-child(1){
+    left:0;
+    bottom:4px;
+    transform:rotate(-7deg);
+    border-color:#9d39ff;
+}
+
+.hero-card:nth-child(2){
+    left:87px;
+    bottom:12px;
+    z-index:5;
+    transform:scale(1.04);
+    border-color:#ffd52f;
+}
+
+.hero-card:nth-child(3){
+    right:0;
+    bottom:4px;
+    transform:rotate(7deg);
+    border-color:#199bff;
+}
+
+.hero-card img{
+    width:100%;
+    height:126px;
+    display:block;
+    object-fit:cover;
+    object-position:center top;
+    border-radius:7px;
+}
+
+.card-top{
+    display:flex;
+    justify-content:space-between;
+    font-size:7px;
+    font-weight:1000;
+    margin-bottom:4px;
+}
+
+.card-rating{
+    font-size:18px;
+}
+
+.hero-card-name{
+    text-align:center;
+    font-size:7px;
+    font-weight:1000;
+    margin-top:4px;
+}
+
+.hero-card-stats{
+    text-align:center;
+    color:#aeb9ce;
+    font-size:6px;
+    margin-top:3px;
+}
+
+
+/* ================= SECTION ================= */
+
+.section{
+    margin-top:14px;
+    padding:16px;
+    border-radius:17px;
+    background:
+    linear-gradient(
+        145deg,
+        #071329,
+        #050d20
+    );
+    border:1px solid #213b66;
+    box-shadow:0 15px 35px #0008;
+}
+
+.section-title{
+    margin:0 0 13px;
+    font-size:20px;
+    font-weight:1000;
+}
+
+
+/* ================= PACKAGES ================= */
+
+.packages{
+    display:flex;
+    gap:9px;
+    overflow-x:auto;
+    padding:2px 1px 8px;
+    scrollbar-width:none;
+}
+
+.packages::-webkit-scrollbar{
+    display:none;
+}
+
 .pack{
-min-width:0;text-align:center;padding:10px;border-radius:11px;background:#061024;border:1px solid;
-box-shadow:inset 0 0 25px #fff00005
+    flex:0 0 132px;
+    min-height:220px;
+    padding:9px;
+    border-radius:13px;
+    background:#061024;
+    text-align:center;
 }
-.pack.green{border-color:#35b62d}
-.pack.blue{border-color:#168bff}
-.pack.purple{border-color:#9a32ff}
-.pack.gold{border-color:#d7a80e}
-.pack.red{border-color:#e72727}
-.pack h4{margin:0 0 8px;font-size:14px}
-.packArt{
-height:145px;border-radius:8px;display:grid;place-items:center;
-background:linear-gradient(145deg,#173a12,#071408);font-size:55px;
-box-shadow:inset 0 0 30px #45ff3c18
+
+.pack.common{
+    border:1px solid #37cf32;
 }
-.pack.blue .packArt{background:linear-gradient(145deg,#083d70,#061328)}
-.pack.purple .packArt{background:linear-gradient(145deg,#451075,#0d0820)}
-.pack.gold .packArt{background:linear-gradient(145deg,#634c08,#160f03)}
-.pack.red .packArt{background:linear-gradient(145deg,#650f0f,#180606)}
-.pack .range{font-size:11px;color:#00cfff;margin:9px 0 5px;font-weight:900}
-.pack.green .range{color:#47d53a}
-.pack.purple .range{color:#bb63ff}
-.pack.gold .range{color:#ffd22e}
-.pack.red .range{color:#ff4b4b}
-.price{border:0;border-radius:6px;padding:8px;width:100%;font-weight:1000;color:#07100b}
-.pack.green .price{background:#2cae28}
-.pack.blue .price{background:#1677d9;color:#fff}
-.pack.purple .price{background:#6f27d7;color:#fff}
-.pack.gold .price{background:#c49212}
-.pack.red .price{background:#d51d1d;color:#fff}
-.summary .stat{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:9px;background:#08132a;border:1px solid #1b3154;margin:7px 0}
-.stat span{color:#9ba8bf;font-size:12px}
-.stat b{font-size:15px}
-.bottomGrid{display:grid;grid-template-columns:1fr 1fr 190px;gap:14px;margin-top:14px}
-.collectionEmpty{height:270px;border:1px dashed #31496c;border-radius:10px;display:grid;place-items:center;text-align:center;color:#9ba8bf}
-.emptyIcon{font-size:50px;opacity:.4}
+
+.pack.rare{
+    border:1px solid #159dff;
+}
+
+.pack.epic{
+    border:1px solid #a23cff;
+}
+
+.pack.legendary{
+    border:1px solid #e1b720;
+}
+
+.pack.ultimate{
+    border:1px solid #ff3434;
+}
+
+.pack-title{
+    font-size:11px;
+    font-weight:1000;
+    white-space:nowrap;
+}
+
+.pack-art{
+    height:118px;
+    margin-top:8px;
+    border-radius:8px;
+    display:grid;
+    place-items:center;
+    font-size:50px;
+}
+
+.common .pack-art{
+    background:
+    radial-gradient(circle,#cfff6b,#1e861b);
+}
+
+.rare .pack-art{
+    background:
+    radial-gradient(circle,#b8eaff,#0874c9);
+}
+
+.epic .pack-art{
+    background:
+    radial-gradient(circle,#edc5ff,#6520a8);
+}
+
+.legendary .pack-art{
+    background:
+    radial-gradient(circle,#fff2a5,#956e08);
+}
+
+.ultimate .pack-art{
+    background:
+    radial-gradient(circle,#ffb0a0,#a40e0e);
+}
+
+.pack-value{
+    margin-top:7px;
+    color:#00d0ff;
+    font-size:8px;
+    font-weight:1000;
+    line-height:1.4;
+}
+
+.common .pack-value{
+    color:#5bdd50;
+}
+
+.epic .pack-value{
+    color:#c66bff;
+}
+
+.legendary .pack-value{
+    color:#ffd52f;
+}
+
+.ultimate .pack-value{
+    color:#ff5959;
+}
+
+.pack-buy{
+    width:100%;
+    margin-top:7px;
+    padding:8px 4px;
+    border-radius:6px;
+    font-size:11px;
+    font-weight:1000;
+    color:#071006;
+}
+
+.common .pack-buy{
+    background:#45d83d;
+}
+
+.rare .pack-buy{
+    background:#168de6;
+    color:#fff;
+}
+
+.epic .pack-buy{
+    background:#762cdf;
+    color:#fff;
+}
+
+.legendary .pack-buy{
+    background:#d7a91a;
+}
+
+.ultimate .pack-buy{
+    background:#df2424;
+    color:#fff;
+}
+
+.pack-note{
+    margin:8px 0 0;
+    color:#7f8da8;
+    font-size:8px;
+    line-height:1.4;
+}
+
+
+/* ================= SUMMARY ================= */
+
+.summary-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    min-height:48px;
+    padding:9px 12px;
+    margin-top:7px;
+    border-radius:9px;
+    background:#08142c;
+    border:1px solid #1c3459;
+}
+
+.summary-left{
+    color:#aab5ca;
+    font-size:10px;
+}
+
+.summary-right{
+    color:#fff;
+    font-weight:1000;
+    font-size:14px;
+}
+
+
+/* ================= COLLECTION ================= */
+
 .collection{
-height:270px;display:flex;gap:10px;overflow-x:auto;padding:5px
+    min-height:245px;
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding:4px;
+    scrollbar-width:none;
 }
-.card{
-min-width:180px;height:255px;border-radius:12px;padding:9px;background:#071127;border:1px solid #31507d;
-box-shadow:0 15px 30px #0008
+
+.collection::-webkit-scrollbar{
+    display:none;
 }
-.card.gold{border-color:#ffd22e}
-.card.purple{border-color:#9a32ff}
-.card.blue{border-color:#159dff}
-.sell{
-width:100%;padding:7px;border:0;border-radius:7px;margin-top:6px;
-background:#35b62d;color:#061006;font-weight:1000
+
+.empty{
+    width:100%;
+    min-height:220px;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    color:#8f9db5;
+    border:1px dashed #29436c;
+    border-radius:10px;
+    font-size:11px;
 }
-.battleBox{height:270px;display:grid;place-items:center;text-align:center}
-.vs{font-size:45px;font-weight:1000;color:var(--gold);font-style:italic;text-shadow:0 0 20px #ffd22e55}
-.sideQuick button{width:100%;border:1px solid #243c67;border-radius:10px;padding:15px;text-align:left;color:#fff;font-weight:1000;margin-bottom:10px;background:#071127}
-.sideQuick .leader{background:linear-gradient(135deg,#62440b,#271d06);color:#ffe28a}
-.sideQuick .missions{background:linear-gradient(135deg,#0a2354,#071128)}
-.sideQuick .shop{background:linear-gradient(135deg,#006e78,#05303a)}
-.depositFloat{
-position:fixed;right:28px;bottom:78px;width:116px;height:116px;border-radius:50%;
-z-index:30;border:2px solid #a66aff;background:radial-gradient(circle at 40% 30%,#8d50ff,#35117e);
-box-shadow:0 0 35px #8d4cff88,0 15px 30px #000b;color:#fff;font-weight:1000;font-size:16px
+
+.empty-icon{
+    font-size:42px;
+    opacity:.45;
+    margin-bottom:8px;
 }
-.depositFloat .badge{position:absolute;right:7px;top:7px;width:13px;height:13px;background:red;border-radius:50%}
-.bottomNav{display:none}
-.modal{position:fixed;inset:0;background:#000c;backdrop-filter:blur(13px);z-index:100;display:grid;place-items:center;padding:18px}
-.modal.hidden{display:none}
-.modalBox{width:min(560px,100%);border:1px solid #7147ce;border-radius:16px;background:#071127;padding:20px;box-shadow:0 30px 90px #000}
-.input{width:100%;padding:14px;border-radius:9px;border:1px solid #29436c;background:#040b19;color:#fff;font-size:16px}
-.depositSteps{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:15px 0}
-.step{padding:10px;border-radius:8px;background:#09152d;color:#b8c3d5;font-size:10px}
-.qr{margin:auto;width:145px;height:145px;background:repeating-linear-gradient(45deg,#fff 0 3px,#111 3px 6px);display:grid;place-items:center;color:#000;font-weight:1000;border:8px solid #fff}
-@media(max-width:950px){
-.app{max-width:100%}
-.layout{grid-template-columns:1fr}
-.sidebar{display:none}
-.two{grid-template-columns:1fr}
-.packGrid{grid-template-columns:repeat(5,minmax(130px,1fr));overflow-x:auto}
-.bottomGrid{grid-template-columns:1fr 1fr}
-.sideQuick{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.sideQuick button{margin:0}
-.hero{height:330px}
-.heroText{width:55%;padding:45px 30px}
-.heroCards{right:-35px;transform:scale(.82);transform-origin:right top}
-.depositFloat{right:18px}
+
+
+/* ================= BATTLE ================= */
+
+.battle{
+    min-height:230px;
+    text-align:center;
 }
-@media(max-width:650px){
-.app{padding:0 8px 82px}
-.top{height:68px}
-.logo b{font-size:18px}
-.logo small{font-size:7px}
-.crest{width:42px;height:48px;font-size:22px}
-.topRight{gap:7px}
-.balance{min-width:80px;font-size:15px;padding:7px 9px}
-.bell{width:36px;height:36px}
-.profile{display:none}
-.hero{height:370px}
-.heroText{padding:30px 20px;width:72%}
-.heroText h1{font-size:30px}
-.heroText p{font-size:13px}
-.heroCards{right:-105px;top:105px;transform:scale(.62);transform-origin:right top}
-.packGrid{grid-template-columns:repeat(5,135px);overflow-x:auto}
-.bottomGrid{grid-template-columns:1fr}
-.sideQuick{grid-column:auto;grid-template-columns:1fr 1fr 1fr}
-.sideQuick button{font-size:10px;padding:10px}
-.depositFloat{width:86px;height:86px;font-size:12px;bottom:76px;right:12px}
-.bottomNav{
-position:fixed;display:grid;grid-template-columns:repeat(5,1fr);bottom:0;left:0;right:0;height:64px;
-background:#030817ee;z-index:25;border-top:1px solid #20385f
+
+.battle-arena{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:25px;
+    margin:18px 0;
 }
-.bottomNav button{background:transparent;border:0;color:#aab4c7;font-size:9px;font-weight:900}
-.bottomNav button.active{color:var(--gold)}
+
+.battle-player{
+    width:75px;
+    height:75px;
+    display:grid;
+    place-items:center;
+    border-radius:14px;
+    background:#08142b;
+    border:1px solid #29456e;
+    font-size:37px;
+}
+
+.vs{
+    color:#ffd52f;
+    font-size:30px;
+    font-weight:1000;
+    font-style:italic;
+}
+
+
+/* ================= DEPOSIT ================= */
+
+.deposit-button{
+    position:fixed;
+    right:14px;
+    bottom:78px;
+    z-index:50;
+
+    width:78px;
+    height:78px;
+    border-radius:50%;
+
+    background:
+    radial-gradient(
+        circle at 35% 25%,
+        #a65cff,
+        #42148e
+    );
+
+    border:2px solid #b27cff;
+
+    color:#fff;
+    font-size:11px;
+    font-weight:1000;
+
+    box-shadow:
+    0 0 30px #843eff99,
+    0 12px 30px #000b;
+}
+
+.deposit-button:before{
+    content:"";
+    position:absolute;
+    right:5px;
+    top:5px;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#ff3030;
+}
+
+
+/* ================= BOTTOM NAV ================= */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:45;
+
+    height:65px;
+
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+
+    background:
+    rgba(3,9,22,.96);
+
+    border-top:1px solid #20385f;
+    backdrop-filter:blur(12px);
+}
+
+.bottom-nav button{
+    background:none;
+    color:#8d99ae;
+    font-size:9px;
+    font-weight:1000;
+}
+
+.bottom-nav button.active{
+    color:#ffd52f;
+}
+
+
+/* ================= MODAL ================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:100;
+
+    display:grid;
+    place-items:center;
+
+    padding:15px;
+
+    background:#000c;
+    backdrop-filter:blur(12px);
+}
+
+.modal.hidden{
+    display:none;
+}
+
+.modal-box{
+    width:100%;
+    max-width:430px;
+
+    max-height:90vh;
+    overflow-y:auto;
+
+    padding:20px;
+
+    border-radius:17px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #0a1733,
+        #050c1e
+    );
+
+    border:1px solid #7041d0;
+
+    box-shadow:0 30px 80px #000;
+}
+
+.modal-box h2{
+    margin-top:0;
+}
+
+.input{
+    width:100%;
+    padding:13px;
+
+    border-radius:9px;
+    border:1px solid #29446d;
+
+    background:#030917;
+    color:#fff;
+
+    outline:none;
+}
+
+.deposit-steps{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:7px;
+    margin:13px 0;
+}
+
+.step{
+    padding:10px;
+    border-radius:8px;
+    background:#08152d;
+    color:#9daac1;
+    font-size:9px;
+}
+
+.qr{
+    width:130px;
+    height:130px;
+    margin:12px auto;
+
+    display:grid;
+    place-items:center;
+
+    background:
+    repeating-linear-gradient(
+        45deg,
+        #fff 0 3px,
+        #111 3px 6px
+    );
+
+    color:#000;
+    font-weight:1000;
+    border:7px solid #fff;
+}
+
+.modal-main-btn{
+    width:100%;
+    padding:13px;
+    border-radius:9px;
+    background:linear-gradient(
+        135deg,
+        #ffe94a,
+        #e9b617
+    );
+    color:#111;
+    font-weight:1000;
+}
+
+.modal-close{
+    width:100%;
+    margin-top:8px;
+    padding:11px;
+    border-radius:9px;
+    background:#071126;
+    border:1px solid #29436b;
+    color:#fff;
+}
+
+
+/* ================= DESKTOP ================= */
+
+@media(min-width:800px){
+
+    .app{
+        max-width:1100px;
+        padding-bottom:30px;
+    }
+
+    .bottom-nav{
+        display:none;
+    }
+
+    .deposit-button{
+        right:30px;
+        bottom:30px;
+    }
+
+    .hero{
+        min-height:430px;
+    }
+
+    .hero-content{
+        padding:55px 45px;
+    }
+
+    .hero h1{
+        font-size:48px;
+    }
+
+    .hero-cards{
+        right:50px;
+        left:auto;
+        transform:none;
+        bottom:20px;
+    }
+
+    .packages{
+        overflow:hidden;
+    }
+
+    .pack{
+        flex:1;
+    }
 }
 </style>
 </head>
+
 
 <body>
 
 <div class="app">
 
-<header class="top">
+
+<!-- HEADER -->
+
+<header class="header">
+
+<div class="brand">
+
 <div class="logo">
-<div class="crest">🏏</div>
-<div>
-<b><span>CRICKET</span> CARD</b>
-<small>ARENA</small>
-</div>
+🏏
 </div>
 
-<div class="topRight">
-<div class="balance">
+<div>
+
+<div class="brand-title">
+<span>CRICKET</span> CARD
+</div>
+
+<div class="brand-sub">
+ARENA
+</div>
+
+</div>
+
+</div>
+
+
+<div class="header-right">
+
+<div class="wallet">
 <span class="coin">🪙</span>
 <span id="coins">0</span>
 <span class="plus">+</span>
 </div>
-<div class="bell">🔔</div>
-<div class="profile">
-<div>
-<b>Guest</b>
-<small>ID: GUEST001</small>
+
+<div class="bell">
+🔔
 </div>
-<div class="avatar">👤</div>
+
 </div>
-</div>
+
 </header>
 
-<div class="layout">
 
-<aside class="sidebar">
 
-<button class="sideBtn active">
-🏠 <span>HOME</span>
-</button>
-
-<button class="sideBtn" onclick="scrollToId('packs')">
-🎁 <span>PACKS</span>
-</button>
-
-<button class="sideBtn" onclick="scrollToId('collection')">
-🃏 <span>COLLECTION</span>
-</button>
-
-<button class="sideBtn" onclick="scrollToId('battle')">
-⚔️ <span>BATTLE</span>
-</button>
-
-<button class="sideBtn deposit" onclick="openDeposit()">
-💳 <span>DEPOSIT</span>
-</button>
-
-<button class="sideBtn">
-📜 <span>TRANSACTIONS</span>
-</button>
-
-<button class="sideBtn">
-🏆 <span>LEADERBOARD</span>
-</button>
-
-<button class="sideBtn">
-👤 <span>PROFILE</span>
-</button>
-
-<button class="sideBtn">
-⚙️ <span>SETTINGS</span>
-</button>
-
-<div class="promo">
-<div class="trophy">🏆</div>
-<b>BATTLE & WIN</b>
-<div>BECOME THE</div>
-<span>CHAMPION!</span>
-<button class="play" onclick="scrollToId('battle')">
-PLAY NOW
-</button>
-</div>
-
-</aside>
-
-<main class="main">
+<!-- HERO -->
 
 <section class="hero">
 
-<div class="heroText">
+<div class="hero-content">
+
+<div class="hero-label">
+🏆 CRICKET CARD ARENA
+</div>
 
 <h1>
 BUILD YOUR SQUAD.<br>
@@ -315,61 +882,83 @@ BUILD YOUR SQUAD.<br>
 
 <p>
 Collect powerful cricket cards,
-build your ultimate team and
-win epic battles!
+battle opponents and build your
+ultimate squad.
 </p>
 
-<button class="buy" onclick="scrollToId('packs')">
-BUY PACKS
+<button
+class="hero-button"
+onclick="go('packs')">
+
+💎 BUY PACKS
+
 </button>
 
 </div>
 
-<div class="heroCards">
 
-<div class="hcard">
-<div class="r">
-<strong>87</strong>
+<div class="hero-cards">
+
+
+<div class="hero-card">
+
+<div class="card-top">
+<span class="card-rating">87</span>
 <span>EPIC</span>
 </div>
 
 <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=400&q=80">
 
-<b>ARSHDEEP-INSPIRED</b>
-
-<small>
-BOW 87 &nbsp; BAT 36 &nbsp; CAR 68 &nbsp; SPE 82
-</small>
+<div class="hero-card-name">
+ARJUN-INSPIRED
 </div>
 
-<div class="hcard">
-<div class="r">
-<strong>94</strong>
+<div class="hero-card-stats">
+BAT 36 • BOW 87 • CAR 68 • SPE 82
+</div>
+
+</div>
+
+
+
+<div class="hero-card">
+
+<div class="card-top">
+<span class="card-rating">94</span>
 <span>LEGENDARY</span>
 </div>
 
 <img src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=400&q=80">
 
-<b>VIRAT-INSPIRED</b>
-
-<small>
-BAT 93 &nbsp; BOW 48 &nbsp; CAR 76 &nbsp; SPE 83
-</small>
+<div class="hero-card-name">
+VIRAT-INSPIRED
 </div>
 
-<div class="hcard">
-<div class="r">
-<strong>86</strong>
+<div class="hero-card-stats">
+BAT 93 • BOW 48 • CAR 76 • SPE 83
+</div>
+
+</div>
+
+
+
+<div class="hero-card">
+
+<div class="card-top">
+<span class="card-rating">86</span>
 <span>RARE</span>
 </div>
 
 <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=400&q=80">
 
-<b>HARDIK-INSPIRED</b>
+<div class="hero-card-name">
+HARDIK-INSPIRED
+</div>
 
-<small>
-BAT 71 &nbsp; BOW 72 &nbsp; CAR 84 &nbsp; SPE 75
-</small>
+<div class="hero-card-stats">
+BAT 71 • BOW 72 • CAR 84 • SPE 75
+</div>
+
 </div>
 
 </div>
@@ -377,189 +966,261 @@ BAT 71 &nbsp; BOW 72 &nbsp; CAR 84 &nbsp; SPE 75
 </section>
 
 
-<div class="two">
 
-<section class="panel" id="packs">
+<!-- PACKAGES -->
 
-<h2 class="panelTitle">
-PACKAGES
+<section
+class="section"
+id="packs">
+
+<h2 class="section-title">
+🎁 PACKAGES
 </h2>
 
-<div class="packGrid">
 
-<div class="pack green">
+<div class="packages">
 
-<h4>COMMON PACK</h4>
 
-<div class="packArt">
+<div class="pack common">
+
+<div class="pack-title">
+COMMON PACK
+</div>
+
+<div class="pack-art">
 🟢
 </div>
 
-<div class="range">
+<div class="pack-value">
 TOTAL VALUE<br>
-<b>20 - 40</b>
+20 - 40
 </div>
 
 <button
-class="price"
+class="pack-buy"
 onclick="buyPack('Common',30,20,40)">
+
 30 🪙
+
 </button>
 
 </div>
 
 
-<div class="pack blue">
 
-<h4>RARE PACK</h4>
+<div class="pack rare">
 
-<div class="packArt">
+<div class="pack-title">
+RARE PACK
+</div>
+
+<div class="pack-art">
 🔵
 </div>
 
-<div class="range">
+<div class="pack-value">
 TOTAL VALUE<br>
-<b>60 - 100</b>
+60 - 100
 </div>
 
 <button
-class="price"
+class="pack-buy"
 onclick="buyPack('Rare',75,60,100)">
+
 75 🪙
+
 </button>
 
 </div>
 
 
-<div class="pack purple">
 
-<h4>EPIC PACK</h4>
+<div class="pack epic">
 
-<div class="packArt">
+<div class="pack-title">
+EPIC PACK
+</div>
+
+<div class="pack-art">
 🟣
 </div>
 
-<div class="range">
+<div class="pack-value">
 TOTAL VALUE<br>
-<b>125 - 190</b>
+125 - 190
 </div>
 
 <button
-class="price"
+class="pack-buy"
 onclick="buyPack('Epic',150,125,190)">
+
 150 🪙
+
 </button>
 
 </div>
 
 
-<div class="pack gold">
 
-<h4>LEGENDARY PACK</h4>
+<div class="pack legendary">
 
-<div class="packArt">
+<div class="pack-title">
+LEGENDARY
+</div>
+
+<div class="pack-art">
 🟡
 </div>
 
-<div class="range">
+<div class="pack-value">
 TOTAL VALUE<br>
-<b>260 - 400</b>
+260 - 400
 </div>
 
 <button
-class="price"
+class="pack-buy"
 onclick="buyPack('Legendary',300,260,400)">
+
 300 🪙
+
 </button>
 
 </div>
 
 
-<div class="pack red">
 
-<h4>ULTIMATE PACK</h4>
+<div class="pack ultimate">
 
-<div class="packArt">
+<div class="pack-title">
+ULTIMATE
+</div>
+
+<div class="pack-art">
 🔴
 </div>
 
-<div class="range">
+<div class="pack-value">
 TOTAL VALUE<br>
-<b>550 - 800</b>
+550 - 800
 </div>
 
 <button
-class="price"
+class="pack-buy"
 onclick="buyPack('Ultimate',600,550,800)">
+
 600 🪙
+
 </button>
 
 </div>
 
 </div>
 
-<p style="font-size:11px;color:#8d9ab2;margin:12px 0 0">
-ⓘ All packs contain 3 random player cards. Total value is shown as a range. Actual value will be revealed after opening.
+
+<p class="pack-note">
+🎲 Every pack contains 3 random cards.
+Actual card values are revealed after opening.
 </p>
 
 </section>
 
 
-<aside class="panel summary">
 
-<h2 class="panelTitle">
-MY SUMMARY
+<!-- SUMMARY -->
+
+<section class="section">
+
+<h2 class="section-title">
+📊 MY SUMMARY
 </h2>
 
-<div class="stat">
-<span>🃏 TOTAL CARDS</span>
-<b id="totalCards">0</b>
-</div>
 
-<div class="stat">
-<span>🪙 TOTAL VALUE</span>
-<b id="totalValue">0</b>
-</div>
-
-<div class="stat">
-<span>⚔️ BATTLES WON</span>
-<b>0</b>
-</div>
-
-<div class="stat">
-<span>🔥 BEST STREAK</span>
-<b>0</b>
-</div>
-
-</aside>
-
-</div>
-
-
-<div class="bottomGrid">
-
-<section class="panel" id="collection">
-
-<div style="display:flex;justify-content:space-between;align-items:center">
-
-<h2 class="panelTitle">
-MY COLLECTION
-<span style="color:#ffd22e">
-(<b id="count">0</b>)
+<div class="summary-row">
+<span class="summary-left">
+🃏 TOTAL CARDS
 </span>
+<b
+class="summary-right"
+id="totalCards">
+0
+</b>
+</div>
+
+
+<div class="summary-row">
+<span class="summary-left">
+🪙 TOTAL VALUE
+</span>
+<b
+class="summary-right"
+id="totalValue">
+0
+</b>
+</div>
+
+
+<div class="summary-row">
+<span class="summary-left">
+⚔️ BATTLES WON
+</span>
+<b class="summary-right">
+0
+</b>
+</div>
+
+
+<div class="summary-row">
+<span class="summary-left">
+🔥 BEST STREAK
+</span>
+<b class="summary-right">
+0
+</b>
+</div>
+
+</section>
+
+
+
+<!-- COLLECTION -->
+
+<section
+class="section"
+id="collection">
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+">
+
+<h2 class="section-title">
+🃏 MY COLLECTION
+(<span
+style="color:#ffd52f"
+id="count">0</span>)
 </h2>
 
-<span style="color:#4b9dff;font-size:12px">
-View All
+<span
+style="
+font-size:10px;
+color:#599dff;
+">
+VIEW ALL
 </span>
 
 </div>
 
-<div id="cards" class="collectionEmpty">
+
+<div
+class="collection"
+id="cards">
+
+<div class="empty">
 
 <div>
 
-<div class="emptyIcon">
+<div class="empty-icon">
 🃏
 </div>
 
@@ -577,92 +1238,97 @@ Buy packs to start your collection!
 
 </div>
 
+</div>
+
 </section>
 
 
-<section class="panel" id="battle">
 
-<h2 class="panelTitle">
-QUICK BATTLE
+<!-- BATTLE -->
+
+<section
+class="section battle"
+id="battle">
+
+<h2 class="section-title">
+⚔️ QUICK BATTLE
 </h2>
 
-<p style="color:#9ca9c2;font-size:12px">
-Choose your card and challenge a random opponent.
-</p>
+<div style="
+color:#8e9bb3;
+font-size:11px;
+">
 
-<div class="battleBox">
+Choose your card and challenge
+a random opponent.
 
-<div style="display:flex;align-items:center;gap:28px">
-
-<div>
-<div style="font-size:10px;color:#9ca9c2">
-YOUR CARD
 </div>
 
-<div style="font-size:50px">
+
+<div class="battle-arena">
+
+<div>
+
+<div class="battle-player">
 🃏
 </div>
 
+<small>
+YOU
+</small>
+
 </div>
+
 
 <div class="vs">
 VS
 </div>
 
+
 <div>
 
-<div style="font-size:10px;color:#9ca9c2">
-OPPONENT
-</div>
-
-<div style="font-size:50px">
+<div class="battle-player">
 ❓
 </div>
 
-</div>
+<small>
+OPPONENT
+</small>
 
 </div>
 
-<button class="buy" onclick="startBattle()">
-FIND OPPONENT
+</div>
+
+
+<button
+class="hero-button"
+onclick="battle()">
+
+⚔️ FIND OPPONENT
+
 </button>
 
-<div id="battleResult"
-style="font-size:11px;color:#9ca9c2">
-</div>
 
+<div
+id="battleResult"
+style="
+margin-top:12px;
+font-size:10px;
+color:#9ca9c2;
+">
 </div>
 
 </section>
 
-
-<aside class="sideQuick">
-
-<button class="leader">
-🏆 LEADERBOARD
-</button>
-
-<button class="missions">
-🎯 MISSIONS
-</button>
-
-<button class="shop">
-🛒 SHOP
-</button>
-
-</aside>
-
-</div>
-
-</main>
 </div>
 
 
-<!-- SEPARATE DEPOSIT BUTTON -->
 
-<button class="depositFloat" onclick="openDeposit()">
+<!-- SEPARATE DEPOSIT -->
 
-<span class="badge"></span>
+<button
+class="deposit-button"
+onclick="openDeposit()">
 
 💳<br>
 DEPOSIT
@@ -670,85 +1336,143 @@ DEPOSIT
 </button>
 
 
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+<button
+class="active"
+onclick="goTop()">
+🏠<br>
+HOME
+</button>
+
+<button
+onclick="go('packs')">
+🎁<br>
+PACKS
+</button>
+
+<button
+onclick="go('collection')">
+🃏<br>
+CARDS
+</button>
+
+<button
+onclick="go('battle')">
+⚔️<br>
+BATTLE
+</button>
+
+<button
+onclick="openDeposit()">
+💳<br>
+DEPOSIT
+</button>
+
+</nav>
+
+
+
 <!-- DEPOSIT MODAL -->
 
-<div class="modal hidden" id="depositModal">
+<div
+class="modal hidden"
+id="depositModal">
 
-<div class="modalBox">
+<div class="modal-box">
 
-<h2 style="margin-top:0">
+<h2>
 💳 MANUAL DEPOSIT
 </h2>
 
-<p style="color:#9ca9c2;font-size:12px">
-Enter any amount. Payment will remain pending until admin approval.
+<p style="
+color:#9ca9c2;
+font-size:11px;
+line-height:1.5;
+">
+
+Deposit any amount. Your coins will be
+credited only after payment verification
+and admin approval.
+
 </p>
 
+
 <input
-id="depositAmount"
 class="input"
+id="amount"
 type="number"
 min="1"
 placeholder="Enter amount ₹"
 >
 
-<div class="depositSteps">
+
+<div class="deposit-steps">
 
 <div class="step">
-<b>1</b><br>
-Enter any amount
-</div>
-
-<div class="step">
-<b>2</b><br>
-Pay using UPI / QR
+<b>①</b><br>
+Enter amount
 </div>
 
 <div class="step">
-<b>3</b><br>
-Submit UTR + screenshot
+<b>②</b><br>
+Make payment
 </div>
 
 <div class="step">
-<b>4</b><br>
-Wait for approval
+<b>③</b><br>
+Submit UTR
+</div>
+
+<div class="step">
+<b>④</b><br>
+Admin approval
 </div>
 
 </div>
 
-<div style="padding:13px;border:1px solid #263f68;border-radius:10px;text-align:center">
 
-<div style="font-size:10px;color:#9ca9c2">
-UPI ID
+<div style="
+padding:13px;
+border:1px solid #263f68;
+border-radius:10px;
+text-align:center;
+">
+
+<div style="
+font-size:9px;
+color:#8997ae;
+">
+UPI PAYMENT
 </div>
 
 <b>
 cricketcardarena@upi
 </b>
 
-<div
-class="qr"
-style="margin-top:12px">
-
+<div class="qr">
 SCAN<br>
 &amp;<br>
 PAY
-
 </div>
 
 </div>
+
 
 <button
-class="buy"
-style="width:100%;margin-top:12px"
+class="modal-main-btn"
 onclick="submitDeposit()">
 
-SUBMIT DEPOSIT
+CONTINUE PAYMENT
 
 </button>
 
+
 <button
-style="width:100%;margin-top:8px;padding:11px;border:1px solid #2a4168;border-radius:9px;background:#071127;color:#fff"
+class="modal-close"
 onclick="closeDeposit()">
 
 CLOSE
@@ -760,13 +1484,14 @@ CLOSE
 </div>
 
 
-<!-- PACK MODAL -->
+
+<!-- PACK OPEN MODAL -->
 
 <div
 class="modal hidden"
 id="packModal">
 
-<div class="modalBox">
+<div class="modal-box">
 
 <h2 id="packTitle">
 🎁 PACK OPENED
@@ -774,17 +1499,26 @@ id="packModal">
 
 <p
 id="packInfo"
-style="color:#9ca9c2;font-size:12px">
+style="
+font-size:11px;
+color:#9ca9c2;
+">
 </p>
+
 
 <div
 id="revealed"
-style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+style="
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:7px;
+">
 </div>
 
+
 <button
-class="buy"
-style="width:100%;margin-top:15px"
+class="modal-main-btn"
+style="margin-top:14px"
 onclick="closePack()">
 
 ADD TO COLLECTION
@@ -796,7 +1530,10 @@ ADD TO COLLECTION
 </div>
 
 
+
 <script>
+
+/* ================= DATA ================= */
 
 const players=[
 
@@ -832,42 +1569,4 @@ img:"https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fi
 
 {
 name:"Rohan-Inspired",
-value:12,
-bat:78,
-bowl:55,
-catch:80,
-speed:77,
-img:"https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=400&q=80"
-},
-
-{
-name:"Aarav-Inspired",
-value:13,
-bat:66,
-bowl:83,
-catch:88,
-speed:90,
-img:"https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=400&q=80"
-},
-
-{
-name:"Kabir-Inspired",
-value:15,
-bat:86,
-bowl:69,
-catch:91,
-speed:84,
-img:"https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=400&q=80"
-}
-
-];
-
-
-let coins=
-Number(
-localStorage.getItem("cca_coins")||0
-);
-
-let collection=
-JSON.parse(
-localStorage.getItem("cca_cards")||
+va
