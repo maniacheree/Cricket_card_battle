@@ -4,132 +4,1177 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1">
 <title>Cricket Card Battle</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#070b14;color:#fff;font-family:Arial,sans-serif}
-.app{max-width:480px;margin:auto;min-height:100vh;background:linear-gradient(180deg,#0c1220,#070b14);padding-bottom:78px}
-header{padding:18px 16px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:21px;font-weight:800}.wallet{background:#151d2e;border:1px solid #27324a;border-radius:20px;padding:8px 12px;color:#ffd34d;font-weight:700}
-.hero{margin:4px 16px 16px;padding:22px;border-radius:22px;background:linear-gradient(135deg,#142b50,#172036);border:1px solid #2c4165}
-.hero h1{margin:0 0 8px;font-size:28px}.hero p{margin:0;color:#aebbd0;line-height:1.45}
-button{border:0;border-radius:13px;padding:12px 16px;font-weight:800;color:#08101c;background:#ffd34d;cursor:pointer}
-.pack{margin:16px;padding:18px;border-radius:20px;background:#101827;border:1px solid #26334b}
-.packtop{display:flex;justify-content:space-between;align-items:center}.pack h2{margin:0}.price{color:#ffd34d;font-weight:800}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
-.card{min-height:190px;border-radius:16px;padding:12px;background:linear-gradient(160deg,#172338,#0e1523);border:1px solid #30415e;position:relative;overflow:hidden}
-.card:after{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:#2e7dff22;right:-25px;top:-25px}
-.rarity{font-size:10px;color:#8fb6ff;text-transform:uppercase;font-weight:800}.avatar{font-size:42px;text-align:center;margin:15px 0 8px}.name{font-weight:800;text-align:center;font-size:13px}.value{text-align:center;color:#ffd34d;font-weight:800;margin-top:5px}
-.stat{display:flex;justify-content:space-between;font-size:10px;color:#9eabc0;margin-top:8px}
-.section{padding:0 16px}.section h2{font-size:18px}.row{display:flex;gap:10px;overflow:auto;padding-bottom:4px}.smallcard{min-width:145px}.hidden{display:none}
-.battle{margin:16px;padding:18px;border-radius:20px;background:#101827;border:1px solid #26334b}.battle h2{margin-top:0}
-.challenge{font-size:15px;color:#aebbd0}.challenge b{color:#fff}.choice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.choice button{background:#1a2740;color:#fff;border:1px solid #344765}.result{margin-top:14px;padding:12px;border-radius:12px;background:#0b1220;text-align:center;font-weight:800}
-nav{position:fixed;bottom:0;left:0;right:0;margin:auto;max-width:480px;background:#0d1422ee;backdrop-filter:blur(10px);display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #26334b;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
-nav button{background:transparent;color:#94a4bc;padding:8px 2px;font-size:11px}nav button.active{color:#ffd34d}
-.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;padding:20px;z-index:5}.modalbox{width:min(440px,100%);background:#111a2a;border:1px solid #30415e;border-radius:22px;padding:20px}.modalbox h2{text-align:center}.reveal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}.reveal .card{min-height:170px}.close{width:100%;margin-top:8px}
-@media(min-width:600px){body{padding:20px 0}.app{border-radius:24px;overflow:hidden;box-shadow:0 20px 60px #0008}}
+*{box-sizing:border-box}
+
+body{
+margin:0;
+background:
+radial-gradient(circle at 15% 5%,#203b70 0,transparent 28%),
+radial-gradient(circle at 90% 15%,#4a2a6d 0,transparent 24%),
+linear-gradient(145deg,#05070d,#0a0f1c 48%,#060912);
+color:#fff;
+font-family:Inter,Arial,sans-serif;
+min-height:100vh
+}
+
+.app{
+max-width:480px;
+margin:auto;
+min-height:100vh;
+background:
+linear-gradient(180deg,#0b1220e8,#070b14f5),
+radial-gradient(circle at 50% 0,#263e6a44,transparent 45%);
+padding-bottom:82px;
+box-shadow:0 0 80px #0008
+}
+
+header{
+padding:18px 16px;
+display:flex;
+justify-content:space-between;
+align-items:center
+}
+
+.logo{
+font-size:21px;
+font-weight:900;
+letter-spacing:.2px;
+text-shadow:0 0 18px #77a9ff55
+}
+
+.wallet{
+background:linear-gradient(135deg,#171f31,#0d1422);
+border:1px solid #d9b65b55;
+border-radius:22px;
+padding:9px 13px;
+color:#ffd75a;
+font-weight:900;
+box-shadow:0 8px 25px #0005,inset 0 1px #ffffff12
+}
+
+.hero{
+margin:4px 16px 16px;
+padding:24px;
+border-radius:26px;
+background:
+linear-gradient(135deg,#142e59dd,#171d36ee 55%,#27183cdd);
+border:1px solid #8fb8ff3b;
+box-shadow:0 18px 45px #0007,inset 0 1px #ffffff18;
+position:relative;
+overflow:hidden
+}
+
+.hero:before{
+content:"";
+position:absolute;
+inset:-60%;
+background:conic-gradient(
+from 90deg,
+transparent,
+#8bb9ff22,
+transparent 30%
+);
+animation:shine 7s linear infinite
+}
+
+.hero>*{
+position:relative;
+z-index:1
+}
+
+.hero h1{
+margin:0 0 8px;
+font-size:30px;
+line-height:1.05
+}
+
+.hero p{
+margin:0;
+color:#b8c6db;
+line-height:1.5
+}
+
+button{
+border:0;
+border-radius:14px;
+padding:12px 16px;
+font-weight:900;
+color:#0a101b;
+background:linear-gradient(135deg,#ffe48a,#ffc93d);
+cursor:pointer;
+box-shadow:0 8px 22px #ffca3a20;
+transition:transform .18s,box-shadow .18s
+}
+
+button:hover{
+transform:translateY(-1px);
+box-shadow:0 11px 28px #ffca3a35
+}
+
+button:active{
+transform:scale(.97)
+}
+
+.pack{
+margin:16px;
+padding:19px;
+border-radius:23px;
+background:linear-gradient(145deg,#111b2d,#0c1320);
+border:1px solid #ffffff12;
+box-shadow:0 15px 35px #0005,inset 0 1px #ffffff0c
+}
+
+.packtop{
+display:flex;
+justify-content:space-between;
+align-items:center
+}
+
+.pack h2{
+margin:0
+}
+
+.price{
+color:#ffd34d;
+font-weight:800
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
+margin-top:15px
+}
+
+.card{
+min-height:190px;
+border-radius:18px;
+padding:12px;
+background:
+linear-gradient(160deg,#1b2942,#0b111e 75%);
+border:1px solid #7d9fcf36;
+position:relative;
+overflow:hidden;
+box-shadow:0 12px 28px #0006,inset 0 1px #ffffff12;
+transition:transform .2s,border-color .2s
+}
+
+.card:hover{
+transform:translateY(-3px);
+border-color:#ffd35a55
+}
+
+.card:after{
+content:"";
+position:absolute;
+width:80px;
+height:80px;
+border-radius:50%;
+background:#2e7dff22;
+right:-25px;
+top:-25px
+}
+
+.rarity{
+font-size:10px;
+color:#8fb6ff;
+text-transform:uppercase;
+font-weight:800
+}
+
+.avatar{
+font-size:42px;
+text-align:center;
+margin:15px 0 8px;
+filter:drop-shadow(0 5px 10px #0008)
+}
+
+.name{
+font-weight:800;
+text-align:center;
+font-size:13px
+}
+
+.value{
+text-align:center;
+color:#ffd34d;
+font-weight:800;
+margin-top:5px
+}
+
+.stat{
+display:flex;
+justify-content:space-between;
+font-size:10px;
+color:#9eabc0;
+margin-top:8px
+}
+
+.section{
+padding:0 16px
+}
+
+.section h2{
+font-size:18px
+}
+
+.row{
+display:flex;
+gap:10px;
+overflow:auto;
+padding-bottom:4px
+}
+
+.smallcard{
+min-width:145px
+}
+
+.hidden{
+display:none!important
+}
+
+.modal.hidden{
+display:none!important
+}
+
+.battle{
+margin:16px;
+padding:19px;
+border-radius:23px;
+background:linear-gradient(145deg,#111b2d,#0c1320);
+border:1px solid #ffffff12;
+box-shadow:0 15px 35px #0005
+}
+
+.battle h2{
+margin-top:0
+}
+
+.challenge{
+font-size:15px;
+color:#aebbd0
+}
+
+.challenge b{
+color:#fff
+}
+
+.choice{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+margin-top:14px
+}
+
+.choice button{
+background:#1a2740;
+color:#fff;
+border:1px solid #344765
+}
+
+.result{
+margin-top:14px;
+padding:14px;
+border-radius:14px;
+background:linear-gradient(135deg,#0c1626,#101b2d);
+border:1px solid #ffffff10;
+text-align:center;
+font-weight:900;
+box-shadow:inset 0 1px #ffffff0b
+}
+
+nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+margin:auto;
+max-width:480px;
+background:#090f1be8;
+backdrop-filter:blur(18px);
+display:grid;
+grid-template-columns:repeat(4,1fr);
+border-top:1px solid #ffffff12;
+padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+box-shadow:0 -12px 35px #0008
+}
+
+nav button{
+background:transparent;
+color:#94a4bc;
+padding:8px 2px;
+font-size:11px
+}
+
+nav button.active{
+color:#ffd34d
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:#02040acc;
+backdrop-filter:blur(12px);
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:5;
+animation:fadeIn .2s ease
+}
+
+.modalbox{
+width:min(440px,100%);
+background:linear-gradient(145deg,#17243a,#0c1320);
+border:1px solid #ffd45a45;
+border-radius:26px;
+padding:21px;
+box-shadow:0 25px 80px #000b,inset 0 1px #ffffff14;
+animation:pop .25s ease
+}
+
+.modalbox h2{
+text-align:center
+}
+
+.reveal{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+margin:16px 0
+}
+
+.reveal .card{
+min-height:170px
+}
+
+.close{
+width:100%;
+margin-top:8px
+}
+
+@media(min-width:600px){
+body{
+padding:20px 0
+}
+
+.app{
+border-radius:24px;
+overflow:hidden;
+box-shadow:0 20px 60px #0008
+}
+}
+
+@keyframes shine{
+to{
+transform:rotate(360deg)
+}
+}
+
+@keyframes fadeIn{
+from{
+opacity:0
+}
+to{
+opacity:1
+}
+}
+
+@keyframes pop{
+from{
+transform:scale(.96);
+opacity:.4
+}
+to{
+transform:scale(1);
+opacity:1
+}
+}
 </style>
 </head>
+
 <body>
+
 <div class="app">
-<header><div class="logo">🏏 Cricket Card Battle</div><div class="wallet">🪙 <span id="coins">50</span></div></header>
+
+<header>
+<div class="logo">🏏 Cricket Card Battle</div>
+
+<div class="wallet">
+🪙 <span id="coins">50</span>
+</div>
+</header>
+
 
 <section class="hero">
-<h1>Play. Collect. Battle.</h1>
-<p>Build your cricket card collection and challenge opponents using player stats.</p>
-<br><button onclick="openPack()">🎁 Open Common Pack · 30</button>
+
+<h1>
+Play. Collect. Battle.
+</h1>
+
+<p>
+Build your cricket card collection and challenge opponents using player stats.
+</p>
+
+<br>
+
+<button onclick="openPack()">
+🎁 Open Common Pack · 30
+</button>
+
 </section>
+
 
 <section class="pack">
-<div class="packtop"><h2>🟢 Common Pack</h2><span class="price">30 Coins</span></div>
-<p style="color:#9eabc0;font-size:13px">Contains 3 random common cards. Total card value can vary between 25–40 coins.</p>
-<button onclick="openPack()">Open Pack</button>
+
+<div class="packtop">
+
+<h2>
+🟢 Common Pack
+</h2>
+
+<span class="price">
+30 Coins
+</span>
+
+</div>
+
+<p style="color:#9eabc0;font-size:13px">
+
+Contains 3 random common cards.
+Total card value can vary between 25–40 coins.
+
+</p>
+
+<button onclick="openPack()">
+Open Pack
+</button>
+
 </section>
+
 
 <section class="section">
-<h2>🃏 My Cards (<span id="count">0</span>)</h2>
-<div id="mycards" class="row"><p style="color:#738199;font-size:13px">Open your first pack to get cards.</p></div>
+
+<h2>
+🃏 My Cards (<span id="count">0</span>)
+</h2>
+
+<div id="mycards" class="row">
+
+<p style="color:#738199;font-size:13px">
+Open your first pack to get cards.
+</p>
+
+</div>
+
 </section>
+
 
 <section class="battle">
-<h2>⚔️ Quick Battle</h2>
-<div class="challenge">Challenge stat: <b id="challenge">Bowling Accuracy</b></div>
-<p style="color:#738199;font-size:12px">Choose one of your cards. The higher challenge stat wins the round.</p>
-<div id="battlechoices" class="choice"></div>
-<div id="result" class="result hidden"></div>
+
+<h2>
+⚔️ Quick Battle
+</h2>
+
+<div class="challenge">
+
+Challenge stat:
+<b id="challenge">
+Bowling Accuracy
+</b>
+
+</div>
+
+<p style="color:#738199;font-size:12px">
+
+Choose one of your cards.
+The higher challenge stat wins the round.
+
+</p>
+
+<div id="battlechoices" class="choice">
+</div>
+
+<div id="result" class="result hidden">
+</div>
+
 </section>
 
+
 <nav>
-<button class="active">🏠<br>Home</button><button onclick="scrollToCards()">🃏<br>Cards</button><button onclick="scrollToBattle()">⚔️<br>Battle</button><button>👤<br>Profile</button>
+
+<button class="active">
+🏠
+<br>
+Home
+</button>
+
+<button onclick="scrollToCards()">
+🃏
+<br>
+Cards
+</button>
+
+<button onclick="scrollToBattle()">
+⚔️
+<br>
+Battle
+</button>
+
+<button>
+👤
+<br>
+Profile
+</button>
+
 </nav>
+
 </div>
+
+
+<!-- PACK MODAL -->
 
 <div id="modal" class="modal hidden">
+
 <div class="modalbox">
-<h2>🎉 Pack Opened!</h2>
-<p style="text-align:center;color:#aebbd0">You received 3 cards.</p>
-<div id="reveal" class="reveal"></div>
-<button class="close" onclick="closeModal()">Add to Collection</button>
-</div>
+
+<h2>
+🎉 Pack Opened!
+</h2>
+
+<p style="text-align:center;color:#aebbd0">
+You received 3 cards.
+</p>
+
+<div id="reveal" class="reveal">
 </div>
 
+<div
+id="packStatus"
+style="
+text-align:center;
+color:#91a4c1;
+font-size:12px;
+min-height:16px
+">
+</div>
+
+<button
+class="close"
+onclick="closeModal()">
+
+Add to Collection
+
+</button>
+
+</div>
+
+</div>
+
+
 <script>
+
 const players=[
-{name:"Gill",value:9,bat:76,bowl:52,catch:75,pace:70},
-{name:"Siraj",value:8,bat:43,bowl:72,catch:73,pace:84},
-{name:"Rahul",value:10,bat:80,bowl:48,catch:78,pace:69},
-{name:"Jaiswal",value:11,bat:82,bowl:45,catch:68,pace:72},
-{name:"Rinku",value:12,bat:78,bowl:42,catch:72,pace:68},
-{name:"Axar",value:13,bat:70,bowl:78,catch:86,pace:76},
-{name:"Shami",value:14,bat:40,bowl:88,catch:80,pace:91},
-{name:"Jadeja",value:14,bat:74,bowl:82,catch:94,pace:79}
+
+{
+name:"Gill",
+value:9,
+bat:76,
+bowl:52,
+catch:75,
+pace:70
+},
+
+{
+name:"Siraj",
+value:8,
+bat:43,
+bowl:72,
+catch:73,
+pace:84
+},
+
+{
+name:"Rahul",
+value:10,
+bat:80,
+bowl:48,
+catch:78,
+pace:69
+},
+
+{
+name:"Jaiswal",
+value:11,
+bat:82,
+bowl:45,
+catch:68,
+pace:72
+},
+
+{
+name:"Rinku",
+value:12,
+bat:78,
+bowl:42,
+catch:72,
+pace:68
+},
+
+{
+name:"Axar",
+value:13,
+bat:70,
+bowl:78,
+catch:86,
+pace:76
+},
+
+{
+name:"Shami",
+value:14,
+bat:40,
+bowl:88,
+catch:80,
+pace:91
+},
+
+{
+name:"Jadeja",
+value:14,
+bat:74,
+bowl:82,
+catch:94,
+pace:79
+}
+
 ];
-let coins=Number(localStorage.getItem("ccb_coins")||50);
-let collection=JSON.parse(localStorage.getItem("ccb_cards")||"[]");
-let first=localStorage.getItem("ccb_welcome")!=="1";
-function save(){localStorage.setItem("ccb_coins",coins);localStorage.setItem("ccb_cards",JSON.stringify(collection))}
+
+
+let coins=
+Number(
+localStorage.getItem("ccb_coins") || 50
+);
+
+
+let collection=
+JSON.parse(
+localStorage.getItem("ccb_cards") || "[]"
+);
+
+
+let first=
+localStorage.getItem("ccb_welcome") !== "1";
+
+
+function save(){
+
+localStorage.setItem(
+"ccb_coins",
+coins
+);
+
+localStorage.setItem(
+"ccb_cards",
+JSON.stringify(collection)
+);
+
+}
+
+
 function render(){
-document.getElementById("coins").textContent=coins;document.getElementById("count").textContent=collection.length;
-const box=document.getElementById("mycards"); box.innerHTML="";
-if(!collection.length){box.innerHTML='<p style="color:#738199;font-size:13px">Open your first pack to get cards.</p>'}
-collection.forEach((p,i)=>{box.innerHTML+=cardHTML(p,i,true)});
+
+document.getElementById("coins").textContent=coins;
+
+document.getElementById("count").textContent=
+collection.length;
+
+
+const box=
+document.getElementById("mycards");
+
+box.innerHTML="";
+
+
+if(!collection.length){
+
+box.innerHTML=
+`
+<p style="color:#738199;font-size:13px">
+Open your first pack to get cards.
+</p>
+`;
+
+}
+
+
+collection.forEach(
+(p,i)=>{
+
+box.innerHTML+=
+cardHTML(p,i,true);
+
+}
+);
+
+
 renderBattle();
+
 }
+
+
 function cardHTML(p,i,small=false){
-return `<div class="card ${small?'smallcard':''}"><div class="rarity">Common</div><div class="avatar">🏏</div><div class="name">${p.name}</div><div class="value">🪙 ${p.value} coins</div><div class="stat"><span>BAT ${p.bat}</span><span>BOWL ${p.bowl}</span></div><div class="stat"><span>CATCH ${p.catch}</span><span>PACE ${p.pace}</span></div></div>`
+
+return `
+
+<div class="card ${small?'smallcard':''}">
+
+<div class="rarity">
+Common
+</div>
+
+<div class="avatar">
+🏏
+</div>
+
+<div class="name">
+${p.name}
+</div>
+
+<div class="value">
+🪙 ${p.value} coins
+</div>
+
+<div class="stat">
+<span>
+BAT ${p.bat}
+</span>
+
+<span>
+BOWL ${p.bowl}
+</span>
+</div>
+
+<div class="stat">
+
+<span>
+CATCH ${p.catch}
+</span>
+
+<span>
+PACE ${p.pace}
+</span>
+
+</div>
+
+</div>
+
+`;
+
 }
+
+
 function openPack(){
-if(first){first=false;localStorage.setItem("ccb_welcome","1");buyPack(true);return}
-buyPack(false)
+
+if(first){
+
+first=false;
+
+localStorage.setItem(
+"ccb_welcome",
+"1"
+);
+
+buyPack(true);
+
+return;
+
 }
+
+buyPack(false);
+
+}
+
+
 function buyPack(free){
-if(!free && coins<30){alert("Not enough coins!");return}
-if(!free)coins-=30;
+
+if(!free && coins<30){
+
+alert(
+"Not enough coins!"
+);
+
+return;
+
+}
+
+
+if(!free){
+
+coins-=30;
+
+}
+
+
 let arr=[];
+
 let total=0;
+
+
 for(let i=0;i<3;i++){
-let p=players[Math.floor(Math.random()*players.length)];
-arr.push({...p});total+=p.value;
+
+let p=
+players[
+Math.floor(
+Math.random()*players.length
+)
+];
+
+arr.push({...p});
+
+total+=p.value;
+
 }
-while(total<25){let p=players[Math.floor(Math.random()*players.length)];arr[Math.floor(Math.random()*3)]={...p};total=arr.reduce((s,x)=>s+x.value,0)}
-while(total>40){let idx=Math.floor(Math.random()*3);let p=arr[idx];let lower=players.filter(x=>x.value<=p.value-1);if(!lower.length)break;let np=lower[Math.floor(Math.random()*lower.length)];arr[idx]={...np};total=arr.reduce((s,x)=>s+x.value,0)}
-collection.push(...arr);save();showReveal(arr,free)
+
+
+/* Keep total card value between 25 and 40 */
+
+while(total<25){
+
+let p=
+players[
+Math.floor(
+Math.random()*players.length
+)
+];
+
+arr[
+Math.floor(
+Math.random()*3
+)
+]=
+{...p};
+
+total=
+arr.reduce(
+(s,x)=>s+x.value,
+0
+);
+
 }
-function showReveal(arr,free){document.getElementById("modal").classList.remove("hidden");document.getElementById("reveal").innerHTML=arr.map((p,i)=>cardHTML(p,i)).join("");document.querySelector(".modalbox p").textContent=free?"Your first Common Pack is FREE!":"3 cards added from your 30-coin pack."}
-function closeModal(){document.getElementById("modal").classList.add("hidden");render()}
-function renderBattle(){
-const b=document.getElementById("battlechoices");b.innerHTML="";
-collection.slice(0,6).forEach((p,i)=>{b.innerHTML+=`<button onclick="battle(${i})">${p.name}<br><small>BOWL ${p.bowl}</small></button>`})
+
+
+while(total>40){
+
+let idx=
+Math.floor(
+Math.random()*3
+);
+
+let p=
+arr[idx];
+
+let lower=
+players.filter(
+x=>x.value<=p.value-1
+);
+
+if(!lower.length)
+break;
+
+let np=
+lower[
+Math.floor(
+Math.random()*lower.length
+)
+];
+
+arr[idx]={...np};
+
+total=
+arr.reduce(
+(s,x)=>s+x.value,
+0
+);
+
 }
-function battle(i){
-if(!collection.length)return;
-const me=collection[i], opponent=players[Math.floor(Math.random()*players.length)];
-const stat=document.getElementById("challenge").textContent;
-const mine=me.bowl, theirs=opponent.bowl;
-const win=mine>=theirs;
-const r=document.getElementById("result");r.classList.remove("hidden");
-r.innerHTML=win?`🏆 YOU WIN!<br><small>${me.name}: ${mine} vs ${opponent.name}: ${theirs}</small>`:`❌ YOU LOSE<br><small>${me.name}: ${mine} vs ${opponent.name}: ${theirs}</small>`;
+
+
+collection.push(...arr);
+
+save();
+
+showReveal(
+arr,
+free
+);
+
 }
-function scrollToCards(){document.getElementById("mycards").scrollIntoView({behavior:"smooth"})}
-function scrollToBattle(){document.querySelector(".battle").scrollIntoView({behavior:"smooth"})}
+
+
+function showReveal(arr,free){
+
+const modal=
+document.getElementById("modal");
+
+const reveal=
+document.getElementById("reveal");
+
+const status=
+document.getElementById("packStatus");
+
+
+modal.classList.remove(
+"hidden"
+);
+
+reveal.innerHTML="";
+
+status.textContent=
+"✨ Revealing your cards...";
+
+
+document.querySelector(
+".modalbox p"
+).textContent=
+
+free
+?
+"Your first Common Pack is FREE!"
+:
+"3 cards added from your 30-coin pack.";
+
+
+arr.forEach(
+(p,i)=>{
+
+setTimeout(
+
+()=>{
+
+reveal.insertAdjacentHTML(
+"beforeend",
+cardHTML(p,i)
+);
+
+
+if(i===arr.length-1){
+
+status.textContent=
+"🎉 All 3 cards revealed!";
+
+}
+
+},
+
+350*i
+
+);
+
+}
+
+);
+
+}
+
+
+function closeModal(){
+
+document
+.getElementById("modal")
+.classList.add("hidden");
+
 render();
+
+}
+
+
+function renderBattle(){
+
+const b=
+document.getElementById(
+"battlechoices"
+);
+
+b.innerHTML="";
+
+
+collection
+.slice(0,6)
+.forEach(
+
+(p,i)=>{
+
+b.innerHTML+=`
+
+<button
+onclick="battle(${i})">
+
+${p.name}
+
+<br>
+
+<small>
+BOWL ${p.bowl}
+</small>
+
+</button>
+
+`;
+
+}
+
+);
+
+}
+
+
+function battle(i){
+
+if(!collection.length)
+return;
+
+
+const me=
+collection[i];
+
+
+const opponent=
+players[
+Math.floor(
+Math.random()*players.length
+)
+];
+
+
+const challenges=[
+
+[
+"Bowling Accuracy",
+"bowl"
+],
+
+[
+"Ball Speed",
+"pace"
+],
+
+[
+"Batting Power",
+"bat"
+],
+
+[
+"Catching",
+"catch"
+]
+
+];
+
+
+const c=
+challenges[
+Math.floor(
+Math.random()*challenges.length
+)
+];
+
+
+document.getElementById(
+"challenge"
+).textContent=
+c[0];
+
+
+const mine=
+me[c[1]];
+
+
+const theirs=
+opponent[c[1]];
+
+
+const win=
+mine>=theirs;
+
+
+const r=
+document.getElementById(
+"result"
+);
+
+
+r.classList.remove(
+"hidden"
+);
+
+
+if(win){
+
+r.innerHTML=
+
+`
+🏆 YOU WIN!
+
+<br>
+
+<small>
+${me.name}: ${mine}
+vs
+${opponent.name}: ${theirs}
+</small>
+`;
+
+}
+
+else{
+
+r.innerHTML=
+
+`
+❌ YOU LOSE
+
+<br>
+
+<small>
+${me.name}: ${mine}
+vs
+${opponent.name}: ${theirs}
+</small>
+`;
+
+}
+
+}
+
+
+function scrollToCards(){
+
+document
+.getElementById("mycards")
+.scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+
+function scrollToBattle(){
+
+document
+.querySelector(".battle")
+.scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+
+render();
+
 </script>
+
 </body>
 </html>
