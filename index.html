@@ -125,6 +125,18 @@ h1 span{color:#fff}
  .battleHero{min-height:430px}.battleContent{padding:55px 15px}.vs{font-size:60px}.row{grid-template-columns:35px 1fr 90px}
  .sectionTitle{font-size:21px}.bigCoin{font-size:35px}
 }
+
+.cardPhoto{width:100%;height:170px;object-fit:cover;border-radius:9px;border:1px solid #80611a;display:block}
+.cardTag{display:inline-block;margin-top:7px;padding:4px 7px;border:1px solid #6f5312;border-radius:12px;color:#ffd85a;font-size:8px;font-weight:900}
+.cardValue{font-size:15px;color:#ffd85a;font-weight:1000;margin-top:5px}
+.cardActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.smallGold{border:1px solid #9c7315;border-radius:7px;padding:8px;background:linear-gradient(#ffe98c,#bd8108);font-weight:1000;font-size:10px}
+.smallDark{border:1px solid #5a4514;border-radius:7px;padding:8px;background:#090909;color:#ffd85a;font-weight:1000;font-size:10px}
+.packDetail{display:none}
+.packDetail.show{display:block}
+.revealCard{border:1px solid #8a6717;border-radius:12px;background:linear-gradient(145deg,#171208,#060606);padding:9px;text-align:center}
+.revealCard img{width:100%;height:190px;object-fit:cover;border-radius:8px}
+@media(max-width:800px){.cardPhoto{height:145px}.revealCard img{height:160px}}
 </style>
 </head>
 <body>
@@ -164,21 +176,67 @@ h1 span{color:#fff}
 
 <section class="page" id="packs">
 <div class="sectionTitle">PACKS</div>
-<p class="muted">Choose your pack. Every pack contains 3 random cards.</p>
+<p class="muted">Premium cricket card packs • 3 cards guaranteed in every pack.</p>
+
 <div class="packGrid">
-<div class="pack"><img src="common_pack.png"><h3>COMMON PACK</h3><div class="range">20 – 40 COINS</div><button class="buy" onclick="buyPack(30,20,40)">30 🪙</button></div>
-<div class="pack"><img src="rare_pack.png"><h3>RARE PACK</h3><div class="range">60 – 100 COINS</div><button class="buy" onclick="buyPack(75,60,100)">75 🪙</button></div>
-<div class="pack"><img src="epic_pack.png"><h3>EPIC PACK</h3><div class="range">125 – 190 COINS</div><button class="buy" onclick="buyPack(150,125,190)">150 🪙</button></div>
-<div class="pack"><img src="legendary_pack.png"><h3>LEGENDARY PACK</h3><div class="range">260 – 400 COINS</div><button class="buy" onclick="buyPack(300,260,400)">300 🪙</button></div>
-<div class="pack"><img src="ultimate_pack.png"><h3>ULTIMATE PACK</h3><div class="range">550 – 800 COINS</div><button class="buy" onclick="buyPack(600,550,800)">600 🪙</button></div>
+<div class="pack"><img src="common_pack.png"><h3>COMMON PACK</h3><div class="range">20 – 40 COINS</div><button class="buy" onclick="openPack('COMMON',30,20,40)">30 🪙</button></div>
+<div class="pack"><img src="rare_pack.png"><h3>RARE PACK</h3><div class="range">60 – 100 COINS</div><button class="buy" onclick="openPack('RARE',75,60,100)">75 🪙</button></div>
+<div class="pack"><img src="epic_pack.png"><h3>EPIC PACK</h3><div class="range">125 – 190 COINS</div><button class="buy" onclick="openPack('EPIC',150,125,190)">150 🪙</button></div>
+<div class="pack"><img src="legendary_pack.png"><h3>LEGENDARY PACK</h3><div class="range">260 – 400 COINS</div><button class="buy" onclick="openPack('LEGENDARY',300,260,400)">300 🪙</button></div>
+<div class="pack"><img src="ultimate_pack.png"><h3>ULTIMATE PACK</h3><div class="range">550 – 800 COINS</div><button class="buy" onclick="openPack('ULTIMATE',600,550,800)">600 🪙</button></div>
+</div>
+
+<div id="packOpening" class="panel packDetail" style="margin-top:15px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div class="kicker">PACK OPENING</div>
+      <h2 id="openingTitle" style="color:#ffd85a;margin:5px 0">OPENING PACK...</h2>
+    </div>
+    <div id="openingCost" class="cardTag"></div>
+  </div>
+  <div class="grid3" id="revealGrid" style="margin-top:14px"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+    <div id="openingTotal" style="color:#ffd85a;font-weight:1000"></div>
+    <button class="goldBtn" onclick="finishPack()">ADD TO MY CARDS</button>
+  </div>
 </div>
 </section>
-
 <section class="page" id="cards">
 <div class="sectionTitle">MY CARDS</div>
-<div class="panel"><p class="muted">Your collected cards appear here.</p><div class="cardGrid" id="cardsGrid"></div></div>
-</section>
+<div class="panel">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <div class="muted">COLLECTION: <b id="collectionCount" style="color:#ffd85a">0</b> cards</div>
+    <select id="cardFilter" class="input" style="max-width:180px;margin:0" onchange="renderCards()">
+      <option value="ALL">ALL CARDS</option>
+      <option value="BATTING">BATSMEN</option>
+      <option value="BOWLING">BOWLERS</option>
+      <option value="ALLROUNDER">ALL ROUNDERS</option>
+    </select>
+  </div>
+  <div class="cardGrid" id="cardsGrid" style="margin-top:14px"></div>
+</div>
 
+<div id="cardDetail" class="panel" style="display:none;margin-top:14px">
+  <div style="display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:center">
+    <img id="detailPhoto" class="cardPhoto" style="height:330px">
+    <div>
+      <div class="kicker">CARD DETAIL</div>
+      <h2 id="detailName" style="color:#ffd85a"></h2>
+      <p id="detailRole" class="muted"></p>
+      <div class="grid3">
+        <div class="panel"><div class="muted">BAT</div><b id="detailBat" style="color:#ffd85a"></b></div>
+        <div class="panel"><div class="muted">BOWL</div><b id="detailBowl" style="color:#ffd85a"></b></div>
+        <div class="panel"><div class="muted">FIELD</div><b id="detailField" style="color:#ffd85a"></b></div>
+      </div>
+      <div style="font-size:22px;color:#ffd85a;font-weight:1000;margin:15px 0">🪙 <span id="detailValue"></span></div>
+      <div class="cardActions">
+        <button class="smallGold" onclick="useSelectedCard()">USE IN BATTLE</button>
+        <button class="smallDark" onclick="sellSelectedCard()">SELL CARD</button>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
 <section class="page" id="battle">
 <div class="sectionTitle">BATTLE & WIN COINS</div>
 <div class="battleHero"><div class="battleContent">
@@ -232,11 +290,13 @@ h1 span{color:#fff}
 
     <div class="panel" style="margin-top:12px;background:#070707">
       <h3 style="color:#ffd85a;margin-top:0">PAYMENT DETAILS</h3>
-      <p class="muted">Pay the amount shown below. <b style="color:#ffd85a">₹1 = 1 Coin</b>. After payment, enter your UTR and upload the screenshot for manual verification.</p>
+      <p class="muted">After payment, enter the exact details below and submit for manual verification.</p>
 
       <div class="muted">PAYMENT AMOUNT</div>
       <input class="input" id="payAmount" type="number" min="1" step="1" placeholder="Enter payment amount ₹">
-      <div id="coinPreview" class="muted" style="margin-top:-2px;color:#ffd85a">🪙 You will receive 1 coin per ₹1</div>
+
+      <div class="muted" style="margin-top:8px">COINS REQUESTED</div>
+      <input class="input" id="coinAmount" type="number" min="1" step="1" placeholder="Enter coins to receive">
 
       <div class="muted" style="margin-top:8px">UTR / TRANSACTION ID</div>
       <input class="input" id="utr" maxlength="80" placeholder="Enter UTR / transaction ID">
@@ -278,74 +338,172 @@ h1 span{color:#fff}
 <div class="modal" id="packModal"><div class="modalBox"><button class="close" onclick="closeModal('packModal')">×</button><h2 style="color:#ffd85a">🎁 PACK OPENED</h2><p class="muted" id="packInfo"></p><div class="cardGrid" id="revealed"></div><button class="goldBtn" style="width:100%;margin-top:14px" onclick="closeModal('packModal')">CONTINUE</button></div></div>
 <div class="toast" id="toast"></div>
 
+
 <script>
 let coins=Number(localStorage.getItem('cca_coins')||0);
 let cards=JSON.parse(localStorage.getItem('cca_cards')||'[]');
-const names=['ARSHDEEP-INSPIRED','VIRAT-INSPIRED','HARDIK-INSPIRED','ROHIT-INSPIRED','SURYA-INSPIRED','BUMRAH-INSPIRED'];
+let pendingPack=null;
+let selectedCardIndex=null;
 
-function save(){localStorage.setItem('cca_coins',coins);localStorage.setItem('cca_cards',JSON.stringify(cards));update();}
+const cardPool=[
+ {name:'VIRAT-INSPIRED',role:'BATSMAN',img:'virat_card.jpg',bat:94,bowl:58,field:92},
+ {name:'HARDIK-INSPIRED',role:'ALLROUNDER',img:'hardik_card.jpg',bat:88,bowl:84,field:90},
+ {name:'BUMRAH-INSPIRED',role:'BOWLER',img:'bumrah_card.jpg',bat:55,bowl:96,field:91},
+ {name:'ROHIT-INSPIRED',role:'BATSMAN',img:'rohit_card.jpg',bat:91,bowl:42,field:87},
+ {name:'SHUBMAN-INSPIRED',role:'BATSMAN',img:'shubman_card.jpg',bat:90,bowl:38,field:88}
+];
+
+function save(){
+ localStorage.setItem('cca_coins',coins);
+ localStorage.setItem('cca_cards',JSON.stringify(cards));
+ update();
+}
 function update(){
  document.querySelectorAll('#coins,#homeCoins,#depositBalance').forEach(e=>e.textContent=coins.toLocaleString());
  document.getElementById('homeCards').textContent=cards.length;
+ document.getElementById('collectionCount').textContent=cards.length;
  renderCards();
+ if(typeof renderDepositHistory==='function') renderDepositHistory();
 }
 function show(id){
  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
- document.getElementById(id).classList.add('active');
+ const page=document.getElementById(id);
+ if(page) page.classList.add('active');
  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
  scrollTo({top:0,behavior:'smooth'});
 }
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));
 
-function buyPack(price,min,max){
- if(coins<price){show('deposit');toast('Not enough coins — add coins first');return;}
+function makeValue(min,max){
+ return Math.floor(Math.random()*(max-min+1))+min;
+}
+function openPack(type,price,min,max){
+ if(coins<price){
+   show('deposit');
+   toast('Not enough coins — add coins first');
+   return;
+ }
  coins-=price;
- let vals;
- do{vals=[1,2,3].map(()=>Math.floor(Math.random()*9)+5)}
- while(vals.reduce((a,b)=>a+b,0)<min||vals.reduce((a,b)=>a+b,0)>max);
- vals.forEach((v,i)=>cards.push({name:names[i%names.length],value:v}));
+ const result=[];
+ let total=0;
+ for(let i=0;i<3;i++){
+   const c=cardPool[Math.floor(Math.random()*cardPool.length)];
+   result.push({...c,value:makeValue(8,40),rarity:type,id:'CARD-'+Date.now()+'-'+i});
+ }
+ total=result.reduce((a,c)=>a+c.value,0);
+ while(total<min || total>max){
+   result.forEach(c=>c.value=makeValue(8,40));
+   total=result.reduce((a,c)=>a+c.value,0);
+ }
+ pendingPack={type,price,cards:result,total};
+ document.getElementById('openingTitle').textContent=type+' PACK OPENED';
+ document.getElementById('openingCost').textContent='− '+price+' 🪙';
+ document.getElementById('openingTotal').textContent='TOTAL CARD VALUE: 🪙 '+total;
+ document.getElementById('revealGrid').innerHTML=result.map(c=>`
+   <div class="revealCard">
+     <img src="${c.img}">
+     <div class="cardTag">${c.rarity}</div>
+     <h3 style="margin:7px 0;color:#fff">${c.name}</h3>
+     <div class="cardValue">🪙 ${c.value}</div>
+     <div class="statsRow"><span>BAT ${c.bat}</span><span>BOWL ${c.bowl}</span><span>FIELD ${c.field}</span></div>
+   </div>`).join('');
+ document.getElementById('packOpening').classList.add('show');
  save();
- document.getElementById('packInfo').textContent='3 random cards • Total value '+vals.reduce((a,b)=>a+b,0)+' coins';
- document.getElementById('revealed').innerHTML=vals.map((v,i)=>`<div class="playerCard"><div class="playerArt">🏏</div><b>${names[i%names.length]}</b><div style="margin-top:8px;color:#ffd85a">🪙 ${v}</div></div>`).join('');
- document.getElementById('packModal').classList.add('show');
+}
+function finishPack(){
+ if(!pendingPack)return;
+ cards.push(...pendingPack.cards);
+ pendingPack=null;
+ document.getElementById('packOpening').classList.remove('show');
+ save();
+ toast('3 cards added to My Cards');
+ show('cards');
 }
 function renderCards(){
  const g=document.getElementById('cardsGrid');
- if(!cards.length){g.innerHTML='<div class="muted" style="padding:30px">No cards yet. Open a pack to start your collection.</div>';return;}
- g.innerHTML=cards.map((c,i)=>`<div class="playerCard"><div class="playerArt">🏏</div><b>${c.name}</b><div class="statsRow"><span>POWER</span><span>${c.value}</span></div></div>`).join('');
+ if(!g)return;
+ const filter=document.getElementById('cardFilter')?.value||'ALL';
+ const list=cards.map((c,i)=>({...c,index:i})).filter(c=>filter==='ALL'||c.role===filter);
+ if(!list.length){
+   g.innerHTML='<div class="muted" style="padding:30px">No cards here yet. Open a pack to start your collection.</div>';
+   return;
+ }
+ g.innerHTML=list.map(c=>`
+   <div class="playerCard">
+     <img class="cardPhoto" src="${c.img}">
+     <div class="cardTag">${c.rarity||'COMMON'}</div>
+     <h3 style="margin:7px 0">${c.name}</h3>
+     <div class="cardValue">🪙 ${c.value}</div>
+     <div class="statsRow"><span>BAT ${c.bat}</span><span>BOWL ${c.bowl}</span><span>FIELD ${c.field}</span></div>
+     <button class="smallGold" style="width:100%;margin-top:8px" onclick="viewCard(${c.index})">VIEW CARD</button>
+   </div>`).join('');
+}
+function viewCard(index){
+ selectedCardIndex=index;
+ const c=cards[index];
+ if(!c)return;
+ document.getElementById('cardDetail').style.display='block';
+ document.getElementById('detailPhoto').src=c.img;
+ document.getElementById('detailName').textContent=c.name;
+ document.getElementById('detailRole').textContent=(c.rarity||'COMMON')+' • '+c.role;
+ document.getElementById('detailBat').textContent=c.bat;
+ document.getElementById('detailBowl').textContent=c.bowl;
+ document.getElementById('detailField').textContent=c.field;
+ document.getElementById('detailValue').textContent=c.value;
+ scrollTo({top:document.getElementById('cardDetail').offsetTop-100,behavior:'smooth'});
+}
+function sellSelectedCard(){
+ if(selectedCardIndex===null||!cards[selectedCardIndex])return;
+ const c=cards[selectedCardIndex];
+ coins+=Number(c.value)||0;
+ cards.splice(selectedCardIndex,1);
+ selectedCardIndex=null;
+ document.getElementById('cardDetail').style.display='none';
+ save();
+ toast('Card sold • coins added to wallet');
+}
+function useSelectedCard(){
+ if(selectedCardIndex===null)return toast('Select a card first');
+ show('battle');
+ toast('Card selected for battle');
 }
 function playBattle(){
  if(!cards.length){toast('Open a pack first');show('packs');return;}
  const win=Math.random()>.5;
- document.getElementById('battleResult').textContent=win?'🏆 YOU WIN +25 COINS':'❌ YOU LOSE';
+ const result=document.getElementById('battleResult');
+ result.textContent=win?'🏆 YOU WIN +25 COINS':'❌ YOU LOSE';
  if(win){coins+=25;save();} else update();
 }
-function selectAmount(v){document.getElementById('customAmount').value=v;show('deposit');}
+function selectAmount(v){
+ document.getElementById('payAmount').value=v;
+ document.getElementById('coinAmount')?.remove();
+ show('deposit');
+}
 function depositRequest(){
- const v=Number(document.getElementById('customAmount').value);
+ const v=Number(document.getElementById('customAmount')?.value);
  if(!v){toast('Enter a coin amount');return;}
  toast('Deposit request created for '+v.toLocaleString()+' coins');
 }
-function closeModal(id){document.getElementById(id).classList.remove('show')}
-function toast(t){const x=document.getElementById('toast');x.textContent=t;x.style.display='block';clearTimeout(window.__t);window.__t=setTimeout(()=>x.style.display='none',2200)}
+function closeModal(id){document.getElementById(id)?.classList.remove('show')}
+function toast(t){
+ const x=document.getElementById('toast');
+ if(!x)return;
+ x.textContent=t;x.style.display='block';
+ clearTimeout(window.__t);
+ window.__t=setTimeout(()=>x.style.display='none',2200);
+}
 
-const depositRequests=JSON.parse(localStorage.getItem('cca_deposit_requests')||'[]');
-
-
-document.getElementById('payAmount').addEventListener('input',function(){
-  const v=Number(this.value)||0;
-  document.getElementById('coinPreview').textContent =
-    v ? '🪙 You will receive '+v.toLocaleString()+' coins' : '🪙 You will receive 1 coin per ₹1';
-});
-
-document.getElementById('paymentShot').addEventListener('change',function(){
-  const f=this.files[0];
-  document.getElementById('shotName').textContent=f?f.name:'No screenshot selected';
-});
+function copyUPI(){
+  const id='Maniacheree@axl';
+  navigator.clipboard?.writeText(id).then(
+    ()=>toast('UPI ID copied'),
+    ()=>toast('UPI ID: '+id)
+  );
+}
 
 function submitDeposit(){
   const pay=Number(document.getElementById('payAmount').value);
-  const coin=pay;
+  const coin=Number(document.getElementById('coinAmount').value);
   const utr=document.getElementById('utr').value.trim();
   const file=document.getElementById('paymentShot').files[0];
 
@@ -367,6 +525,7 @@ function submitDeposit(){
   depositRequests.unshift(request);
   localStorage.setItem('cca_deposit_requests',JSON.stringify(depositRequests));
   document.getElementById('payAmount').value='';
+  document.getElementById('coinAmount').value='';
   document.getElementById('utr').value='';
   document.getElementById('paymentShot').value='';
   document.getElementById('shotName').textContent='No screenshot selected';
@@ -396,16 +555,9 @@ function escapeHtml(s){
 }
 
 
-function copyUPI(){
-  const id='Maniacheree@axl';
-  navigator.clipboard?.writeText(id).then(
-    ()=>toast('UPI ID copied'),
-    ()=>toast('UPI ID: '+id)
-  );
-}
-
 update();
-renderDepositHistory();
+if(typeof renderDepositHistory==='function')renderDepositHistory();
 </script>
+
 </body>
 </html>
