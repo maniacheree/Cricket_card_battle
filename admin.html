@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cricket Card Arena — Admin</title>
+<style>
+:root{--bg:#030303;--panel:#090909;--gold:#f5c84b;--gold2:#ffe38a;--line:#654b0e;--muted:#aaa;--green:#45df61;--red:#ff4b45}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,#4a350022,transparent 40%),#030303;color:#fff;font-family:Arial,sans-serif}
+button,input,select{font:inherit}.layout{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#060606;border-right:1px solid #2c220d;padding:18px 12px;position:fixed;top:0;bottom:0}
+.logo{font-size:24px;font-weight:1000;font-style:italic;padding:8px 10px 20px}.logo span{display:block;color:var(--gold);font-size:9px;letter-spacing:4px;font-style:normal}
+.admin{border:1px solid var(--line);border-radius:10px;padding:11px;background:#0b0b0b;margin-bottom:14px}.admin small{color:#888;font-size:8px}.admin b{color:var(--gold)}
+.nav button{width:100%;border:1px solid transparent;background:transparent;color:#aaa;text-align:left;padding:12px;border-radius:8px;margin:2px 0;font-weight:900;cursor:pointer}
+.nav button:hover,.nav button.active{color:var(--gold);background:linear-gradient(90deg,#211a09,#080808);border-color:#4e3c10}
+.main{margin-left:245px;width:calc(100% - 245px);padding:22px;max-width:1450px}
+.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a210d;padding-bottom:15px}.title{font-size:28px;font-weight:1000;color:var(--gold)}.sub{color:#888;font-size:10px}
+.page{display:none}.page.active{display:block}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.stat{border:1px solid var(--line);border-radius:12px;padding:16px;background:linear-gradient(145deg,#111008,#060606);box-shadow:inset 0 0 25px #d29a2510}.stat small{color:#888}.num{font-size:28px;color:var(--gold);font-weight:1000;margin-top:8px}
+.panel{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(145deg,#0d0d0d,#050505);padding:16px}
+.table{width:100%;border-collapse:collapse;margin-top:10px}.table th,.table td{padding:12px 8px;border-bottom:1px solid #25200f;text-align:left;font-size:11px}.table th{color:var(--gold);font-size:9px}.badge{display:inline-block;padding:5px 8px;border-radius:20px;font-size:8px;font-weight:1000}.pending{color:#ffd75a;border:1px solid #725611}.approved{color:var(--green);border:1px solid #235c2e}.rejected{color:var(--red);border:1px solid #63221f}
+.action{border:1px solid #9d7518;border-radius:7px;padding:8px 11px;background:linear-gradient(#ffe88a,#c48508);font-weight:1000;font-size:9px}.dark{background:#080808;color:#ffd75a;border-color:#59450f}
+.search{width:100%;padding:11px;border:1px solid #49390f;background:#050505;color:#fff;border-radius:8px;margin-top:10px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.player{border:1px solid #5e470f;border-radius:10px;padding:10px;background:#080808}.player h3{margin:5px 0;color:#ffd75a}.player p{font-size:10px;color:#999;margin:4px 0}
+.formGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.input{width:100%;padding:11px;border-radius:7px;border:1px solid #49390f;background:#030303;color:#fff}
+.notice{padding:12px;border:1px dashed #695012;border-radius:9px;color:#aaa;font-size:10px;margin-top:12px}
+.mobileMenu{display:none}
+@media(max-width:800px){
+.sidebar{position:fixed;width:100%;height:auto;bottom:0;top:auto;z-index:50;border-right:0;border-top:1px solid #2c220d;padding:5px}
+.sidebar .logo,.sidebar .admin{display:none}.nav{display:grid;grid-template-columns:repeat(5,1fr)}.nav button{font-size:8px;text-align:center;padding:9px 2px}.main{margin-left:0;width:100%;padding:10px 8px 80px}.top{padding-top:5px}.title{font-size:21px}.grid4{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.table{min-width:650px}.panel{overflow-x:auto}.formGrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="logo">CRICKET CARD<span>ARENA • ADMIN</span></div>
+<div class="admin"><small>ADMIN ACCOUNT</small><br><b>SUPER ADMIN</b><br><span style="color:#777;font-size:9px">Control Centre</span></div>
+<nav class="nav">
+<button class="active" data-page="dashboard">📊 Dashboard</button>
+<button data-page="users">👥 Users</button>
+<button data-page="deposits">💳 Deposits</button>
+<button data-page="packs">🎁 Packs</button>
+<button data-page="players">🃏 Players</button>
+<button data-page="battles">⚔️ Battles</button>
+<button data-page="wallet">🪙 Wallet</button>
+<button data-page="settings">⚙️ Settings</button>
+</nav>
+</aside>
+
+<main class="main">
+<header class="top"><div><div class="title" id="pageTitle">Dashboard</div><div class="sub">CRICKET CARD ARENA CONTROL CENTRE</div></div><button class="action dark" onclick="toast('Backend authentication will be connected next')">🔒 SECURE MODE</button></header>
+
+<section class="page active" id="dashboard">
+<div class="grid4">
+<div class="stat"><small>TOTAL USERS</small><div class="num" id="usersCount">0</div></div>
+<div class="stat"><small>PENDING DEPOSITS</small><div class="num" id="pendingCount">0</div></div>
+<div class="stat"><small>TOTAL CARDS</small><div class="num" id="cardsCount">0</div></div>
+<div class="stat"><small>COINS IN SYSTEM</small><div class="num" id="coinsCount">0</div></div>
+</div>
+<div class="panel"><h3 style="color:#ffd75a">⚡ QUICK ACTIONS</h3>
+<button class="action" onclick="show('deposits')">REVIEW DEPOSITS</button>
+<button class="action dark" onclick="show('players')">MANAGE PLAYERS</button>
+<button class="action dark" onclick="show('packs')">MANAGE PACKS</button>
+</div>
+<div class="panel"><h3 style="color:#ffd75a">SYSTEM STATUS</h3><div class="notice">🟢 Frontend admin interface online. Real user/deposit/wallet actions require server-side authentication and a database.</div></div>
+</section>
+
+<section class="page" id="users">
+<div class="panel"><h3 style="color:#ffd75a">👥 USER MANAGEMENT</h3>
+<input class="search" placeholder="Search user ID / username">
+<table class="table"><thead><tr><th>USER</th><th>ID</th><th>COINS</th><th>CARDS</th><th>STATUS</th><th>ACTION</th></tr></thead>
+<tbody><tr><td>Demo Player</td><td>—</td><td>0</td><td>0</td><td><span class="badge approved">ACTIVE</span></td><td><button class="action dark" onclick="toast('Backend required')">VIEW</button></td></tr></tbody></table>
+</div></section>
+
+<section class="page" id="deposits">
+<div class="panel"><h3 style="color:#ffd75a">💳 DEPOSIT REVIEW</h3>
+<p class="sub">Pending deposit approvals will appear here after backend connection.</p>
+<table class="table"><thead><tr><th>REQUEST</th><th>AMOUNT</th><th>COINS</th><th>UTR</th><th>STATUS</th><th>ACTION</th></tr></thead>
+<tbody id="depositRows"><tr><td colspan="6" style="color:#777">No backend deposit records loaded.</td></tr></tbody></table>
+</div></section>
+
+<section class="page" id="packs">
+<div class="panel"><h3 style="color:#ffd75a">🎁 PACK MANAGEMENT</h3>
+<div class="cards">
+<div class="player"><h3>COMMON</h3><p>Price: 30 coins</p><p>Common 70% • Rare 30%</p><button class="action dark" onclick="toast('Pack editor coming with backend')">EDIT</button></div>
+<div class="player"><h3>RARE</h3><p>Price: 75 coins</p><p>Rare 65% • Epic 35%</p><button class="action dark" onclick="toast('Pack editor coming with backend')">EDIT</button></div>
+<div class="player"><h3>EPIC</h3><p>Price: 150 coins</p><p>Epic 70% • Legendary 30%</p><button class="action dark" onclick="toast('Pack editor coming with backend')">EDIT</button></div>
+<div class="player"><h3>LEGENDARY</h3><p>Price: 300 coins</p><p>Legendary 72% • Ultimate 28%</p><button class="action dark" onclick="toast('Pack editor coming with backend')">EDIT</button></div>
+<div class="player"><h3>ULTIMATE</h3><p>Price: 600 coins</p><p>Ultimate 82% • Icon 18%</p><button class="action dark" onclick="toast('Pack editor coming with backend')">EDIT</button></div>
+</div></div></section>
+
+<section class="page" id="players">
+<div class="panel"><h3 style="color:#ffd75a">🃏 PLAYER DATABASE</h3><input class="search" id="playerSearch" placeholder="Search player..." oninput="filterPlayers()"><div class="cards" id="playerList"></div></div>
+</section>
+
+<section class="page" id="battles">
+<div class="panel"><h3 style="color:#ffd75a">⚔️ BATTLE MANAGEMENT</h3><div class="notice">Battle history, rewards and disputes will be shown here after backend connection.</div>
+<table class="table"><thead><tr><th>MATCH</th><th>PLAYER 1</th><th>PLAYER 2</th><th>RESULT</th><th>REWARD</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table>
+</div></section>
+
+<section class="page" id="wallet">
+<div class="panel"><h3 style="color:#ffd75a">🪙 WALLET CONTROL</h3>
+<div class="formGrid"><div><label class="sub">USER ID</label><input class="input" placeholder="Telegram/User ID"></div><div><label class="sub">COIN ADJUSTMENT</label><input class="input" type="number" placeholder="+ / - coins"></div></div>
+<button class="action" style="margin-top:10px" onclick="toast('Server-side wallet API required')">APPLY ADJUSTMENT</button>
+<div class="notice">Wallet adjustments must be validated server-side and logged with admin ID, reason and timestamp.</div>
+</div></section>
+
+<section class="page" id="settings">
+<div class="panel"><h3 style="color:#ffd75a">⚙️ SETTINGS</h3>
+<div class="formGrid"><div><label class="sub">SITE NAME</label><input class="input" value="Cricket Card Arena"></div><div><label class="sub">CURRENCY</label><input class="input" value="₹ / Coins"></div><div><label class="sub">₹1 = COIN</label><input class="input" value="1" disabled></div><div><label class="sub">ADMIN MODE</label><input class="input" value="SERVER AUTH REQUIRED" disabled></div></div>
+<div class="notice">This UI intentionally does not store admin passwords or perform real financial approvals in the browser.</div>
+</div></section>
+</main>
+</div>
+<div id="toast" style="position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:#101010;border:1px solid #9b7417;color:#ffd75a;padding:10px 14px;border-radius:8px;display:none;z-index:100"></div>
+<script>
+const titles={dashboard:'Dashboard',users:'Users',deposits:'Deposits',packs:'Packs',players:'Players',battles:'Battles',wallet:'Wallet',settings:'Settings'};
+let playerDB=[];
+async function loadPlayers(){
+ try{
+  const r=await fetch('players.json',{cache:'no-store'});
+  if(r.ok){playerDB=await r.json();renderPlayers();document.getElementById('playersCount')?.remove();}
+ }catch(e){}
+}
+function show(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+ document.getElementById('pageTitle').textContent=titles[id]||id;
+}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));
+function renderPlayers(list=playerDB){
+ const box=document.getElementById('playerList');
+ if(!box)return;
+ if(!list.length){box.innerHTML='<div style="color:#777">players.json not loaded.</div>';return;}
+ box.innerHTML=list.map(p=>`<div class="player"><div style="color:#777;font-size:9px">${p.country} • ${p.role}</div><h3>${p.name}</h3><p>Rating: <b style="color:#ffd75a">${p.rating}</b></p><p>Rarity: ${p.rarity}</p><p>BAT ${p.bat} • BOWL ${p.bowl} • FIELD ${p.field}</p><button class="action dark" onclick="toast('Player editing will use backend')">EDIT</button></div>`).join('');
+}
+function filterPlayers(){const q=document.getElementById('playerSearch').value.toLowerCase();renderPlayers(playerDB.filter(p=>(p.name+' '+p.country+' '+p.role).toLowerCase().includes(q)));}
+function toast(t){const x=document.getElementById('toast');x.textContent=t;x.style.display='block';clearTimeout(window.__t);window.__t=setTimeout(()=>x.style.display='none',2000)}
+loadPlayers();
+</script>
+</body>
+</html>
