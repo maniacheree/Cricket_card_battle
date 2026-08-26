@@ -211,12 +211,65 @@ h1 span{color:#fff}
 
 <section class="page" id="deposit">
 <div class="sectionTitle">ADD COINS</div>
+
 <div class="depositGrid">
-<div class="panel"><h2 style="color:#ffd85a">CHOOSE AMOUNT</h2><div class="amounts">
-<button class="amount" onclick="selectAmount(100)">100<br>₹10</button><button class="amount" onclick="selectAmount(500)">500<br>₹50</button><button class="amount" onclick="selectAmount(1000)">1,000<br>₹100</button>
-<button class="amount" onclick="selectAmount(5000)">5,000<br>₹500</button><button class="amount" onclick="selectAmount(10000)">10,000<br>₹1,000</button><button class="amount" onclick="selectAmount(20000)">20,000<br>₹2,000</button>
-</div></div>
-<div class="panel"><h2 style="color:#ffd85a">MANUAL DEPOSIT</h2><p class="muted">Enter any amount and submit your deposit request for manual verification.</p><input class="input" id="customAmount" type="number" placeholder="Coins amount"><button class="goldBtn" style="width:100%" onclick="depositRequest()">🛡 DEPOSIT NOW</button></div>
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 style="color:#ffd85a;margin:0">💳 SECURE PAYMENT</h2>
+      <span style="border:1px solid #6f5312;border-radius:20px;padding:6px 10px;color:#ffd85a;font-size:9px">UPI</span>
+    </div>
+
+    <div style="margin-top:15px;text-align:center;border:1px solid #6f5312;border-radius:14px;background:#050505;padding:14px">
+      <div style="color:#ffd85a;font-weight:1000;font-size:12px;margin-bottom:10px">SCAN & PAY</div>
+      <img src="payment_qr.jpg" alt="UPI Payment QR"
+           style="width:min(290px,85vw);max-width:100%;border-radius:10px;border:2px solid #b98a22;display:block;margin:auto">
+      <div style="margin-top:12px;color:#aaa;font-size:10px">UPI ID</div>
+      <div style="display:flex;gap:7px;align-items:center;justify-content:center;margin-top:5px">
+        <b id="upiId" style="color:#ffd85a;font-size:15px;word-break:break-all">Maniacheree@axl</b>
+        <button class="goldBtn" style="padding:7px 10px;font-size:10px" onclick="copyUPI()">COPY</button>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:12px;background:#070707">
+      <h3 style="color:#ffd85a;margin-top:0">PAYMENT DETAILS</h3>
+      <p class="muted">After payment, enter the exact details below and submit for manual verification.</p>
+
+      <div class="muted">PAYMENT AMOUNT</div>
+      <input class="input" id="payAmount" type="number" min="1" step="1" placeholder="Enter payment amount ₹">
+
+      <div class="muted" style="margin-top:8px">COINS REQUESTED</div>
+      <input class="input" id="coinAmount" type="number" min="1" step="1" placeholder="Enter coins to receive">
+
+      <div class="muted" style="margin-top:8px">UTR / TRANSACTION ID</div>
+      <input class="input" id="utr" maxlength="80" placeholder="Enter UTR / transaction ID">
+    </div>
+
+    <label style="display:block;margin-top:12px;border:1px dashed #735511;border-radius:10px;padding:16px;text-align:center;background:#080808;color:#ffd85a;cursor:pointer">
+      📸 <b>UPLOAD PAYMENT SCREENSHOT</b>
+      <input id="paymentShot" type="file" accept="image/*" style="display:none">
+      <div id="shotName" class="muted" style="margin-top:7px">No screenshot selected</div>
+    </label>
+
+    <button class="goldBtn" style="width:100%;margin-top:12px" onclick="submitDeposit()">SUBMIT FOR APPROVAL</button>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2 style="color:#ffd85a;margin-top:0">🪙 WALLET</h2>
+      <div class="balance">
+        <div class="balanceIcon">🪙</div>
+        <div>
+          <div class="bigCoin" id="depositBalance">0</div>
+          <div class="muted">AVAILABLE COINS</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:14px">
+      <h2 style="color:#ffd85a;margin-top:0">📋 DEPOSIT HISTORY</h2>
+      <div id="depositHistory" class="list"></div>
+    </div>
+  </div>
 </div>
 </section>
 </main>
@@ -234,7 +287,7 @@ const names=['ARSHDEEP-INSPIRED','VIRAT-INSPIRED','HARDIK-INSPIRED','ROHIT-INSPI
 
 function save(){localStorage.setItem('cca_coins',coins);localStorage.setItem('cca_cards',JSON.stringify(cards));update();}
 function update(){
- document.querySelectorAll('#coins,#homeCoins').forEach(e=>e.textContent=coins.toLocaleString());
+ document.querySelectorAll('#coins,#homeCoins,#depositBalance').forEach(e=>e.textContent=coins.toLocaleString());
  document.getElementById('homeCards').textContent=cards.length;
  renderCards();
 }
@@ -277,7 +330,78 @@ function depositRequest(){
 }
 function closeModal(id){document.getElementById(id).classList.remove('show')}
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.style.display='block';clearTimeout(window.__t);window.__t=setTimeout(()=>x.style.display='none',2200)}
+
+const depositRequests=JSON.parse(localStorage.getItem('cca_deposit_requests')||'[]');
+
+document.getElementById('paymentShot').addEventListener('change',function(){
+  const f=this.files[0];
+  document.getElementById('shotName').textContent=f?f.name:'No screenshot selected';
+});
+
+function submitDeposit(){
+  const pay=Number(document.getElementById('payAmount').value);
+  const coin=Number(document.getElementById('coinAmount').value);
+  const utr=document.getElementById('utr').value.trim();
+  const file=document.getElementById('paymentShot').files[0];
+
+  if(!pay || pay<=0) return toast('Enter payment amount');
+  if(!coin || coin<=0) return toast('Enter coins requested');
+  if(!utr) return toast('Enter UTR / transaction ID');
+  if(!file) return toast('Upload payment screenshot');
+
+  const request={
+    id:'DEP-'+Date.now(),
+    paymentAmount:pay,
+    coinsRequested:coin,
+    utr:utr,
+    screenshotName:file.name,
+    status:'PENDING',
+    createdAt:new Date().toLocaleString()
+  };
+
+  depositRequests.unshift(request);
+  localStorage.setItem('cca_deposit_requests',JSON.stringify(depositRequests));
+  document.getElementById('payAmount').value='';
+  document.getElementById('coinAmount').value='';
+  document.getElementById('utr').value='';
+  document.getElementById('paymentShot').value='';
+  document.getElementById('shotName').textContent='No screenshot selected';
+  renderDepositHistory();
+  toast('Deposit submitted • Waiting for approval');
+}
+
+function renderDepositHistory(){
+  const box=document.getElementById('depositHistory');
+  if(!depositRequests.length){
+    box.innerHTML='<div class="muted" style="padding:10px 0">No deposit requests yet.</div>';
+    return;
+  }
+  box.innerHTML=depositRequests.slice(0,8).map(r=>`
+    <div class="row" style="grid-template-columns:1fr auto">
+      <div>
+        <b style="color:#ffd85a">${r.id}</b><br>
+        <span class="muted">₹${Number(r.paymentAmount).toLocaleString()} • ${Number(r.coinsRequested).toLocaleString()} coins</span><br>
+        <span class="muted">UTR: ${escapeHtml(r.utr)}</span><br>
+        <span class="muted">${escapeHtml(r.createdAt)}</span>
+      </div>
+      <div style="text-align:right;color:${r.status==='APPROVED'?'#48df62':r.status==='REJECTED'?'#ff5750':'#ffd85a'};font-weight:1000">${r.status}</div>
+    </div>`).join('');
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+
+function copyUPI(){
+  const id='Maniacheree@axl';
+  navigator.clipboard?.writeText(id).then(
+    ()=>toast('UPI ID copied'),
+    ()=>toast('UPI ID: '+id)
+  );
+}
+
 update();
+renderDepositHistory();
 </script>
 </body>
 </html>
