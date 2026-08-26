@@ -1,133 +1,610 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cricket Card Arena</title>
 
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;background:#02040c;color:#fff;font-family:Arial,sans-serif}
-body{min-height:100vh}
-button{font:inherit;cursor:pointer}
-.app{max-width:1450px;margin:auto;padding:14px 18px 90px}
 
-/* HEADER */
-header{height:72px;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:10px}
-.shield{width:50px;height:58px;display:grid;place-items:center;background:linear-gradient(145deg,#203d86,#080c1b);border:2px solid #f6ca28;clip-path:polygon(50% 0,94% 13%,87% 80%,50% 100%,13% 80%,6% 13%);font-size:26px}
-.brand{font-size:24px;font-weight:1000;font-style:italic}
-.brand small{display:block;color:#ffd42a;font-size:10px;letter-spacing:3px}
-.headRight{display:flex;align-items:center;gap:12px}
-.wallet{padding:11px 18px;border-radius:30px;background:#080f21;border:1px solid #384967;font-weight:900}
-.wallet span{color:#ffd42a}
-.circle{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#080f21;border:1px solid #384967}
+body{
+ margin:0;
+ background:#020713;
+ color:#fff;
+ font-family:Arial,sans-serif
+}
 
-/* HERO */
-.hero{height:370px;position:relative;overflow:hidden;border-radius:16px;border:1px solid #284574;background:
-radial-gradient(circle at 75% 20%,#274c9a55,transparent 25%),
-linear-gradient(180deg,#07162f,#020817 70%,#071b12)}
-.hero:before{content:"";position:absolute;inset:0;background:
-radial-gradient(circle at 15% 20%,#fff8 0 2px,transparent 3px),
-radial-gradient(circle at 35% 12%,#fff8 0 2px,transparent 3px),
-radial-gradient(circle at 62% 15%,#fff8 0 2px,transparent 3px),
-radial-gradient(circle at 84% 18%,#fff8 0 2px,transparent 3px)}
-.hero:after{content:"";position:absolute;left:-10%;right:-10%;bottom:-55%;height:70%;border-radius:50%;background:radial-gradient(ellipse,#3a7b45,#07130d 60%)}
-.heroText{position:relative;z-index:3;padding:55px;width:48%}
-.kicker{color:#ffd42a;font-size:10px;letter-spacing:2px;font-weight:900}
-.hero h1{font-size:45px;line-height:1;margin:12px 0;font-style:italic}
-.hero h1 b{color:#ffd42a}
-.hero p{color:#d5ddeb;line-height:1.5;max-width:400px}
-.yellow{background:linear-gradient(#ffe52e,#eeb918);border:0;border-radius:7px;padding:13px 28px;font-weight:1000}
+.app{
+ max-width:1450px;
+ margin:auto;
+ padding:10px 14px 80px
+}
 
-/* FEATURE CARDS */
-.featured{position:absolute;right:35px;bottom:10px;width:535px;height:315px;z-index:5}
-.fcard{position:absolute;width:185px;height:290px;padding:7px;border-radius:12px;background:#071126;box-shadow:0 20px 50px #000e}
-.fcard:nth-child(1){left:0;bottom:5px;transform:rotate(-6deg);border:2px solid #a43cff}
-.fcard:nth-child(2){left:175px;bottom:0;z-index:3;border:2px solid #ffd42a}
-.fcard:nth-child(3){right:0;bottom:5px;transform:rotate(6deg);border:2px solid #159cff}
-.fphoto{height:195px;width:100%;border-radius:7px;object-fit:cover;background:linear-gradient(145deg,#315b8d,#111927)}
-.ftop{display:flex;justify-content:space-between;font-size:9px;font-weight:900}
-.rating{font-size:25px}
-.fname{text-align:center;font-size:10px;font-weight:1000;margin-top:4px}
-.fstats{display:flex;justify-content:space-around;color:#aebbd0;font-size:7px;margin-top:5px}
+.head{
+ height:70px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between
+}
 
-/* PANELS */
-.grid{display:grid;grid-template-columns:1fr 225px;gap:13px;margin-top:13px}
-.panel{background:linear-gradient(145deg,#07152d,#030916);border:1px solid #213c67;border-radius:13px;padding:15px;box-shadow:0 15px 40px #0009}
-.title{font-size:20px;font-weight:1000;margin-bottom:13px}
+.logo{
+ font-size:24px;
+ font-weight:900;
+ font-style:italic
+}
 
-/* PACKS */
-.packs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.pack{padding:7px;border-radius:10px;text-align:center;background:#030914}
-.common{border:2px solid #39d23a}.rare{border:2px solid #159eff}.epic{border:2px solid #a43cff}.legend{border:2px solid #e0b624}.ultimate{border:2px solid #ed2929}
-.packName{font-size:11px;font-weight:1000}
-.packet{height:175px;margin-top:7px;border-radius:7px;position:relative;display:grid;place-items:center;overflow:hidden}
-.common .packet{background:linear-gradient(145deg,#073613,#25bd30)}
-.rare .packet{background:linear-gradient(145deg,#052d65,#087dd7)}
-.epic .packet{background:linear-gradient(145deg,#300750,#8d27e5)}
-.legend .packet{background:linear-gradient(145deg,#523800,#d59c10)}
-.ultimate .packet{background:linear-gradient(145deg,#4c0505,#df2925)}
-.packet:after{content:"";position:absolute;width:180%;height:35px;background:#fff3;transform:rotate(-35deg)}
-.art{position:relative;width:105px;height:145px;border:2px solid #fff5;border-radius:7px;background:linear-gradient(145deg,#263b59,#0b111d);overflow:hidden;box-shadow:0 0 25px #0008}
-.art:before{content:"";position:absolute;width:45px;height:45px;border-radius:50%;background:#dca984;left:30px;top:18px}
-.art:after{content:"";position:absolute;width:82px;height:105px;left:11px;bottom:-10px;border-radius:40px 40px 0 0;background:linear-gradient(90deg,#111827,#28619a,#111827)}
-.bat{position:absolute;width:9px;height:72px;background:linear-gradient(90deg,#673d1c,#f2c16c,#673d1c);right:10px;top:45px;transform:rotate(-23deg);z-index:3}
-.packLogo{position:absolute;z-index:4;top:8px;left:0;right:0;text-align:center;font-size:8px;font-weight:1000}
-.three{position:absolute;z-index:5;bottom:6px;left:8px;right:8px;background:#000b;border:1px solid #fff5;border-radius:4px;padding:4px;font-size:7px;font-weight:900}
-.value{font-size:9px;font-weight:900;line-height:1.4;margin-top:7px}
-.common .value{color:#52e64e}.rare .value{color:#2bbaff}.epic .value{color:#c56aff}.legend .value{color:#ffd52a}.ultimate .value{color:#ff5b5b}
-.buy{width:100%;border:0;border-radius:5px;padding:8px;margin-top:6px;font-weight:1000}
-.common .buy{background:#32bd32}.rare .buy{background:#167fd3;color:#fff}.epic .buy{background:#6d25d4;color:#fff}.legend .buy{background:#c48f12}.ultimate .buy{background:#d52323;color:#fff}
+.logo span{
+ display:block;
+ color:#ffd329;
+ font-size:11px;
+ letter-spacing:3px
+}
 
-/* SUMMARY */
-.stat{height:57px;margin-bottom:8px;border:1px solid #1d365c;border-radius:8px;background:#071329;display:flex;align-items:center;justify-content:space-between;padding:10px}
-.stat small{color:#9daabe}.stat b{font-size:15px}
+.coins{
+ padding:10px 18px;
+ border:1px solid #465878;
+ border-radius:30px;
+ background:#050c1b;
+ color:#ffd329
+}
 
-/* LOWER */
-.lower{display:grid;grid-template-columns:1fr 1.15fr 225px;gap:13px;margin-top:13px}
-.lower .panel{min-height:275px}
-.collection{height:210px;display:flex;gap:9px;overflow:auto}
-.empty{min-width:100%;height:210px;border:1px dashed #30466a;border-radius:9px;display:grid;place-items:center;text-align:center;color:#8997ac;font-size:11px}
-.battleArea{display:flex;align-items:center;justify-content:center;gap:22px;margin:25px 0}
-.battleCard{width:95px;height:120px;border-radius:9px;border:1px solid #345075;background:#071126;display:grid;place-items:center;font-size:40px}
-.vs{font-size:32px;font-weight:1000;font-style:italic;color:#ffd42a}
-.find{display:block;margin:auto;width:80%;padding:11px;border:0;border-radius:7px;background:linear-gradient(90deg,#5d18d4,#8c2aff);color:white;font-weight:1000}
-.side{height:62px;width:100%;margin-bottom:9px;border-radius:10px;color:#fff;text-align:left;padding-left:15px;border:1px solid #294165;font-weight:1000}
-.s1{background:linear-gradient(135deg,#62480c,#241b06)}.s2{background:linear-gradient(135deg,#092e6c,#07142a)}.s3{background:linear-gradient(135deg,#006d70,#052c31)}
+.hero{
+ height:390px;
+ position:relative;
+ overflow:hidden;
+ border:1px solid #315083;
+ border-radius:16px;
+ background:
+ radial-gradient(circle at 75% 25%,#1b4d9c,#07152e 38%,#020713 75%);
+ box-shadow:inset 0 0 80px #0b4da855
+}
 
-/* DEPOSIT */
-.deposit{position:fixed;right:25px;bottom:75px;width:105px;height:105px;border-radius:50%;z-index:20;border:2px solid #a663ff;background:radial-gradient(circle at 35% 25%,#aa5dff,#391080);color:#fff;font-weight:1000;box-shadow:0 0 35px #9144ff99}
+.hero:after{
+ content:"";
+ position:absolute;
+ left:0;
+ right:0;
+ bottom:0;
+ height:32%;
+ background:radial-gradient(ellipse,#285335,#06120b)
+}
 
-/* NAV */
-.nav{display:none}
+.copy{
+ position:relative;
+ z-index:3;
+ width:45%;
+ padding:48px
+}
 
-/* MODALS */
-.modal{display:none;position:fixed;inset:0;background:#000d;z-index:100;align-items:center;justify-content:center;padding:15px}
-.modal.show{display:flex}
-.box{width:min(460px,95vw);background:#071329;border:1px solid #7545da;border-radius:15px;padding:20px}
-.box h2{margin:0 0 10px}
-.box p{color:#9ba8bd;font-size:12px;line-height:1.5}
-.input{width:100%;padding:12px;background:#030a17;border:1px solid #29436a;border-radius:7px;color:#fff;margin-top:10px}
-.action{width:100%;padding:12px;border:0;border-radius:7px;background:#f0c329;margin-top:9px;font-weight:1000}
-.dark{background:#071126;color:#fff;border:1px solid #29436a}
-.reveal{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
-.rcard{background:#081329;border:1px solid #30496e;border-radius:7px;padding:5px;text-align:center;font-size:8px}
-.rcard img{width:100%;height:120px;object-fit:cover;border-radius:5px}
+.copy small{
+ color:#ffd329;
+ font-weight:900;
+ letter-spacing:2px
+}
 
-/* MOBILE */
+.copy h1{
+ font-size:43px;
+ line-height:1.02;
+ font-style:italic;
+ margin:12px 0
+}
+
+.copy h1 span{
+ color:#ffd329
+}
+
+.copy p{
+ color:#d6dfed;
+ line-height:1.5
+}
+
+.buy,
+.pack button,
+.find,
+.action{
+ border:0;
+ border-radius:7px;
+ padding:12px 25px;
+ background:linear-gradient(#ffe43b,#e9b319);
+ font-weight:900
+}
+
+.players{
+ position:absolute;
+ right:25px;
+ bottom:0;
+ width:55%;
+ height:330px;
+ z-index:4
+}
+
+.card{
+ position:absolute;
+ bottom:10px;
+ width:190px;
+ height:285px;
+ padding:7px;
+ border-radius:13px;
+ background:#061025;
+ overflow:hidden;
+ box-shadow:0 20px 45px #000
+}
+
+.card:nth-child(1){
+ left:3%;
+ border:2px solid #a43cff;
+ transform:rotate(-6deg)
+}
+
+.card:nth-child(2){
+ left:32%;
+ border:2px solid #ffd329;
+ z-index:3
+}
+
+.card:nth-child(3){
+ right:2%;
+ border:2px solid #159cff;
+ transform:rotate(6deg)
+}
+
+.art{
+ height:195px;
+ border-radius:8px;
+ background:linear-gradient(145deg,#193d70,#071022);
+ position:relative
+}
+
+.art:before{
+ content:"";
+ position:absolute;
+ top:18px;
+ left:50%;
+ transform:translateX(-50%);
+ width:62px;
+ height:62px;
+ border-radius:50%;
+ background:
+ radial-gradient(circle at 35% 35%,#e5b18c,#9d5f43 55%,#211b20 56%)
+}
+
+.art:after{
+ content:"";
+ position:absolute;
+ bottom:-20px;
+ left:50%;
+ transform:translateX(-50%);
+ width:130px;
+ height:170px;
+ border-radius:50% 50% 0 0;
+ background:linear-gradient(90deg,#071c40,#2467bd,#071c40)
+}
+
+.name{
+ text-align:center;
+ font-size:9px;
+ font-weight:900;
+ margin-top:5px
+}
+
+.stats{
+ display:flex;
+ justify-content:space-around;
+ font-size:7px;
+ color:#bcc8da;
+ margin-top:5px
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:1fr 250px;
+ gap:14px;
+ margin-top:14px
+}
+
+.panel{
+ background:linear-gradient(145deg,#08162d,#030a18);
+ border:1px solid #243d65;
+ border-radius:14px;
+ padding:14px
+}
+
+.title{
+ font-size:20px;
+ font-weight:900;
+ margin-bottom:12px
+}
+
+.packs{
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ gap:9px
+}
+
+.pack{
+ padding:7px;
+ border-radius:10px;
+ text-align:center;
+ background:#030a17
+}
+
+.common{border:2px solid #31d34b}
+.rare{border:2px solid #159cff}
+.epic{border:2px solid #a43cff}
+.legendary{border:2px solid #e5b72b}
+.ultimate{border:2px solid #ef3131}
+
+.packname{
+ font-size:10px;
+ font-weight:900
+}
+
+.packart{
+ height:165px;
+ margin-top:7px;
+ border-radius:7px;
+ display:grid;
+ place-items:center
+}
+
+.common .packart{
+ background:linear-gradient(145deg,#073714,#21a82f)
+}
+
+.rare .packart{
+ background:linear-gradient(145deg,#052c60,#087ed4)
+}
+
+.epic .packart{
+ background:linear-gradient(145deg,#2e0750,#8422dc)
+}
+
+.legendary .packart{
+ background:linear-gradient(145deg,#523802,#d49a12)
+}
+
+.ultimate .packart{
+ background:linear-gradient(145deg,#4e0606,#d82a27)
+}
+
+.packet{
+ width:100px;
+ height:140px;
+ border:2px solid #ffffff55;
+ border-radius:7px;
+ background:linear-gradient(
+  120deg,
+  #ffffff22,
+  transparent 35%,
+  #0005
+ );
+ position:relative;
+ overflow:hidden
+}
+
+.packet b{
+ position:absolute;
+ top:8px;
+ left:0;
+ right:0;
+ text-align:center;
+ font-size:8px
+}
+
+.packet:before{
+ content:"";
+ position:absolute;
+ width:45px;
+ height:45px;
+ border-radius:50%;
+ left:50%;
+ top:35px;
+ transform:translateX(-50%);
+ background:#c17b57
+}
+
+.packet:after{
+ content:"🏏";
+ position:absolute;
+ font-size:70px;
+ left:17px;
+ top:62px
+}
+
+.range{
+ font-size:9px;
+ margin-top:6px
+}
+
+.range b{
+ font-size:13px;
+ color:#ffd329
+}
+
+.pack button{
+ width:100%;
+ padding:8px;
+ margin-top:5px
+}
+
+.lower{
+ display:grid;
+ grid-template-columns:1fr 1.1fr 250px;
+ gap:14px;
+ margin-top:14px
+}
+
+.stat{
+ display:flex;
+ justify-content:space-between;
+ padding:13px;
+ border:1px solid #294166;
+ border-radius:8px;
+ margin-bottom:8px;
+ background:#07142a
+}
+
+.stat small{
+ color:#aab6c9
+}
+
+.empty{
+ height:220px;
+ border:1px dashed #314668;
+ border-radius:10px;
+ display:grid;
+ place-items:center;
+ text-align:center;
+ color:#9aa8bc
+}
+
+.battle{
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ gap:18px;
+ margin:30px 0
+}
+
+.bcard{
+ width:95px;
+ height:120px;
+ border:1px solid #405477;
+ border-radius:10px;
+ display:grid;
+ place-items:center;
+ font-size:40px;
+ background:#08142a
+}
+
+.vs{
+ font-size:32px;
+ color:#ffd329;
+ font-weight:900;
+ font-style:italic
+}
+
+.find{
+ display:block;
+ margin:auto;
+ background:linear-gradient(90deg,#5d18d3,#8c2cff);
+ color:#fff;
+ width:85%
+}
+
+.side button{
+ width:100%;
+ height:60px;
+ margin-bottom:8px;
+ border-radius:10px;
+ color:#fff;
+ font-weight:900;
+ border:1px solid #3b5073
+}
+
+.deposit{
+ position:fixed;
+ right:18px;
+ bottom:70px;
+ width:88px;
+ height:88px;
+ border-radius:50%;
+ border:2px solid #a967ff;
+ background:radial-gradient(circle,#a75cff,#351078);
+ color:#fff;
+ font-weight:900;
+ z-index:20;
+ box-shadow:0 0 35px #8b42ff99
+}
+
+.nav{
+ display:none
+}
+
+.modal{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:#000d;
+ z-index:50;
+ align-items:center;
+ justify-content:center;
+ padding:15px
+}
+
+.modal.show{
+ display:flex
+}
+
+.box{
+ width:min(460px,95vw);
+ background:#071329;
+ border:1px solid #7545da;
+ border-radius:15px;
+ padding:20px
+}
+
+.box input{
+ width:100%;
+ padding:12px;
+ margin:10px 0;
+ background:#030a17;
+ color:#fff;
+ border:1px solid #29436a;
+ border-radius:7px
+}
+
+.action{
+ width:100%;
+ margin-top:8px
+}
+
+.close{
+ background:#071126;
+ color:#fff;
+ border:1px solid #29436a
+}
+
+.revealed{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:6px;
+ margin-top:10px
+}
+
+.rc{
+ padding:6px;
+ text-align:center;
+ background:#081329;
+ border:1px solid #30496e;
+ border-radius:7px;
+ font-size:8px
+}
+
 @media(max-width:800px){
-.app{padding:5px 7px 75px}
-header{height:60px}.shield{width:40px;height:46px;font-size:20px}.brand{font-size:16px}.brand small{font-size:6px}
-.headRight{gap:4px}.wallet{min-width:72px;padding:8px;font-size:12px}.circle{width:36px;height:36px}.guest{display:none}
-.hero{height:410px}.heroText{width:100%;padding:28px 18px}.hero h1{font-size:28px}.hero p{font-size:12px;max-width:270px}.yellow{font-size:11px;padding:11px 20px}
-.featured{left:50%;right:auto;bottom:0;transform:translateX(-50%);width:320px;height:215px}.fcard{width:125px;height:202px}.fcard:nth-child(2){left:98px}.fcard:nth-child(3){right:0}.fphoto{height:135px}.rating{font-size:18px}.fname{font-size:7px}.fstats{font-size:5px}
-.grid{display:block}.packs{display:flex;overflow:auto}.pack{flex:0 0 132px}.packet{height:155px}.art{width:92px;height:130px}
-.lower{display:block}.lower .panel{margin-top:12px}
-.side{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}.side{height:55px;padding:3px;text-align:center;font-size:8px}
-.deposit{width:78px;height:78px;right:10px;bottom:70px;font-size:10px}
-.nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:0;right:0;bottom:0;height:62px;background:#030917f7;border-top:1px solid #263d60;z-index:19}
-.nav button{border:0;background:none;color:#a2aec0;font-size:8px;font-weight:900}.nav button:first-child{color:#ffd42a}
+
+ .app{
+  padding:6px 7px 75px
+ }
+
+ .head{
+  height:58px
+ }
+
+ .logo{
+  font-size:17px
+ }
+
+ .logo span{
+  font-size:8px
+ }
+
+ .hero{
+  height:425px
+ }
+
+ .copy{
+  width:100%;
+  padding:25px 17px
+ }
+
+ .copy h1{
+  font-size:29px
+ }
+
+ .copy p{
+  font-size:12px;
+  max-width:260px
+ }
+
+ .players{
+  width:345px;
+  height:220px;
+  left:50%;
+  right:auto;
+  transform:translateX(-50%)
+ }
+
+ .card{
+  width:125px;
+  height:200px
+ }
+
+ .card:nth-child(2){
+  left:32%
+ }
+
+ .art{
+  height:135px
+ }
+
+ .grid,
+ .lower{
+  display:block
+ }
+
+ .panel{
+  margin-top:12px
+ }
+
+ .packs{
+  display:flex;
+  overflow:auto
+ }
+
+ .pack{
+  min-width:132px
+ }
+
+ .packart{
+  height:150px
+ }
+
+ .lower .panel{
+  margin-top:12px
+ }
+
+ .side{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-top:12px
+ }
+
+ .side button{
+  font-size:8px
+ }
+
+ .deposit{
+  width:75px;
+  height:75px;
+  font-size:10px
+ }
+
+ .nav{
+  display:grid;
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:62px;
+  background:#030917f7;
+  border-top:1px solid #243c62;
+  z-index:25;
+  grid-template-columns:repeat(5,1fr)
+ }
+
+ .nav button{
+  background:none;
+  border:0;
+  color:#9da9bd;
+  font-size:8px
+ }
+
+ .nav .active{
+  color:#ffd329
+ }
 }
 </style>
 </head>
@@ -136,31 +613,26 @@ header{height:60px}.shield{width:40px;height:46px;font-size:20px}.brand{font-siz
 
 <div class="app">
 
-<header>
+<header class="head">
 <div class="logo">
-<div class="shield">🏏</div>
-<div class="brand">CRICKET CARD<small>ARENA</small></div>
+🏏 CRICKET CARD
+<span>ARENA</span>
 </div>
 
-<div class="headRight">
-<div class="wallet">🪙 <span id="coins">0</span> <span>+</span></div>
-<div class="circle">🔔</div>
-<div class="guest">
-<div class="guest-info">Guest<small>ID: GUEST001</small></div>
-<div class="circle">👤</div>
-</div>
+<div class="coins">
+🪙 <b id="bal">0</b>　<span>＋</span>
 </div>
 </header>
 
+<section class="hero" id="home">
 
-<section class="hero">
+<div class="copy">
 
-<div class="heroText">
-<div class="kicker">🏆 CRICKET CARD ARENA</div>
+<small>🏆 CRICKET CARD ARENA</small>
 
 <h1>
 BUILD YOUR SQUAD.<br>
-<b>DOMINATE THE ARENA.</b>
+<span>DOMINATE THE ARENA.</span>
 </h1>
 
 <p>
@@ -169,101 +641,193 @@ build your ultimate team and
 win epic battles!
 </p>
 
-<button class="yellow" onclick="scrollToId('packs')">
+<button class="buy" onclick="go('packs')">
 BUY PACKS
 </button>
+
 </div>
 
+<div class="players">
 
-<div class="featured">
+<div class="card">
+<div><b>87</b>　EPIC</div>
+<div class="art"></div>
 
-<div class="fcard">
-<div class="ftop"><span class="rating">87</span><span>EPIC</span></div>
-<img class="fphoto" src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=500&q=80">
-<div class="fname">ARSHDEEP-INSPIRED</div>
-<div class="fstats"><span>BOW 87</span><span>BAT 36</span><span>CAR 68</span><span>SPE 82</span></div>
+<div class="name">
+ARSHDEEP-INSPIRED
 </div>
 
-<div class="fcard">
-<div class="ftop"><span class="rating">94</span><span>LEGENDARY</span></div>
-<img class="fphoto" src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=500&q=80">
-<div class="fname">VIRAT-INSPIRED</div>
-<div class="fstats"><span>BAT 93</span><span>BOW 48</span><span>CAR 76</span><span>SPE 83</span></div>
+<div class="stats">
+<span>BOW 87</span>
+<span>BAT 36</span>
+<span>CAR 68</span>
+<span>SPE 82</span>
+</div>
 </div>
 
-<div class="fcard">
-<div class="ftop"><span class="rating">86</span><span>RARE</span></div>
-<img class="fphoto" src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=500&q=80">
-<div class="fname">HARDIK-INSPIRED</div>
-<div class="fstats"><span>BAT 71</span><span>BOW 72</span><span>CAR 80</span><span>SPE 75</span></div>
+<div class="card">
+<div><b>94</b>　LEGENDARY</div>
+<div class="art"></div>
+
+<div class="name">
+VIRAT-INSPIRED
+</div>
+
+<div class="stats">
+<span>BAT 93</span>
+<span>BOW 48</span>
+<span>CAR 76</span>
+<span>SPE 83</span>
+</div>
+</div>
+
+<div class="card">
+<div><b>86</b>　RARE</div>
+<div class="art"></div>
+
+<div class="name">
+HARDIK-INSPIRED
+</div>
+
+<div class="stats">
+<span>BAT 71</span>
+<span>BOW 72</span>
+<span>CAR 80</span>
+<span>SPE 75</span>
+</div>
 </div>
 
 </div>
 </section>
-
 
 <div class="grid">
 
 <section class="panel" id="packs">
 
-<div class="title">PACKAGES</div>
+<div class="title">
+PACKAGES
+</div>
 
 <div class="packs">
 
-<script>
-const packData=[
-["COMMON","common",30,20,40],
-["RARE","rare",75,60,100],
-["EPIC","epic",150,125,190],
-["LEGENDARY","legend",300,260,400],
-["ULTIMATE","ultimate",600,550,800]
-];
+<div class="pack common">
+<div class="packname">COMMON PACK</div>
 
-document.write(packData.map(p=>`
-<div class="pack ${p[1]}">
-<div class="packName">${p[0]} PACK</div>
-
+<div class="packart">
 <div class="packet">
-<div class="art">
-<div class="packLogo">CRICKET<br>CARD ARENA</div>
-<div class="pack-player"></div>
-<div class="bat"></div>
-<div class="three">3 CARDS</div>
+<b>CRICKET CARD<br>ARENA</b>
 </div>
 </div>
 
-<div class="value">
-TOTAL VALUE<br>${p[3]} - ${p[4]}
+<div class="range">
+TOTAL VALUE<br>
+<b>20 - 40</b>
 </div>
 
-<button class="buy" onclick="buyPack('${p[0]}',${p[2]},${p[3]},${p[4]})">
-${p[2]} 🪙
+<button onclick="buy(30,20,40)">
+30 🪙
 </button>
 </div>
-`).join(""));
-</script>
+
+<div class="pack rare">
+<div class="packname">RARE PACK</div>
+
+<div class="packart">
+<div class="packet">
+<b>CRICKET CARD<br>ARENA</b>
+</div>
+</div>
+
+<div class="range">
+TOTAL VALUE<br>
+<b>60 - 100</b>
+</div>
+
+<button onclick="buy(75,60,100)">
+75 🪙
+</button>
+</div>
+
+<div class="pack epic">
+<div class="packname">EPIC PACK</div>
+
+<div class="packart">
+<div class="packet">
+<b>CRICKET CARD<br>ARENA</b>
+</div>
+</div>
+
+<div class="range">
+TOTAL VALUE<br>
+<b>125 - 190</b>
+</div>
+
+<button onclick="buy(150,125,190)">
+150 🪙
+</button>
+</div>
+
+<div class="pack legendary">
+<div class="packname">LEGENDARY PACK</div>
+
+<div class="packart">
+<div class="packet">
+<b>CRICKET CARD<br>ARENA</b>
+</div>
+</div>
+
+<div class="range">
+TOTAL VALUE<br>
+<b>260 - 400</b>
+</div>
+
+<button onclick="buy(300,260,400)">
+300 🪙
+</button>
+</div>
+
+<div class="pack ultimate">
+<div class="packname">ULTIMATE PACK</div>
+
+<div class="packart">
+<div class="packet">
+<b>CRICKET CARD<br>ARENA</b>
+</div>
+</div>
+
+<div class="range">
+TOTAL VALUE<br>
+<b>550 - 800</b>
+</div>
+
+<button onclick="buy(600,550,800)">
+600 🪙
+</button>
+</div>
 
 </div>
 
-<div style="margin-top:10px;color:#7f8da3;font-size:9px">
+<div style="color:#8491a7;font-size:9px;margin-top:9px">
 ⓘ All packs contain 3 random player cards.
+Total value is shown as a range.
 </div>
 
 </section>
 
-
 <aside class="panel">
 
-<div class="title">MY SUMMARY</div>
+<div class="title">
+MY SUMMARY
+</div>
 
 <div class="stat">
 <small>🃏 TOTAL CARDS</small>
-<b id="totalCards">0</b>
+<b id="tc">0</b>
 </div>
 
 <div class="stat">
 <small>🪙 TOTAL VALUE</small>
-<b id="totalValue">0 🪙</b>
+<b id="tv">0</b>
 </div>
 
 <div class="stat">
@@ -280,75 +844,76 @@ ${p[2]} 🪙
 
 </div>
 
-
 <div class="lower">
 
-<section class="panel">
+<section class="panel" id="collection">
 
 <div class="title">
-MY COLLECTION (<span id="count" style="color:#ffd42a">0</span>)
+MY COLLECTION
+<span style="color:#ffd329" id="cc">(0)</span>
 </div>
 
-<div class="collection" id="collection">
-<div class="empty">
-<div>
-<div style="font-size:45px;opacity:.3">🃏</div>
-<b>You don't have any cards yet.</b>
-<br>
+<div class="empty" id="col">
+🃏<br>
+You don't have any cards yet.<br>
 Buy packs to start your collection!
-</div>
-</div>
 </div>
 
 </section>
-
 
 <section class="panel" id="battle">
 
-<div class="title">QUICK BATTLE</div>
+<div class="title">
+QUICK BATTLE
+</div>
 
-<div style="color:#9ca9bd;font-size:11px">
+<div style="color:#9ba9bf;font-size:11px">
 Choose your card and challenge a random opponent
 </div>
 
-<div class="battleArea">
+<div class="battle">
 
-<div>
-<div class="battleCard">🃏</div>
-<small>Select a card</small>
+<div class="bcard">
+🃏
 </div>
 
-<div class="vs">VS</div>
+<div class="vs">
+VS
+</div>
 
-<div>
-<div class="battleCard">❓</div>
-<small>Random opponent</small>
+<div class="bcard">
+❓
 </div>
 
 </div>
 
-<button class="find" onclick="battle()">
+<button class="find" onclick="fight()">
 FIND OPPONENT
 </button>
 
-<div id="battleResult"
-style="text-align:center;font-size:10px;color:#9ca9bd;margin-top:8px">
+<div id="result"
+style="text-align:center;color:#9ba9bf;font-size:10px;margin-top:8px">
 </div>
 
 </section>
 
+<aside class="side">
 
-<aside>
-
-<button class="side s1" onclick="alert('Leaderboard coming soon')">
+<button
+style="background:#503b0b"
+onclick="alert('Leaderboard coming soon')">
 🏆 LEADERBOARD
 </button>
 
-<button class="side s2" onclick="alert('Missions coming soon')">
+<button
+style="background:#092d63"
+onclick="alert('Missions coming soon')">
 🎯 MISSIONS
 </button>
 
-<button class="side s3" onclick="alert('Shop coming soon')">
+<button
+style="background:#006365"
+onclick="alert('Shop coming soon')">
 🛒 SHOP
 </button>
 
@@ -358,375 +923,239 @@ style="text-align:center;font-size:10px;color:#9ca9bd;margin-top:8px">
 
 </div>
 
-
-<button class="deposit" onclick="openDeposit()">
-💳<br>DEPOSIT
+<button class="deposit" onclick="openD()">
+💳<br>
+DEPOSIT
 </button>
 
-
 <nav class="nav">
-<button onclick="scrollTo({top:0,behavior:'smooth'})">🏠<br>HOME</button>
-<button onclick="scrollToId('packs')">🎁<br>PACKS</button>
-<button onclick="scrollToId('collection')">🃏<br>COLLECTION</button>
-<button onclick="scrollToId('battle')">⚔️<br>BATTLE</button>
-<button onclick="openDeposit()">👤<br>PROFILE</button>
+
+<button class="active" onclick="go('home')">
+🏠<br>HOME
+</button>
+
+<button onclick="go('packs')">
+🎁<br>PACKS
+</button>
+
+<button onclick="go('collection')">
+🃏<br>COLLECTION
+</button>
+
+<button onclick="go('battle')">
+⚔️<br>BATTLE
+</button>
+
+<button onclick="openD()">
+👤<br>PROFILE
+</button>
+
 </nav>
 
+<div class="modal" id="dm">
 
-<div class="modal" id="depositModal">
 <div class="box">
-<h2>💳 Deposit Coins</h2>
-<p>Deposit any amount. Payment will be manually verified before coins are credited.</p>
-<input class="input" id="amount" type="number" min="1" placeholder="Enter amount ₹">
-<button class="action" onclick="submitDeposit()">CONTINUE PAYMENT</button>
-<button class="action dark" onclick="closeDeposit()">CLOSE</button>
-</div>
+
+<h2>💳 DEPOSIT COINS</h2>
+
+<p style="color:#9ba9bf;font-size:12px">
+Deposit any amount. Manual verification will be used.
+</p>
+
+<input
+id="amt"
+type="number"
+placeholder="Enter amount ₹">
+
+<button class="action" onclick="deposit()">
+CONTINUE
+</button>
+
+<button class="action close" onclick="closeD()">
+CLOSE
+</button>
+
 </div>
 
+</div>
 
-<div class="modal" id="packModal">
+<div class="modal" id="pm">
+
 <div class="box">
-<h2 id="packTitle">PACK OPENED</h2>
-<p id="packInfo"></p>
-<div class="reveal" id="reveal"></div>
-<button class="action" onclick="closePack()">ADD TO COLLECTION</button>
-</div>
-</div>
 
+<h2>🎁 PACK OPENED</h2>
 
-<script>
+<p id="pi"
+style="color:#9ba9bf;font-size:12px">
+</p>
 
-/* PLAYERS */
-
-const players=[
-{
-name:"Arshdeep-Inspired",
-bat:36,bowl:87,catch:68,speed:82,
-img:"https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=500&q=80"
-},
-{
-name:"Virat-Inspired",
-bat:93,bowl:48,catch:76,speed:83,
-img:"https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=500&q=80"
-},
-{
-name:"Hardik-Inspired",
-bat:71,bowl:72,catch:80,speed:75,
-img:"https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=500&q=80"
-}
-];
-
-
-/* STORAGE */
-
-let coins=Number(localStorage.getItem("cca_coins")||0);
-
-let collection=JSON.parse(
-localStorage.getItem("cca_cards")||"[]"
-);
-
-
-/* SAVE */
-
-function save(){
-localStorage.setItem("cca_coins",coins);
-localStorage.setItem("cca_cards",JSON.stringify(collection));
-}
-
-
-/* UPDATE */
-
-function update(){
-
-document.getElementById("coins").textContent=coins;
-
-document.getElementById("totalCards").textContent=
-collection.length;
-
-document.getElementById("count").textContent=
-collection.length;
-
-document.getElementById("totalValue").textContent=
-collection.reduce((a,b)=>a+Number(b.value||0),0)+" 🪙";
-
-render();
-
-}
-
-
-/* RANDOM 3 CARDS WITH TOTAL RANGE */
-
-function randomCards(min,max){
-
-let cards,total;
-
-do{
-
-cards=[];
-total=0;
-
-for(let i=0;i<3;i++){
-
-let p=players[
-Math.floor(Math.random()*players.length)
-];
-
-let c={
-...p,
-value:Math.floor(Math.random()*9)+5
-};
-
-cards.push(c);
-total+=c.value;
-
-}
-
-}while(total<min||total>max);
-
-return cards;
-
-}
-
-
-/* BUY PACK */
-
-function buyPack(name,price,min,max){
-
-if(coins<price){
-
-openDeposit();
-return;
-
-}
-
-coins-=price;
-
-let cards=randomCards(min,max);
-
-collection.push(...cards);
-
-save();
-update();
-
-document.getElementById("packTitle").textContent=
-name+" PACK OPENED";
-
-document.getElementById("packInfo").textContent=
-"3 CARDS • TOTAL VALUE "+
-cards.reduce((a,b)=>a+b.value,0)+
-" COINS";
-
-document.getElementById("reveal").innerHTML=
-cards.map(c=>`
-
-<div class="rcard">
-<img src="${c.img}">
-<b>${c.name}</b>
-<br>
-<span style="color:#ffd42a">🪙 ${c.value}</span>
-</div>
-
-`).join("");
-
-document.getElementById("packModal").classList.add("show");
-
-}
-
-
-/* COLLECTION */
-
-function render(){
-
-let box=document.getElementById("collection");
-
-if(!collection.length){
-
-box.innerHTML=`
-<div class="empty">
-<div>
-<div style="font-size:45px;opacity:.3">🃏</div>
-<b>You don't have any cards yet.</b>
-<br>
-Buy packs to start your collection!
-</div>
-</div>`;
-return;
-
-}
-
-box.innerHTML=collection.map((c,i)=>`
-
-<div style="
-min-width:160px;
-height:250px;
-background:#071127;
-border:2px solid ${i%3===0?"#ffd42a":i%3===1?"#a43cff":"#159cff"};
-border-radius:10px;
-padding:6px;
-text-align:center;
-">
-
-<img src="${c.img}"
-style="
-width:100%;
-height:135px;
-object-fit:cover;
-border-radius:6px;
-">
-
-<div style="font-size:9px;font-weight:1000;margin-top:5px">
-${c.name}
-</div>
-
-<div style="font-size:7px;color:#9ca9bd;margin-top:5px">
-BAT ${c.bat} • BOW ${c.bowl}
-</div>
-
-<div style="color:#ffd42a;font-size:9px;margin-top:5px">
-🪙 ${c.value}
+<div class="revealed" id="rv">
 </div>
 
 <button
-onclick="sellCard(${i})"
-style="
-position:static;
-width:100%;
-margin-top:6px;
-padding:6px;
-border:0;
-border-radius:5px;
-background:#35c936;
-font-size:8px;
-font-weight:1000;
-">
-
-SELL ${c.value}
-
+class="action"
+onclick="pm.classList.remove('show')">
+ADD TO COLLECTION
 </button>
 
 </div>
 
-`).join("");
+</div>
 
-}
+<script>
 
+let coins =
++localStorage.getItem('cca_coins') || 0;
 
-/* SELL */
-
-function sellCard(i){
-
-let c=collection[i];
-
-if(!c)return;
-
-if(confirm("Sell this card for "+c.value+" coins?")){
-
-coins+=Number(c.value);
-
-collection.splice(i,1);
-
-save();
-update();
-
-}
-
-}
-
-
-/* DEPOSIT */
-
-function openDeposit(){
-document.getElementById("depositModal").classList.add("show");
-}
-
-function closeDeposit(){
-document.getElementById("depositModal").classList.remove("show");
-}
-
-function submitDeposit(){
-
-let amount=Number(
-document.getElementById("amount").value
+let cards =
+JSON.parse(
+localStorage.getItem('cca_cards') || '[]'
 );
 
-if(!amount||amount<1){
+function save(){
 
-alert("Enter a valid amount");
-return;
+localStorage.setItem(
+'cca_coins',
+coins
+);
 
-}
-
-closeDeposit();
-
-alert(
-"Deposit request of ₹"+
-amount+
-" created. Manual verification required."
+localStorage.setItem(
+'cca_cards',
+JSON.stringify(cards)
 );
 
 }
 
+function ui(){
 
-/* BATTLE */
+bal.textContent=coins;
 
-function battle(){
+tc.textContent=cards.length;
 
-if(!collection.length){
+cc.textContent='('+cards.length+')';
 
-alert("Buy a pack first.");
-scrollToId("packs");
-return;
-
-}
-
-let mine=
-collection[
-Math.floor(Math.random()*collection.length)
-];
-
-let enemy=
-players[
-Math.floor(Math.random()*players.length)
-];
-
-let stats=["bat","bowl","catch","speed"];
-
-let stat=
-stats[
-Math.floor(Math.random()*stats.length)
-];
-
-let a=mine[stat];
-let b=enemy[stat];
-
-document.getElementById("battleResult").textContent=
-a>=b
-?
-"🏆 YOU WIN • "+a+" VS "+b
-:
-"❌ YOU LOSE • "+a+" VS "+b;
+tv.textContent=
+cards.reduce(
+(a,c)=>a+c,
+0
+);
 
 }
 
+function go(id){
 
-/* NAV */
-
-function scrollToId(id){
-
-document.getElementById(id)
+document
+.getElementById(id)
 .scrollIntoView({
-behavior:"smooth",
-block:"start"
+behavior:'smooth'
 });
 
 }
 
+function openD(){
 
-/* INIT */
+dm.classList.add('show');
 
-update();
+}
+
+function closeD(){
+
+dm.classList.remove('show');
+
+}
+
+function deposit(){
+
+let a=+amt.value;
+
+if(!a)
+return alert('Enter amount');
+
+closeD();
+
+alert(
+'Deposit request created for ₹'+
+a+
+'. Manual verification required.'
+);
+
+}
+
+function buy(price,min,max){
+
+if(coins<price)
+return openD();
+
+coins-=price;
+
+let a;
+
+do{
+
+a=[
+1,2,3
+].map(
+()=>Math.floor(
+Math.random()*9
+)+5
+);
+
+}
+while(
+a.reduce((x,y)=>x+y,0)<min ||
+a.reduce((x,y)=>x+y,0)>max
+);
+
+cards.push(...a);
+
+save();
+
+ui();
+
+pi.textContent=
+'3 cards • Total value '+
+a.reduce((x,y)=>x+y,0)+
+' coins';
+
+rv.innerHTML=
+
+a.map(
+(v,i)=>
+
+'<div class="rc">'+
+'🏏<br>'+
+[
+'Arshdeep-Inspired',
+'Virat-Inspired',
+'Hardik-Inspired'
+][i]+
+'<br>'+
+'<b style="color:#ffd329">'+
+'🪙 '+v+
+'</b>'+
+'</div>'
+
+).join('');
+
+pm.classList.add('show');
+
+}
+
+function fight(){
+
+if(!cards.length)
+return alert('Buy a pack first');
+
+result.textContent =
+Math.random()>.5
+?'🏆 YOU WIN'
+:'❌ YOU LOSE';
+
+}
+
+ui();
 
 </script>
 
 </body>
-      </html>
+</html>
