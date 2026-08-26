@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1,
+      maximum-scale=1,
+      user-scalable=no">
+
+<title>Cricket Card Arena</title>
+
+<style>
+
+/* =====================================================
+   RESET
+===================================================== */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#020611;
+    color:#fff;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    overflow-x:hidden;
+}
+
+button{
+    font-family:inherit;
+    cursor:pointer;
+}
+
+
+/* =====================================================
+   APP
+===================================================== */
+
+.app{
+    width:100%;
+    max-width:1450px;
+    margin:auto;
+    padding:0 20px 100px;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header{
+    height:82px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.logo-area{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo-shield{
+    width:58px;
+    height:65px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #172f65,
+            #020714
+        );
+
+    border:2px solid #f7c928;
+
+    clip-path:
+        polygon(
+            50% 0,
+            94% 14%,
+            87% 78%,
+            50% 100%,
+            13% 78%,
+            6% 14%
+        );
+
+    box-shadow:
+        0 0 20px #1b56b955;
+}
+
+.logo-cricket{
+    font-size:30px;
+}
+
+.brand{
+    font-size:26px;
+    font-weight:1000;
+    font-style:italic;
+    letter-spacing:-1px;
+}
+
+.brand span{
+    display:block;
+    color:#ffd12a;
+    font-size:14px;
+    letter-spacing:2px;
+    margin-top:2px;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.coin-box{
+    min-width:180px;
+    height:48px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    border-radius:28px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #0b152b,
+            #050b19
+        );
+
+    border:1px solid #3d4b67;
+
+    box-shadow:
+        0 8px 25px #0008;
+}
+
+.coin{
+    color:#ffd52c;
+    font-size:23px;
+}
+
+.coin-number{
+    font-size:18px;
+    font-weight:1000;
+}
+
+.coin-plus{
+    color:#ffd52c;
+    font-size:28px;
+}
+
+.bell{
+    width:48px;
+    height:48px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#071126;
+    border:1px solid #3d4b67;
+
+    font-size:21px;
+}
+
+.guest{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.guest-info{
+    font-size:13px;
+}
+
+.guest-info small{
+    display:block;
+    color:#8794a9;
+    font-size:9px;
+    margin-top:3px;
+}
+
+.avatar{
+    width:50px;
+    height:50px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            #e7e9ee,
+            #8b919d
+        );
+
+    color:#252b35;
+    font-size:27px;
+
+    border:2px solid #646d7d;
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero{
+    min-height:365px;
+
+    position:relative;
+    overflow:hidden;
+
+    border-radius:16px;
+
+    border:1px solid #315083;
+
+    background:
+        radial-gradient(
+            circle at 75% 35%,
+            #254caa88,
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 55% 100%,
+            #152b6544,
+            transparent 35%
+        ),
+        linear-gradient(
+            180deg,
+            #071630,
+            #020916
+        );
+
+    box-shadow:
+        inset 0 0 70px #0b245555,
+        0 20px 60px #000c;
+}
+
+.stadium-lights{
+    position:absolute;
+    inset:0;
+
+    background:
+        radial-gradient(
+            circle at 18% 18%,
+            #ffffff55 0 2%,
+            transparent 5%
+        ),
+        radial-gradient(
+            circle at 36% 12%,
+            #ffffff55 0 2%,
+            transparent 5%
+        ),
+        radial-gradient(
+            circle at 61% 15%,
+            #ffffff55 0 2%,
+            transparent 5%
+        ),
+        radial-gradient(
+            circle at 84% 18%,
+            #ffffff55 0 2%,
+            transparent 5%
+        );
+}
+
+.stadium{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:47%;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            #274f34,
+            #06120c 65%
+        );
+
+    border-top:
+        1px solid #466c54;
+
+    opacity:.9;
+}
+
+.hero-content{
+    position:relative;
+    z-index:3;
+
+    width:48%;
+
+    padding:
+        52px 55px;
+}
+
+.hero-small{
+    color:#ffd52b;
+    font-size:10px;
+    font-weight:1000;
+    letter-spacing:2px;
+}
+
+.hero-title{
+    margin-top:12px;
+
+    font-size:45px;
+    line-height:1.01;
+
+    font-weight:1000;
+    font-style:italic;
+    text-transform:uppercase;
+}
+
+.hero-title span{
+    color:#ffd52b;
+}
+
+.hero-description{
+    max-width:410px;
+
+    margin-top:20px;
+
+    color:#e0e7f0;
+
+    font-size:18px;
+    line-height:1.45;
+}
+
+.buy-button{
+    margin-top:22px;
+
+    padding:
+        14px 35px;
+
+    border:0;
+    border-radius:8px;
+
+    background:
+        linear-gradient(
+            #ffe632,
+            #f1b819
+        );
+
+    color:#111;
+
+    font-size:18px;
+    font-weight:1000;
+
+    box-shadow:
+        0 8px 25px #e7b91d55;
+}
+
+
+/* =====================================================
+   FEATURE PLAYER CARDS
+===================================================== */
+
+.featured{
+    position:absolute;
+
+    right:38px;
+    bottom:13px;
+
+    width:535px;
+    height:320px;
+
+    z-index:4;
+}
+
+.feature-card{
+    position:absolute;
+
+    width:190px;
+    height:295px;
+
+    padding:7px;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #0c1831,
+            #030817
+        );
+
+    overflow:hidden;
+
+    box-shadow:
+        0 20px 50px #000d;
+}
+
+.feature-card:nth-child(1){
+    left:0;
+    bottom:7px;
+
+    transform:rotate(-6deg);
+
+    border:2px solid #a43cff;
+}
+
+.feature-card:nth-child(2){
+    left:173px;
+    bottom:0;
+
+    z-index:4;
+
+    border:2px solid #ffd32b;
+
+    box-shadow:
+        0 0 35px #e8b92855,
+        0 20px 50px #000d;
+}
+
+.feature-card:nth-child(3){
+    right:0;
+    bottom:7px;
+
+    transform:rotate(5deg);
+
+    border:2px solid #159cff;
+}
+
+.card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    font-size:9px;
+    font-weight:1000;
+}
+
+.rating{
+    font-size:27px;
+}
+
+.feature-photo{
+    width:100%;
+    height:198px;
+
+    margin-top:3px;
+
+    border-radius:8px;
+
+    object-fit:cover;
+    object-position:center top;
+
+    background:#142b50;
+}
+
+.feature-name{
+    text-align:center;
+
+    margin-top:5px;
+
+    font-size:11px;
+    font-weight:1000;
+}
+
+.feature-stats{
+    display:flex;
+    justify-content:space-around;
+
+    margin-top:5px;
+
+    color:#b9c5d8;
+    font-size:7px;
+}
+
+
+/* =====================================================
+   GRID
+===================================================== */
+
+.top-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        230px;
+
+    gap:14px;
+
+    margin-top:14px;
+}
+
+
+/* =====================================================
+   PANEL
+===================================================== */
+
+.panel{
+    padding:17px;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #07152d,
+            #030a18
+        );
+
+    border:1px solid #203c69;
+
+    box-shadow:
+        0 15px 40px #0009;
+}
+
+.panel-title{
+    margin-bottom:15px;
+
+    font-size:21px;
+    font-weight:1000;
+}
+
+
+/* =====================================================
+   PACKAGES
+===================================================== */
+
+.packages{
+    display:grid;
+
+    grid-template-columns:
+        repeat(5,1fr);
+
+    gap:11px;
+}
+
+.pack{
+    padding:8px;
+
+    text-align:center;
+
+    border-radius:11px;
+
+    background:#040c1b;
+}
+
+.common{
+    border:2px solid #39d23a;
+}
+
+.rare{
+    border:2px solid #139eff;
+}
+
+.epic{
+    border:2px solid #a43cff;
+}
+
+.legendary{
+    border:2px solid #e3b928;
+}
+
+.ultimate{
+    border:2px solid #ef2929;
+}
+
+.pack-title{
+    font-size:12px;
+    font-weight:1000;
+    white-space:nowrap;
+}
+
+
+/* =====================================================
+   REALISTIC PACK ART
+===================================================== */
+
+.pack-art{
+    position:relative;
+
+    height:178px;
+
+    margin-top:8px;
+
+    overflow:hidden;
+
+    border-radius:7px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+}
+
+.common .pack-art{
+    background:
+        radial-gradient(
+            circle at center,
+            #55e86644,
+            transparent 45%
+        ),
+        linear-gradient(
+            145deg,
+            #073313,
+            #21aa2d
+        );
+}
+
+.rare .pack-art{
+    background:
+        radial-gradient(
+            circle at center,
+            #5ad9ff44,
+            transparent 45%
+        ),
+        linear-gradient(
+            145deg,
+            #05295c,
+            #087bd1
+        );
+}
+
+.epic .pack-art{
+    background:
+        radial-gradient(
+            circle at center,
+            #f05cff44,
+            transparent 45%
+        ),
+        linear-gradient(
+            145deg,
+            #2d074e,
+            #8421d8
+        );
+}
+
+.legendary .pack-art{
+    background:
+        radial-gradient(
+            circle at center,
+            #fff06c44,
+            transparent 45%
+        ),
+        linear-gradient(
+            145deg,
+            #503702,
+            #d2980e
+        );
+}
+
+.ultimate .pack-art{
+    background:
+        radial-gradient(
+            circle at center,
+            #ff6b5344,
+            transparent 45%
+        ),
+        linear-gradient(
+            145deg,
+            #4b0505,
+            #d92825
+        );
+}
+
+.pack-wrapper{
+    position:relative;
+
+    width:112px;
+    height:151px;
+
+    border-radius:7px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #ffffff18,
+            transparent 35%,
+            #0005
+        );
+
+    border:2px solid #ffffff55;
+
+    box-shadow:
+        0 0 20px #ffffff22,
+        inset 0 0 25px #fff2;
+
+    overflow:hidden;
+}
+
+.pack-wrapper:before{
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            110deg,
+            transparent 35%,
+            #ffffff44 50%,
+            transparent 65%
+        );
+
+    transform:translateX(-60px) skewX(-15deg);
+}
+
+.pack-player{
+    position:absolute;
+
+    left:14px;
+    right:14px;
+    bottom:0;
+
+    height:108px;
+
+    border-radius:
+        50% 50% 0 0;
+
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            #e9c1a0 0 12%,
+            transparent 13%
+        ),
+        linear-gradient(
+            100deg,
+            #10151f 0 20%,
+            #263f63 21% 55%,
+            #101827 56%
+        );
+
+    opacity:.95;
+}
+
+.pack-bat{
+    position:absolute;
+
+    width:10px;
+    height:82px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #6b3a18,
+            #f4c16c,
+            #6b3a18
+        );
+
+    transform:
+        rotate(
+            -25deg
+        );
+
+    right:13px;
+    top:34px;
+
+    border-radius:3px;
+}
+
+.pack-logo{
+    position:absolute;
+
+    top:10px;
+    left:0;
+    right:0;
+
+    text-align:center;
+
+    font-size:10px;
+    font-weight:1000;
+
+    color:#fff;
+
+    text-shadow:
+        0 2px 4px #000;
+}
+
+.pack-badge{
+    position:absolute;
+
+    bottom:8px;
+    left:8px;
+    right:8px;
+
+    padding:4px;
+
+    border-radius:5px;
+
+    background:#000b;
+
+    border:1px solid #ffffff66;
+
+    font-size:8px;
+    font-weight:1000;
+}
+
+.pack-value{
+    margin-top:8px;
+
+    font-size:10px;
+    line-height:1.4;
+
+    font-weight:1000;
+}
+
+.common .pack-value{
+    color:#54e94e;
+}
+
+.rare .pack-value{
+    color:#25b8ff;
+}
+
+.epic .pack-value{
+    color:#c66aff;
+}
+
+.legendary .pack-value{
+    color:#ffd52b;
+}
+
+.ultimate .pack-value{
+    color:#ff5b5b;
+}
+
+.pack-buy{
+    width:100%;
+
+    margin-top:7px;
+
+    padding:8px 3px;
+
+    border:0;
+    border-radius:6px;
+
+    font-weight:1000;
+}
+
+.common .pack-buy{
+    background:#31ba30;
+}
+
+.rare .pack-buy{
+    background:#167ed3;
+    color:#fff;
+}
+
+.epic .pack-buy{
+    background:#6b25d1;
+    color:#fff;
+}
+
+.legendary .pack-buy{
+    background:#c18d10;
+}
+
+.ultimate .pack-buy{
+    background:#d62424;
+    color:#fff;
+}
+
+.note{
+    margin-top:11px;
+
+    color:#8190a9;
+
+    font-size:9px;
+}
+
+
+/* =====================================================
+   SUMMARY
+===================================================== */
+
+.stat{
+    height:59px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:10px 13px;
+
+    margin-bottom:8px;
+
+    border-radius:9px;
+
+    background:#07142a;
+
+    border:1px solid #20375c;
+}
+
+.stat-label{
+    color:#a8b4c8;
+    font-size:10px;
+}
+
+.stat-value{
+    font-size:16px;
+    font-weight:1000;
+}
+
+
+/* =====================================================
+   LOWER
+===================================================== */
+
+.lower-grid{
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        1.15fr
+        230px;
+
+    gap:14px;
+
+    margin-top:14px;
+}
+
+.lower-panel{
+    min-height:285px;
+}
+
+
+/* =====================================================
+   COLLECTION
+===================================================== */
+
+.collection{
+    height:220px;
+
+    display:flex;
+    gap:10px;
+
+    overflow-x:auto;
+
+    scrollbar-width:none;
+}
+
+.collection::-webkit-scrollbar{
+    display:none;
+}
+
+.empty{
+    width:100%;
+    height:220px;
+
+    border:
+        1px dashed
+        #2c4367;
+
+    border-radius:10px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    color:#99a6ba;
+
+    font-size:11px;
+}
+
+.empty-icon{
+    font-size:50px;
+    opacity:.35;
+    margin-bottom:8px;
+}
+
+
+/* =====================================================
+   BATTLE
+===================================================== */
+
+.battle-sub{
+    color:#9ca9bd;
+    font-size:11px;
+}
+
+.battle-arena{
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    gap:25px;
+
+    margin:27px 0 17px;
+}
+
+.battle-card{
+    width:100px;
+    height:125px;
+
+    border-radius:10px;
+
+    border:1px solid #334a70;
+
+    background:#071127;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:45px;
+}
+
+.vs{
+    color:#ffd42a;
+
+    font-size:36px;
+
+    font-style:italic;
+
+    font-weight:1000;
+
+    text-shadow:
+        0 0 20px #ffd42a88;
+}
+
+.find-button{
+    display:block;
+
+    width:80%;
+
+    margin:auto;
+
+    padding:11px;
+
+    border:0;
+    border-radius:7px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #5c18d3,
+            #8b28ff
+        );
+
+    color:#fff;
+
+    font-weight:1000;
+}
+
+
+/* =====================================================
+   SIDE BUTTONS
+===================================================== */
+
+.side-button{
+    width:100%;
+    height:64px;
+
+    margin-bottom:9px;
+
+    border-radius:11px;
+
+    color:#fff;
+
+    border:1px solid #294166;
+
+    font-weight:1000;
+
+    text-align:left;
+
+    padding-left:18px;
+}
+
+.leaderboard{
+    background:
+        linear-gradient(
+            135deg,
+            #63480d,
+            #241c07
+        );
+}
+
+.missions{
+    background:
+        linear-gradient(
+            135deg,
+            #092c68,
+            #07142a
+        );
+}
+
+.shop{
+    background:
+        linear-gradient(
+            135deg,
+            #006d70,
+            #052a30
+        );
+}
+
+
+/* =====================================================
+   DEPOSIT
+===================================================== */
+
+.deposit-button{
+    position:fixed;
+
+    right:24px;
+    bottom:78px;
+
+    width:116px;
+    height:116px;
+
+    z-index:30;
+
+    border-radius:50%;
+
+    border:
+        2px solid
+        #a967ff;
+
+    background:
+        radial-gradient(
+            circle at 35% 25%,
+            #a85cff,
+            #381080
+        );
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:1000;
+
+    box-shadow:
+        0 0 38px #8b42ff99,
+        0 15px 40px #000d;
+}
+
+.deposit-button:after{
+    content:"";
+
+    position:absolute;
+
+    width:14px;
+    height:14px;
+
+    border-radius:50%;
+
+    top:7px;
+    right:8px;
+
+    background:#ff2222;
+}
+
+
+/* =====================================================
+   BOTTOM NAV
+===================================================== */
+
+.bottom-nav{
+    display:none;
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal{
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    background:#000d;
+
+    backdrop-filter:
+        blur(10px);
+
+    align-items:center;
+    justify-content:center;
+
+    padding:15px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:
+        min(
+            470px,
+            95vw
+        );
+
+    padding:20px;
+
+    border-radius:16px;
+
+    background:#071329;
+
+    border:1px solid #7545da;
+
+    box-shadow:
+        0 30px 80px #000;
+}
+
+.modal-box h2{
+    margin-bottom:10px;
+}
+
+.modal-text{
+    color:#9ca9bd;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.input{
+    width:100%;
+
+    padding:13px;
+
+    margin-top:12px;
+
+    border-radius:8px;
+
+    border:1px solid #29436a;
+
+    background:#030a17;
+
+    color:#fff;
+
+    outline:none;
+}
+
+.modal-button{
+    width:100%;
+
+    padding:13px;
+
+    margin-top:10px;
+
+    border:0;
+
+    border-radius:8px;
+
+    background:
+        linear-gradient(
+            #ffe52d,
+            #eab719
+        );
+
+    color:#111;
+
+    font-weight:1000;
+}
+
+.modal-close{
+    background:#071126;
+
+    color:#fff;
+
+    border:1px solid #29436a;
+}
+
+.revealed{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:7px;
+
+    margin-top:12px;
+}
+
+.reveal-card{
+    padding:6px;
+
+    border-radius:8px;
+
+    background:#081329;
+
+    border:1px solid #30496e;
+
+    text-align:center;
+
+    font-size:8px;
+}
+
+.reveal-card img{
+    width:100%;
+    height:125px;
+
+    object-fit:cover;
+
+    border-radius:6px;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:800px){
+
+    .app{
+        padding:
+            0 8px
+            78px;
+    }
+
+    .header{
+        height:64px;
+    }
+
+    .logo-shield{
+        width:43px;
+        height:48px;
+    }
+
+    .logo-cricket{
+        font-size:22px;
+    }
+
+    .brand{
+        font-size:17px;
+    }
+
+    .brand span{
+        font-size:7px;
+    }
+
+    .header-right{
+        gap:5px;
+    }
+
+    .coin-box{
+        min-width:76px;
+        height:38px;
+        padding:0 8px;
+        gap:5px;
+    }
+
+    .coin{
+        font-size:16px;
+    }
+
+    .coin-number{
+        font-size:13px;
+    }
+
+    .coin-plus{
+        font-size:19px;
+    }
+
+    .bell{
+        width:38px;
+        height:38px;
+        font-size:16px;
+    }
+
+    .guest{
+        display:none;
+    }
+
+
+    /* HERO */
+
+    .hero{
+        min-height:410px;
+    }
+
+    .hero-content{
+        width:100%;
+        padding:27px 20px;
+    }
+
+    .hero-title{
+        font-size:29px;
+        max-width:330px;
+    }
+
+    .hero-description{
+        max-width:270px;
+        font-size:12px;
+    }
+
+    .buy-button{
+        padding:11px 23px;
+        font-size:12px;
+    }
+
+    .featured{
+        left:50%;
+        right:auto;
+
+        bottom:0;
+
+        transform:
+            translateX(-50%);
+
+        width:320px;
+        height:215px;
+    }
+
+    .feature-card{
+        width:125px;
+        height:204px;
+    }
+
+    .feature-card:nth-child(1){
+        left:0;
+    }
+
+    .feature-card:nth-child(2){
+        left:98px;
+    }
+
+    .fea
