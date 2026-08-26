@@ -306,11 +306,15 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
       <input class="input" id="utr" maxlength="80" placeholder="Enter UTR / transaction ID">
     </div>
 
-    <label style="display:block;margin-top:12px;border:1px dashed #735511;border-radius:10px;padding:16px;text-align:center;background:#080808;color:#ffd85a;cursor:pointer">
-      📸 <b>UPLOAD PAYMENT SCREENSHOT</b>
-      <input id="paymentShot" type="file" accept="image/*" style="display:none">
-      <div id="shotName" class="muted" style="margin-top:7px">No screenshot selected</div>
-    </label>
+    <div id="uploadBox" style="margin-top:12px;border:1px dashed #735511;border-radius:10px;padding:14px;text-align:center;background:#080808">
+  <div style="color:#ffd85a;font-weight:900;font-size:11px">📸 PAYMENT SCREENSHOT</div>
+  <input id="paymentShot" type="file" accept="image/jpeg,image/png,image/webp,image/*"
+         style="display:block;width:100%;margin-top:10px;color:#fff;font-size:12px"
+         onchange="handleScreenshot(this)">
+  <div id="shotName" class="muted" style="margin-top:8px">Choose a screenshot</div>
+  <img id="shotPreview" alt="Screenshot preview"
+       style="display:none;max-width:100%;max-height:230px;margin:10px auto 0;border-radius:9px;border:1px solid #735511">
+</div>
 
     <button class="goldBtn" style="width:100%;margin-top:12px" onclick="submitDeposit()">SUBMIT FOR APPROVAL</button>
   </div>
@@ -545,14 +549,47 @@ function copyUPI(){
   );
 }
 
+
+function handleScreenshot(input){
+  const file=input && input.files ? input.files[0] : null;
+  const name=document.getElementById('shotName');
+  const preview=document.getElementById('shotPreview');
+  if(!file){
+    if(name) name.textContent='Choose a screenshot';
+    if(preview){preview.removeAttribute('src');preview.style.display='none';}
+    return;
+  }
+  if(!file.type || !file.type.startsWith('image/')){
+    input.value='';
+    if(name) name.textContent='❌ Please select an image';
+    return;
+  }
+  if(file.size > 10*1024*1024){
+    input.value='';
+    if(name) name.textContent='❌ Image must be under 10 MB';
+    return;
+  }
+  if(name) name.textContent='✅ Selected: '+file.name;
+  if(preview){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      preview.src=e.target.result;
+      preview.style.display='block';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
 function submitDeposit(){
   const pay=Number(document.getElementById('payAmount').value);
   const coin=pay;
   const utr=document.getElementById('utr').value.trim();
+  const shot=document.getElementById('paymentShot')?.files?.[0];
   const file=document.getElementById('paymentShot').files[0];
 
   if(!pay || pay<=0) return toast('Enter payment amount');
   if(!utr) return toast('Enter UTR / transaction ID');
+  if(!shot) return toast('Upload payment screenshot');
   if(!file) return toast('Upload payment screenshot');
 
   const request={
@@ -569,7 +606,7 @@ function submitDeposit(){
   localStorage.setItem('cca_deposit_requests',JSON.stringify(depositRequests));
   document.getElementById('payAmount').value='';
   document.getElementById('utr').value='';
-  document.getElementById('paymentShot').value='';
+  
   document.getElementById('shotName').textContent='No screenshot selected';
   renderDepositHistory();
   toast('Deposit submitted • Waiting for approval');
