@@ -350,30 +350,51 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 
 <script>
 
-// ===== TELEGRAM MINI APP INTEGRATION =====
-const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+/* ===== TELEGRAM WEB APP IDENTITY ===== */
+const tg = window.Telegram?.WebApp || null;
 let telegramUser = null;
-let telegramInitData = '';
+let telegramUserId = null;
+let telegramInitData = "";
 
-if (TG) {
-  TG.ready();
-  TG.expand();
-  telegramInitData = TG.initData || '';
-  telegramUser = TG.initDataUnsafe && TG.initDataUnsafe.user
-    ? TG.initDataUnsafe.user
-    : null;
+if (tg) {
+  tg.ready();
+  tg.expand();
+
+  telegramInitData = tg.initData || "";
+  telegramUser = tg.initDataUnsafe?.user || null;
+
+  if (telegramUser) {
+    telegramUserId = String(telegramUser.id);
+
+    const nameEl = document.getElementById("userName");
+    const idEl = document.getElementById("userId");
+
+    if (nameEl) {
+      nameEl.textContent =
+        [telegramUser.first_name, telegramUser.last_name]
+        .filter(Boolean).join(" ") || "Telegram User";
+    }
+
+    if (idEl) idEl.textContent = telegramUserId;
+
+    console.log("Telegram User ID:", telegramUserId);
+  }
 }
 
-// UI may display this ID, but secure wallet/deposit authorization must use
-// telegramInitData verified by the backend, never this value alone.
-window.CCA_TELEGRAM = {
-  webApp: TG,
-  user: telegramUser,
-  initData: telegramInitData,
-  get userId(){ return telegramUser ? telegramUser.id : null; }
-};
-// ===== END TELEGRAM INTEGRATION =====
+const ADMIN_ID = "7035868085";
 
+function isAdminTelegramUser() {
+  return telegramUserId === ADMIN_ID;
+}
+
+window.CCA_TELEGRAM = {
+  webApp: tg,
+  user: telegramUser,
+  userId: telegramUserId,
+  initData: telegramInitData,
+  isAdmin: isAdminTelegramUser
+};
+/* ===== END TELEGRAM WEB APP IDENTITY ===== */
 
 let coins=Number(localStorage.getItem('cca_coins')||0);
 let cards=JSON.parse(localStorage.getItem('cca_cards')||'[]');
