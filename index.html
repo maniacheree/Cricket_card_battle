@@ -138,7 +138,8 @@ h1 span{color:#fff}
 .revealCard img{width:100%;height:190px;object-fit:cover;border-radius:8px}
 @media(max-width:800px){.cardPhoto{height:145px}.revealCard img{height:160px}}
 </style>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js">setupTelegramProfile();
+</script>
 </head>
 <body>
 
@@ -154,6 +155,17 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
     <div class="profileBox"><small>PLAYER</small><div class="profileName">GUEST <span style="color:#aaa">⌄</span></div></div>
   </div>
 </header>
+<div id="telegramProfile" style="margin-top:12px;padding:12px;border:1px solid #5f4911;border-radius:10px;background:linear-gradient(145deg,#0c0c0a,#050505)">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div id="tgAvatar" style="width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#171208;border:1px solid #735511;color:#ffd85a;font-weight:900">👤</div>
+    <div style="min-width:0">
+      <div id="userName" style="font-weight:900;color:#fff">Telegram User</div>
+      <div style="font-size:10px;color:#999;margin-top:3px">🆔 User ID: <b id="userId" style="color:#ffd85a">Open inside Telegram</b></div>
+      <div id="tgStatus" style="font-size:9px;color:#6bea7b;margin-top:3px">Checking Telegram...</div>
+    </div>
+  </div>
+</div>
+
 
 <nav class="nav">
 <button data-page="home" class="active"><span>⌂</span>HOME</button>
