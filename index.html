@@ -181,7 +181,12 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 
 <section class="page" id="packs">
 <div class="sectionTitle">PACKS</div>
-<p class="muted">Premium cricket card packs • 3 cards guaranteed. Players are selected from the connected player database according to pack rarity.</p>
+<p class="muted">Premium cricket card packs • 3 cards guaranteed. Each pack has a defined rarity chance.</p>
+<div class="panel" style="margin:10px 0 14px;color:#bdbdbd;font-size:10px;line-height:1.7">
+<b style="color:#ffd85a">PACK ODDS</b><br>
+COMMON: 70% Common / 30% Rare • RARE: 65% Rare / 35% Epic • EPIC: 70% Epic / 30% Legendary<br>
+LEGENDARY: 72% Legendary / 28% Ultimate • ULTIMATE: 82% Ultimate / 18% Icon
+</div>
 
 <div class="packGrid">
 <div class="pack"><img src="common_pack.png"><h3>COMMON PACK</h3><div class="range">20 – 40 COINS</div><button class="buy" onclick="openPack('COMMON',30,20,40)">30 🪙</button></div>
@@ -375,47 +380,57 @@ function rarityRank(r){
   return {COMMON:1,RARE:2,EPIC:3,LEGENDARY:4,ULTIMATE:5,ICON:6}[r]||1;
 }
 
-function playersForPack(packRarity){
-  const rank=rarityRank(packRarity);
-  let eligible=cardPool.filter(p=>rarityRank(p.rarity)<=rank);
-  if(rank>=5){
-    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=3);
-  }else if(rank>=4){
-    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=3);
-  }else if(rank>=3){
-    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=2);
-  }else if(rank>=2){
-    eligible=cardPool.filter(p=>rarityRank(p.rarity)<=3 && rarityRank(p.rarity)>=1);
+const PACK_ODDS={
+  COMMON:[
+    {rarity:'COMMON',weight:70},
+    {rarity:'RARE',weight:30}
+  ],
+  RARE:[
+    {rarity:'RARE',weight:65},
+    {rarity:'EPIC',weight:35}
+  ],
+  EPIC:[
+    {rarity:'EPIC',weight:70},
+    {rarity:'LEGENDARY',weight:30}
+  ],
+  LEGENDARY:[
+    {rarity:'LEGENDARY',weight:72},
+    {rarity:'ULTIMATE',weight:28}
+  ],
+  ULTIMATE:[
+    {rarity:'ULTIMATE',weight:82},
+    {rarity:'ICON',weight:18}
+  ]
+};
+
+function weightedRarity(packRarity){
+  const odds=PACK_ODDS[packRarity]||PACK_ODDS.COMMON;
+  const total=odds.reduce((a,x)=>a+x.weight,0);
+  let r=Math.random()*total;
+  for(const item of odds){
+    r-=item.weight;
+    if(r<=0)return item.rarity;
   }
+  return odds[odds.length-1].rarity;
+}
+
+function playersForRarity(rarity){
+  return cardPool.filter(p=>String(p.rarity).toUpperCase()===rarity);
+}
+
+function playersForPack(packRarity){
+  const odds=PACK_ODDS[packRarity]||PACK_ODDS.COMMON;
+  const allowed=odds.map(x=>x.rarity);
+  const eligible=cardPool.filter(p=>allowed.includes(String(p.rarity).toUpperCase()));
   return eligible.length?eligible:cardPool;
 }
 
 function pickPlayer(packRarity){
-  const list=playersForPack(packRarity);
-  return list[Math.floor(Math.random()*list.length)];
+  const wanted=weightedRarity(packRarity);
+  const exact=playersForRarity(wanted);
+  const pool=exact.length?exact:playersForPack(packRarity);
+  return pool[Math.floor(Math.random()*pool.length)];
 }
-
-
-function save(){
- localStorage.setItem('cca_coins',coins);
- localStorage.setItem('cca_cards',JSON.stringify(cards));
- update();
-}
-function update(){
- document.querySelectorAll('#coins,#homeCoins,#depositBalance').forEach(e=>e.textContent=coins.toLocaleString());
- document.getElementById('homeCards').textContent=cards.length;
- document.getElementById('collectionCount').textContent=cards.length;
- renderCards();
- if(typeof renderDepositHistory==='function') renderDepositHistory();
-}
-function show(id){
- document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
- const page=document.getElementById(id);
- if(page) page.classList.add('active');
- document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
- scrollTo({top:0,behavior:'smooth'});
-}
-document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));
 
 function makeValue(min,max){
  return Math.floor(Math.random()*(max-min+1))+min;
@@ -432,7 +447,10 @@ function openPack(type,price,min,max){
  let total=0;
  for(let i=0;i<3;i++){
    const c=pickPlayer(type);
-   result.push({...c,value:makeValue(Math.max(5,Math.floor(c.value*0.65)),Math.max(10,Math.floor(c.value*1.15))),rarity:type,id:'CARD-'+Date.now()+'-'+i});
+   result.push({...c,value:makeValue(
+  Math.max(5,Math.floor((Number(c.value)||20)*0.65)),
+  Math.max(10,Math.floor((Number(c.value)||20)*1.15))
+),rarity:c.rarity,id:'CARD-'+Date.now()+'-'+i});
  }
  total=result.reduce((a,c)=>a+c.value,0);
  while(total<min || total>max){
@@ -446,7 +464,7 @@ function openPack(type,price,min,max){
  document.getElementById('revealGrid').innerHTML=result.map(c=>`
    <div class="revealCard">
      <img src="${c.img}">
-     <div class="cardTag">${c.rarity}</div>
+     <div class="cardTag">${c.rarity} • ${c.rating || '—'}</div>
      <h3 style="margin:7px 0;color:#fff">${c.name}</h3>
      <div class="cardValue">🪙 ${c.value}</div>
      <div class="statsRow"><span>BAT ${c.bat}</span><span>BOWL ${c.bowl}</span><span>FIELD ${c.field}</span></div>
