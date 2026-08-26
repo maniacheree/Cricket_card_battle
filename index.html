@@ -2,1440 +2,731 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,
-      initial-scale=1,
-      maximum-scale=1,
-      user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>Cricket Card Arena</title>
 
 <style>
-
-/* =====================================================
-   RESET
-===================================================== */
-
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    -webkit-tap-highlight-color:transparent;
-}
-
-html{
-    scroll-behavior:smooth;
-}
-
-body{
-    background:#020611;
-    color:#fff;
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-    overflow-x:hidden;
-}
-
-button{
-    font-family:inherit;
-    cursor:pointer;
-}
-
-
-/* =====================================================
-   APP
-===================================================== */
-
-.app{
-    width:100%;
-    max-width:1450px;
-    margin:auto;
-    padding:0 20px 100px;
-}
-
-
-/* =====================================================
-   HEADER
-===================================================== */
-
-.header{
-    height:82px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-}
-
-.logo-area{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.logo-shield{
-    width:58px;
-    height:65px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:
-        linear-gradient(
-            145deg,
-            #172f65,
-            #020714
-        );
-
-    border:2px solid #f7c928;
-
-    clip-path:
-        polygon(
-            50% 0,
-            94% 14%,
-            87% 78%,
-            50% 100%,
-            13% 78%,
-            6% 14%
-        );
-
-    box-shadow:
-        0 0 20px #1b56b955;
-}
-
-.logo-cricket{
-    font-size:30px;
-}
-
-.brand{
-    font-size:26px;
-    font-weight:1000;
-    font-style:italic;
-    letter-spacing:-1px;
-}
-
-.brand span{
-    display:block;
-    color:#ffd12a;
-    font-size:14px;
-    letter-spacing:2px;
-    margin-top:2px;
-}
-
-.header-right{
-    display:flex;
-    align-items:center;
-    gap:18px;
-}
-
-.coin-box{
-    min-width:180px;
-    height:48px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-
-    border-radius:28px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #0b152b,
-            #050b19
-        );
-
-    border:1px solid #3d4b67;
-
-    box-shadow:
-        0 8px 25px #0008;
-}
-
-.coin{
-    color:#ffd52c;
-    font-size:23px;
-}
-
-.coin-number{
-    font-size:18px;
-    font-weight:1000;
-}
-
-.coin-plus{
-    color:#ffd52c;
-    font-size:28px;
-}
-
-.bell{
-    width:48px;
-    height:48px;
-
-    border-radius:50%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:#071126;
-    border:1px solid #3d4b67;
-
-    font-size:21px;
-}
-
-.guest{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-
-.guest-info{
-    font-size:13px;
-}
-
-.guest-info small{
-    display:block;
-    color:#8794a9;
-    font-size:9px;
-    margin-top:3px;
-}
-
-.avatar{
-    width:50px;
-    height:50px;
-
-    border-radius:50%;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:
-        linear-gradient(
-            #e7e9ee,
-            #8b919d
-        );
-
-    color:#252b35;
-    font-size:27px;
-
-    border:2px solid #646d7d;
-}
-
-
-/* =====================================================
-   HERO
-===================================================== */
-
-.hero{
-    min-height:365px;
-
-    position:relative;
-    overflow:hidden;
-
-    border-radius:16px;
-
-    border:1px solid #315083;
-
-    background:
-        radial-gradient(
-            circle at 75% 35%,
-            #254caa88,
-            transparent 25%
-        ),
-        radial-gradient(
-            circle at 55% 100%,
-            #152b6544,
-            transparent 35%
-        ),
-        linear-gradient(
-            180deg,
-            #071630,
-            #020916
-        );
-
-    box-shadow:
-        inset 0 0 70px #0b245555,
-        0 20px 60px #000c;
-}
-
-.stadium-lights{
-    position:absolute;
-    inset:0;
-
-    background:
-        radial-gradient(
-            circle at 18% 18%,
-            #ffffff55 0 2%,
-            transparent 5%
-        ),
-        radial-gradient(
-            circle at 36% 12%,
-            #ffffff55 0 2%,
-            transparent 5%
-        ),
-        radial-gradient(
-            circle at 61% 15%,
-            #ffffff55 0 2%,
-            transparent 5%
-        ),
-        radial-gradient(
-            circle at 84% 18%,
-            #ffffff55 0 2%,
-            transparent 5%
-        );
-}
-
-.stadium{
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
-    height:47%;
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            #274f34,
-            #06120c 65%
-        );
-
-    border-top:
-        1px solid #466c54;
-
-    opacity:.9;
-}
-
-.hero-content{
-    position:relative;
-    z-index:3;
-
-    width:48%;
-
-    padding:
-        52px 55px;
-}
-
-.hero-small{
-    color:#ffd52b;
-    font-size:10px;
-    font-weight:1000;
-    letter-spacing:2px;
-}
-
-.hero-title{
-    margin-top:12px;
-
-    font-size:45px;
-    line-height:1.01;
-
-    font-weight:1000;
-    font-style:italic;
-    text-transform:uppercase;
-}
-
-.hero-title span{
-    color:#ffd52b;
-}
-
-.hero-description{
-    max-width:410px;
-
-    margin-top:20px;
-
-    color:#e0e7f0;
-
-    font-size:18px;
-    line-height:1.45;
-}
-
-.buy-button{
-    margin-top:22px;
-
-    padding:
-        14px 35px;
-
-    border:0;
-    border-radius:8px;
-
-    background:
-        linear-gradient(
-            #ffe632,
-            #f1b819
-        );
-
-    color:#111;
-
-    font-size:18px;
-    font-weight:1000;
-
-    box-shadow:
-        0 8px 25px #e7b91d55;
-}
-
-
-/* =====================================================
-   FEATURE PLAYER CARDS
-===================================================== */
-
-.featured{
-    position:absolute;
-
-    right:38px;
-    bottom:13px;
-
-    width:535px;
-    height:320px;
-
-    z-index:4;
-}
-
-.feature-card{
-    position:absolute;
-
-    width:190px;
-    height:295px;
-
-    padding:7px;
-
-    border-radius:13px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #0c1831,
-            #030817
-        );
-
-    overflow:hidden;
-
-    box-shadow:
-        0 20px 50px #000d;
-}
-
-.feature-card:nth-child(1){
-    left:0;
-    bottom:7px;
-
-    transform:rotate(-6deg);
-
-    border:2px solid #a43cff;
-}
-
-.feature-card:nth-child(2){
-    left:173px;
-    bottom:0;
-
-    z-index:4;
-
-    border:2px solid #ffd32b;
-
-    box-shadow:
-        0 0 35px #e8b92855,
-        0 20px 50px #000d;
-}
-
-.feature-card:nth-child(3){
-    right:0;
-    bottom:7px;
-
-    transform:rotate(5deg);
-
-    border:2px solid #159cff;
-}
-
-.card-top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    font-size:9px;
-    font-weight:1000;
-}
-
-.rating{
-    font-size:27px;
-}
-
-.feature-photo{
-    width:100%;
-    height:198px;
-
-    margin-top:3px;
-
-    border-radius:8px;
-
-    object-fit:cover;
-    object-position:center top;
-
-    background:#142b50;
-}
-
-.feature-name{
-    text-align:center;
-
-    margin-top:5px;
-
-    font-size:11px;
-    font-weight:1000;
-}
-
-.feature-stats{
-    display:flex;
-    justify-content:space-around;
-
-    margin-top:5px;
-
-    color:#b9c5d8;
-    font-size:7px;
-}
-
-
-/* =====================================================
-   GRID
-===================================================== */
-
-.top-grid{
-    display:grid;
-
-    grid-template-columns:
-        1fr
-        230px;
-
-    gap:14px;
-
-    margin-top:14px;
-}
-
-
-/* =====================================================
-   PANEL
-===================================================== */
-
-.panel{
-    padding:17px;
-
-    border-radius:14px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #07152d,
-            #030a18
-        );
-
-    border:1px solid #203c69;
-
-    box-shadow:
-        0 15px 40px #0009;
-}
-
-.panel-title{
-    margin-bottom:15px;
-
-    font-size:21px;
-    font-weight:1000;
-}
-
-
-/* =====================================================
-   PACKAGES
-===================================================== */
-
-.packages{
-    display:grid;
-
-    grid-template-columns:
-        repeat(5,1fr);
-
-    gap:11px;
-}
-
-.pack{
-    padding:8px;
-
-    text-align:center;
-
-    border-radius:11px;
-
-    background:#040c1b;
-}
-
-.common{
-    border:2px solid #39d23a;
-}
-
-.rare{
-    border:2px solid #139eff;
-}
-
-.epic{
-    border:2px solid #a43cff;
-}
-
-.legendary{
-    border:2px solid #e3b928;
-}
-
-.ultimate{
-    border:2px solid #ef2929;
-}
-
-.pack-title{
-    font-size:12px;
-    font-weight:1000;
-    white-space:nowrap;
-}
-
-
-/* =====================================================
-   REALISTIC PACK ART
-===================================================== */
-
-.pack-art{
-    position:relative;
-
-    height:178px;
-
-    margin-top:8px;
-
-    overflow:hidden;
-
-    border-radius:7px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-}
-
-.common .pack-art{
-    background:
-        radial-gradient(
-            circle at center,
-            #55e86644,
-            transparent 45%
-        ),
-        linear-gradient(
-            145deg,
-            #073313,
-            #21aa2d
-        );
-}
-
-.rare .pack-art{
-    background:
-        radial-gradient(
-            circle at center,
-            #5ad9ff44,
-            transparent 45%
-        ),
-        linear-gradient(
-            145deg,
-            #05295c,
-            #087bd1
-        );
-}
-
-.epic .pack-art{
-    background:
-        radial-gradient(
-            circle at center,
-            #f05cff44,
-            transparent 45%
-        ),
-        linear-gradient(
-            145deg,
-            #2d074e,
-            #8421d8
-        );
-}
-
-.legendary .pack-art{
-    background:
-        radial-gradient(
-            circle at center,
-            #fff06c44,
-            transparent 45%
-        ),
-        linear-gradient(
-            145deg,
-            #503702,
-            #d2980e
-        );
-}
-
-.ultimate .pack-art{
-    background:
-        radial-gradient(
-            circle at center,
-            #ff6b5344,
-            transparent 45%
-        ),
-        linear-gradient(
-            145deg,
-            #4b0505,
-            #d92825
-        );
-}
-
-.pack-wrapper{
-    position:relative;
-
-    width:112px;
-    height:151px;
-
-    border-radius:7px;
-
-    background:
-        linear-gradient(
-            120deg,
-            #ffffff18,
-            transparent 35%,
-            #0005
-        );
-
-    border:2px solid #ffffff55;
-
-    box-shadow:
-        0 0 20px #ffffff22,
-        inset 0 0 25px #fff2;
-
-    overflow:hidden;
-}
-
-.pack-wrapper:before{
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-        linear-gradient(
-            110deg,
-            transparent 35%,
-            #ffffff44 50%,
-            transparent 65%
-        );
-
-    transform:translateX(-60px) skewX(-15deg);
-}
-
-.pack-player{
-    position:absolute;
-
-    left:14px;
-    right:14px;
-    bottom:0;
-
-    height:108px;
-
-    border-radius:
-        50% 50% 0 0;
-
-    background:
-        radial-gradient(
-            circle at 50% 20%,
-            #e9c1a0 0 12%,
-            transparent 13%
-        ),
-        linear-gradient(
-            100deg,
-            #10151f 0 20%,
-            #263f63 21% 55%,
-            #101827 56%
-        );
-
-    opacity:.95;
-}
-
-.pack-bat{
-    position:absolute;
-
-    width:10px;
-    height:82px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #6b3a18,
-            #f4c16c,
-            #6b3a18
-        );
-
-    transform:
-        rotate(
-            -25deg
-        );
-
-    right:13px;
-    top:34px;
-
-    border-radius:3px;
-}
-
-.pack-logo{
-    position:absolute;
-
-    top:10px;
-    left:0;
-    right:0;
-
-    text-align:center;
-
-    font-size:10px;
-    font-weight:1000;
-
-    color:#fff;
-
-    text-shadow:
-        0 2px 4px #000;
-}
-
-.pack-badge{
-    position:absolute;
-
-    bottom:8px;
-    left:8px;
-    right:8px;
-
-    padding:4px;
-
-    border-radius:5px;
-
-    background:#000b;
-
-    border:1px solid #ffffff66;
-
-    font-size:8px;
-    font-weight:1000;
-}
-
-.pack-value{
-    margin-top:8px;
-
-    font-size:10px;
-    line-height:1.4;
-
-    font-weight:1000;
-}
-
-.common .pack-value{
-    color:#54e94e;
-}
-
-.rare .pack-value{
-    color:#25b8ff;
-}
-
-.epic .pack-value{
-    color:#c66aff;
-}
-
-.legendary .pack-value{
-    color:#ffd52b;
-}
-
-.ultimate .pack-value{
-    color:#ff5b5b;
-}
-
-.pack-buy{
-    width:100%;
-
-    margin-top:7px;
-
-    padding:8px 3px;
-
-    border:0;
-    border-radius:6px;
-
-    font-weight:1000;
-}
-
-.common .pack-buy{
-    background:#31ba30;
-}
-
-.rare .pack-buy{
-    background:#167ed3;
-    color:#fff;
-}
-
-.epic .pack-buy{
-    background:#6b25d1;
-    color:#fff;
-}
-
-.legendary .pack-buy{
-    background:#c18d10;
-}
-
-.ultimate .pack-buy{
-    background:#d62424;
-    color:#fff;
-}
-
-.note{
-    margin-top:11px;
-
-    color:#8190a9;
-
-    font-size:9px;
-}
-
-
-/* =====================================================
-   SUMMARY
-===================================================== */
-
-.stat{
-    height:59px;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    padding:10px 13px;
-
-    margin-bottom:8px;
-
-    border-radius:9px;
-
-    background:#07142a;
-
-    border:1px solid #20375c;
-}
-
-.stat-label{
-    color:#a8b4c8;
-    font-size:10px;
-}
-
-.stat-value{
-    font-size:16px;
-    font-weight:1000;
-}
-
-
-/* =====================================================
-   LOWER
-===================================================== */
-
-.lower-grid{
-    display:grid;
-
-    grid-template-columns:
-        1fr
-        1.15fr
-        230px;
-
-    gap:14px;
-
-    margin-top:14px;
-}
-
-.lower-panel{
-    min-height:285px;
-}
-
-
-/* =====================================================
-   COLLECTION
-===================================================== */
-
-.collection{
-    height:220px;
-
-    display:flex;
-    gap:10px;
-
-    overflow-x:auto;
-
-    scrollbar-width:none;
-}
-
-.collection::-webkit-scrollbar{
-    display:none;
-}
-
-.empty{
-    width:100%;
-    height:220px;
-
-    border:
-        1px dashed
-        #2c4367;
-
-    border-radius:10px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    text-align:center;
-
-    color:#99a6ba;
-
-    font-size:11px;
-}
-
-.empty-icon{
-    font-size:50px;
-    opacity:.35;
-    margin-bottom:8px;
-}
-
-
-/* =====================================================
-   BATTLE
-===================================================== */
-
-.battle-sub{
-    color:#9ca9bd;
-    font-size:11px;
-}
-
-.battle-arena{
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-    gap:25px;
-
-    margin:27px 0 17px;
-}
-
-.battle-card{
-    width:100px;
-    height:125px;
-
-    border-radius:10px;
-
-    border:1px solid #334a70;
-
-    background:#071127;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    font-size:45px;
-}
-
-.vs{
-    color:#ffd42a;
-
-    font-size:36px;
-
-    font-style:italic;
-
-    font-weight:1000;
-
-    text-shadow:
-        0 0 20px #ffd42a88;
-}
-
-.find-button{
-    display:block;
-
-    width:80%;
-
-    margin:auto;
-
-    padding:11px;
-
-    border:0;
-    border-radius:7px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #5c18d3,
-            #8b28ff
-        );
-
-    color:#fff;
-
-    font-weight:1000;
-}
-
-
-/* =====================================================
-   SIDE BUTTONS
-===================================================== */
-
-.side-button{
-    width:100%;
-    height:64px;
-
-    margin-bottom:9px;
-
-    border-radius:11px;
-
-    color:#fff;
-
-    border:1px solid #294166;
-
-    font-weight:1000;
-
-    text-align:left;
-
-    padding-left:18px;
-}
-
-.leaderboard{
-    background:
-        linear-gradient(
-            135deg,
-            #63480d,
-            #241c07
-        );
-}
-
-.missions{
-    background:
-        linear-gradient(
-            135deg,
-            #092c68,
-            #07142a
-        );
-}
-
-.shop{
-    background:
-        linear-gradient(
-            135deg,
-            #006d70,
-            #052a30
-        );
-}
-
-
-/* =====================================================
-   DEPOSIT
-===================================================== */
-
-.deposit-button{
-    position:fixed;
-
-    right:24px;
-    bottom:78px;
-
-    width:116px;
-    height:116px;
-
-    z-index:30;
-
-    border-radius:50%;
-
-    border:
-        2px solid
-        #a967ff;
-
-    background:
-        radial-gradient(
-            circle at 35% 25%,
-            #a85cff,
-            #381080
-        );
-
-    color:#fff;
-
-    font-size:15px;
-
-    font-weight:1000;
-
-    box-shadow:
-        0 0 38px #8b42ff99,
-        0 15px 40px #000d;
-}
-
-.deposit-button:after{
-    content:"";
-
-    position:absolute;
-
-    width:14px;
-    height:14px;
-
-    border-radius:50%;
-
-    top:7px;
-    right:8px;
-
-    background:#ff2222;
-}
-
-
-/* =====================================================
-   BOTTOM NAV
-===================================================== */
-
-.bottom-nav{
-    display:none;
-}
-
-
-/* =====================================================
-   MODAL
-===================================================== */
-
-.modal{
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:100;
-
-    background:#000d;
-
-    backdrop-filter:
-        blur(10px);
-
-    align-items:center;
-    justify-content:center;
-
-    padding:15px;
-}
-
-.modal.show{
-    display:flex;
-}
-
-.modal-box{
-    width:
-        min(
-            470px,
-            95vw
-        );
-
-    padding:20px;
-
-    border-radius:16px;
-
-    background:#071329;
-
-    border:1px solid #7545da;
-
-    box-shadow:
-        0 30px 80px #000;
-}
-
-.modal-box h2{
-    margin-bottom:10px;
-}
-
-.modal-text{
-    color:#9ca9bd;
-    font-size:12px;
-    line-height:1.5;
-}
-
-.input{
-    width:100%;
-
-    padding:13px;
-
-    margin-top:12px;
-
-    border-radius:8px;
-
-    border:1px solid #29436a;
-
-    background:#030a17;
-
-    color:#fff;
-
-    outline:none;
-}
-
-.modal-button{
-    width:100%;
-
-    padding:13px;
-
-    margin-top:10px;
-
-    border:0;
-
-    border-radius:8px;
-
-    background:
-        linear-gradient(
-            #ffe52d,
-            #eab719
-        );
-
-    color:#111;
-
-    font-weight:1000;
-}
-
-.modal-close{
-    background:#071126;
-
-    color:#fff;
-
-    border:1px solid #29436a;
-}
-
-.revealed{
-    display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:7px;
-
-    margin-top:12px;
-}
-
-.reveal-card{
-    padding:6px;
-
-    border-radius:8px;
-
-    background:#081329;
-
-    border:1px solid #30496e;
-
-    text-align:center;
-
-    font-size:8px;
-}
-
-.reveal-card img{
-    width:100%;
-    height:125px;
-
-    object-fit:cover;
-
-    border-radius:6px;
-}
-
-
-/* =====================================================
-   MOBILE
-===================================================== */
-
+*{box-sizing:border-box}
+html,body{margin:0;background:#02040c;color:#fff;font-family:Arial,sans-serif}
+body{min-height:100vh}
+button{font:inherit;cursor:pointer}
+.app{max-width:1450px;margin:auto;padding:14px 18px 90px}
+
+/* HEADER */
+header{height:72px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.shield{width:50px;height:58px;display:grid;place-items:center;background:linear-gradient(145deg,#203d86,#080c1b);border:2px solid #f6ca28;clip-path:polygon(50% 0,94% 13%,87% 80%,50% 100%,13% 80%,6% 13%);font-size:26px}
+.brand{font-size:24px;font-weight:1000;font-style:italic}
+.brand small{display:block;color:#ffd42a;font-size:10px;letter-spacing:3px}
+.headRight{display:flex;align-items:center;gap:12px}
+.wallet{padding:11px 18px;border-radius:30px;background:#080f21;border:1px solid #384967;font-weight:900}
+.wallet span{color:#ffd42a}
+.circle{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#080f21;border:1px solid #384967}
+
+/* HERO */
+.hero{height:370px;position:relative;overflow:hidden;border-radius:16px;border:1px solid #284574;background:
+radial-gradient(circle at 75% 20%,#274c9a55,transparent 25%),
+linear-gradient(180deg,#07162f,#020817 70%,#071b12)}
+.hero:before{content:"";position:absolute;inset:0;background:
+radial-gradient(circle at 15% 20%,#fff8 0 2px,transparent 3px),
+radial-gradient(circle at 35% 12%,#fff8 0 2px,transparent 3px),
+radial-gradient(circle at 62% 15%,#fff8 0 2px,transparent 3px),
+radial-gradient(circle at 84% 18%,#fff8 0 2px,transparent 3px)}
+.hero:after{content:"";position:absolute;left:-10%;right:-10%;bottom:-55%;height:70%;border-radius:50%;background:radial-gradient(ellipse,#3a7b45,#07130d 60%)}
+.heroText{position:relative;z-index:3;padding:55px;width:48%}
+.kicker{color:#ffd42a;font-size:10px;letter-spacing:2px;font-weight:900}
+.hero h1{font-size:45px;line-height:1;margin:12px 0;font-style:italic}
+.hero h1 b{color:#ffd42a}
+.hero p{color:#d5ddeb;line-height:1.5;max-width:400px}
+.yellow{background:linear-gradient(#ffe52e,#eeb918);border:0;border-radius:7px;padding:13px 28px;font-weight:1000}
+
+/* FEATURE CARDS */
+.featured{position:absolute;right:35px;bottom:10px;width:535px;height:315px;z-index:5}
+.fcard{position:absolute;width:185px;height:290px;padding:7px;border-radius:12px;background:#071126;box-shadow:0 20px 50px #000e}
+.fcard:nth-child(1){left:0;bottom:5px;transform:rotate(-6deg);border:2px solid #a43cff}
+.fcard:nth-child(2){left:175px;bottom:0;z-index:3;border:2px solid #ffd42a}
+.fcard:nth-child(3){right:0;bottom:5px;transform:rotate(6deg);border:2px solid #159cff}
+.fphoto{height:195px;width:100%;border-radius:7px;object-fit:cover;background:linear-gradient(145deg,#315b8d,#111927)}
+.ftop{display:flex;justify-content:space-between;font-size:9px;font-weight:900}
+.rating{font-size:25px}
+.fname{text-align:center;font-size:10px;font-weight:1000;margin-top:4px}
+.fstats{display:flex;justify-content:space-around;color:#aebbd0;font-size:7px;margin-top:5px}
+
+/* PANELS */
+.grid{display:grid;grid-template-columns:1fr 225px;gap:13px;margin-top:13px}
+.panel{background:linear-gradient(145deg,#07152d,#030916);border:1px solid #213c67;border-radius:13px;padding:15px;box-shadow:0 15px 40px #0009}
+.title{font-size:20px;font-weight:1000;margin-bottom:13px}
+
+/* PACKS */
+.packs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.pack{padding:7px;border-radius:10px;text-align:center;background:#030914}
+.common{border:2px solid #39d23a}.rare{border:2px solid #159eff}.epic{border:2px solid #a43cff}.legend{border:2px solid #e0b624}.ultimate{border:2px solid #ed2929}
+.packName{font-size:11px;font-weight:1000}
+.packet{height:175px;margin-top:7px;border-radius:7px;position:relative;display:grid;place-items:center;overflow:hidden}
+.common .packet{background:linear-gradient(145deg,#073613,#25bd30)}
+.rare .packet{background:linear-gradient(145deg,#052d65,#087dd7)}
+.epic .packet{background:linear-gradient(145deg,#300750,#8d27e5)}
+.legend .packet{background:linear-gradient(145deg,#523800,#d59c10)}
+.ultimate .packet{background:linear-gradient(145deg,#4c0505,#df2925)}
+.packet:after{content:"";position:absolute;width:180%;height:35px;background:#fff3;transform:rotate(-35deg)}
+.art{position:relative;width:105px;height:145px;border:2px solid #fff5;border-radius:7px;background:linear-gradient(145deg,#263b59,#0b111d);overflow:hidden;box-shadow:0 0 25px #0008}
+.art:before{content:"";position:absolute;width:45px;height:45px;border-radius:50%;background:#dca984;left:30px;top:18px}
+.art:after{content:"";position:absolute;width:82px;height:105px;left:11px;bottom:-10px;border-radius:40px 40px 0 0;background:linear-gradient(90deg,#111827,#28619a,#111827)}
+.bat{position:absolute;width:9px;height:72px;background:linear-gradient(90deg,#673d1c,#f2c16c,#673d1c);right:10px;top:45px;transform:rotate(-23deg);z-index:3}
+.packLogo{position:absolute;z-index:4;top:8px;left:0;right:0;text-align:center;font-size:8px;font-weight:1000}
+.three{position:absolute;z-index:5;bottom:6px;left:8px;right:8px;background:#000b;border:1px solid #fff5;border-radius:4px;padding:4px;font-size:7px;font-weight:900}
+.value{font-size:9px;font-weight:900;line-height:1.4;margin-top:7px}
+.common .value{color:#52e64e}.rare .value{color:#2bbaff}.epic .value{color:#c56aff}.legend .value{color:#ffd52a}.ultimate .value{color:#ff5b5b}
+.buy{width:100%;border:0;border-radius:5px;padding:8px;margin-top:6px;font-weight:1000}
+.common .buy{background:#32bd32}.rare .buy{background:#167fd3;color:#fff}.epic .buy{background:#6d25d4;color:#fff}.legend .buy{background:#c48f12}.ultimate .buy{background:#d52323;color:#fff}
+
+/* SUMMARY */
+.stat{height:57px;margin-bottom:8px;border:1px solid #1d365c;border-radius:8px;background:#071329;display:flex;align-items:center;justify-content:space-between;padding:10px}
+.stat small{color:#9daabe}.stat b{font-size:15px}
+
+/* LOWER */
+.lower{display:grid;grid-template-columns:1fr 1.15fr 225px;gap:13px;margin-top:13px}
+.lower .panel{min-height:275px}
+.collection{height:210px;display:flex;gap:9px;overflow:auto}
+.empty{min-width:100%;height:210px;border:1px dashed #30466a;border-radius:9px;display:grid;place-items:center;text-align:center;color:#8997ac;font-size:11px}
+.battleArea{display:flex;align-items:center;justify-content:center;gap:22px;margin:25px 0}
+.battleCard{width:95px;height:120px;border-radius:9px;border:1px solid #345075;background:#071126;display:grid;place-items:center;font-size:40px}
+.vs{font-size:32px;font-weight:1000;font-style:italic;color:#ffd42a}
+.find{display:block;margin:auto;width:80%;padding:11px;border:0;border-radius:7px;background:linear-gradient(90deg,#5d18d4,#8c2aff);color:white;font-weight:1000}
+.side{height:62px;width:100%;margin-bottom:9px;border-radius:10px;color:#fff;text-align:left;padding-left:15px;border:1px solid #294165;font-weight:1000}
+.s1{background:linear-gradient(135deg,#62480c,#241b06)}.s2{background:linear-gradient(135deg,#092e6c,#07142a)}.s3{background:linear-gradient(135deg,#006d70,#052c31)}
+
+/* DEPOSIT */
+.deposit{position:fixed;right:25px;bottom:75px;width:105px;height:105px;border-radius:50%;z-index:20;border:2px solid #a663ff;background:radial-gradient(circle at 35% 25%,#aa5dff,#391080);color:#fff;font-weight:1000;box-shadow:0 0 35px #9144ff99}
+
+/* NAV */
+.nav{display:none}
+
+/* MODALS */
+.modal{display:none;position:fixed;inset:0;background:#000d;z-index:100;align-items:center;justify-content:center;padding:15px}
+.modal.show{display:flex}
+.box{width:min(460px,95vw);background:#071329;border:1px solid #7545da;border-radius:15px;padding:20px}
+.box h2{margin:0 0 10px}
+.box p{color:#9ba8bd;font-size:12px;line-height:1.5}
+.input{width:100%;padding:12px;background:#030a17;border:1px solid #29436a;border-radius:7px;color:#fff;margin-top:10px}
+.action{width:100%;padding:12px;border:0;border-radius:7px;background:#f0c329;margin-top:9px;font-weight:1000}
+.dark{background:#071126;color:#fff;border:1px solid #29436a}
+.reveal{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+.rcard{background:#081329;border:1px solid #30496e;border-radius:7px;padding:5px;text-align:center;font-size:8px}
+.rcard img{width:100%;height:120px;object-fit:cover;border-radius:5px}
+
+/* MOBILE */
 @media(max-width:800px){
+.app{padding:5px 7px 75px}
+header{height:60px}.shield{width:40px;height:46px;font-size:20px}.brand{font-size:16px}.brand small{font-size:6px}
+.headRight{gap:4px}.wallet{min-width:72px;padding:8px;font-size:12px}.circle{width:36px;height:36px}.guest{display:none}
+.hero{height:410px}.heroText{width:100%;padding:28px 18px}.hero h1{font-size:28px}.hero p{font-size:12px;max-width:270px}.yellow{font-size:11px;padding:11px 20px}
+.featured{left:50%;right:auto;bottom:0;transform:translateX(-50%);width:320px;height:215px}.fcard{width:125px;height:202px}.fcard:nth-child(2){left:98px}.fcard:nth-child(3){right:0}.fphoto{height:135px}.rating{font-size:18px}.fname{font-size:7px}.fstats{font-size:5px}
+.grid{display:block}.packs{display:flex;overflow:auto}.pack{flex:0 0 132px}.packet{height:155px}.art{width:92px;height:130px}
+.lower{display:block}.lower .panel{margin-top:12px}
+.side{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}.side{height:55px;padding:3px;text-align:center;font-size:8px}
+.deposit{width:78px;height:78px;right:10px;bottom:70px;font-size:10px}
+.nav{position:fixed;display:grid;grid-template-columns:repeat(5,1fr);left:0;right:0;bottom:0;height:62px;background:#030917f7;border-top:1px solid #263d60;z-index:19}
+.nav button{border:0;background:none;color:#a2aec0;font-size:8px;font-weight:900}.nav button:first-child{color:#ffd42a}
+}
+</style>
+</head>
 
-    .app{
-        padding:
-            0 8px
-            78px;
-    }
+<body>
 
-    .header{
-        height:64px;
-    }
+<div class="app">
 
-    .logo-shield{
-        width:43px;
-        height:48px;
-    }
+<header>
+<div class="logo">
+<div class="shield">🏏</div>
+<div class="brand">CRICKET CARD<small>ARENA</small></div>
+</div>
 
-    .logo-cricket{
-        font-size:22px;
-    }
-
-    .brand{
-        font-size:17px;
-    }
-
-    .brand span{
-        font-size:7px;
-    }
-
-    .header-right{
-        gap:5px;
-    }
-
-    .coin-box{
-        min-width:76px;
-        height:38px;
-        padding:0 8px;
-        gap:5px;
-    }
-
-    .coin{
-        font-size:16px;
-    }
-
-    .coin-number{
-        font-size:13px;
-    }
-
-    .coin-plus{
-        font-size:19px;
-    }
-
-    .bell{
-        width:38px;
-        height:38px;
-        font-size:16px;
-    }
-
-    .guest{
-        display:none;
-    }
+<div class="headRight">
+<div class="wallet">🪙 <span id="coins">0</span> <span>+</span></div>
+<div class="circle">🔔</div>
+<div class="guest">
+<div class="guest-info">Guest<small>ID: GUEST001</small></div>
+<div class="circle">👤</div>
+</div>
+</div>
+</header>
 
 
-    /* HERO */
+<section class="hero">
 
-    .hero{
-        min-height:410px;
-    }
+<div class="heroText">
+<div class="kicker">🏆 CRICKET CARD ARENA</div>
 
-    .hero-content{
-        width:100%;
-        padding:27px 20px;
-    }
+<h1>
+BUILD YOUR SQUAD.<br>
+<b>DOMINATE THE ARENA.</b>
+</h1>
 
-    .hero-title{
-        font-size:29px;
-        max-width:330px;
-    }
+<p>
+Collect powerful cricket cards,
+build your ultimate team and
+win epic battles!
+</p>
 
-    .hero-description{
-        max-width:270px;
-        font-size:12px;
-    }
+<button class="yellow" onclick="scrollToId('packs')">
+BUY PACKS
+</button>
+</div>
 
-    .buy-button{
-        padding:11px 23px;
-        font-size:12px;
-    }
 
-    .featured{
-        left:50%;
-        right:auto;
+<div class="featured">
 
-        bottom:0;
+<div class="fcard">
+<div class="ftop"><span class="rating">87</span><span>EPIC</span></div>
+<img class="fphoto" src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=500&q=80">
+<div class="fname">ARSHDEEP-INSPIRED</div>
+<div class="fstats"><span>BOW 87</span><span>BAT 36</span><span>CAR 68</span><span>SPE 82</span></div>
+</div>
 
-        transform:
-            translateX(-50%);
+<div class="fcard">
+<div class="ftop"><span class="rating">94</span><span>LEGENDARY</span></div>
+<img class="fphoto" src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=500&q=80">
+<div class="fname">VIRAT-INSPIRED</div>
+<div class="fstats"><span>BAT 93</span><span>BOW 48</span><span>CAR 76</span><span>SPE 83</span></div>
+</div>
 
-        width:320px;
-        height:215px;
-    }
+<div class="fcard">
+<div class="ftop"><span class="rating">86</span><span>RARE</span></div>
+<img class="fphoto" src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=500&q=80">
+<div class="fname">HARDIK-INSPIRED</div>
+<div class="fstats"><span>BAT 71</span><span>BOW 72</span><span>CAR 80</span><span>SPE 75</span></div>
+</div>
 
-    .feature-card{
-        width:125px;
-        height:204px;
-    }
+</div>
+</section>
 
-    .feature-card:nth-child(1){
-        left:0;
-    }
 
-    .feature-card:nth-child(2){
-        left:98px;
-    }
+<div class="grid">
 
-    .fea
+<section class="panel" id="packs">
+
+<div class="title">PACKAGES</div>
+
+<div class="packs">
+
+<script>
+const packData=[
+["COMMON","common",30,20,40],
+["RARE","rare",75,60,100],
+["EPIC","epic",150,125,190],
+["LEGENDARY","legend",300,260,400],
+["ULTIMATE","ultimate",600,550,800]
+];
+
+document.write(packData.map(p=>`
+<div class="pack ${p[1]}">
+<div class="packName">${p[0]} PACK</div>
+
+<div class="packet">
+<div class="art">
+<div class="packLogo">CRICKET<br>CARD ARENA</div>
+<div class="pack-player"></div>
+<div class="bat"></div>
+<div class="three">3 CARDS</div>
+</div>
+</div>
+
+<div class="value">
+TOTAL VALUE<br>${p[3]} - ${p[4]}
+</div>
+
+<button class="buy" onclick="buyPack('${p[0]}',${p[2]},${p[3]},${p[4]})">
+${p[2]} 🪙
+</button>
+</div>
+`).join(""));
+</script>
+
+</div>
+
+<div style="margin-top:10px;color:#7f8da3;font-size:9px">
+ⓘ All packs contain 3 random player cards.
+</div>
+
+</section>
+
+
+<aside class="panel">
+
+<div class="title">MY SUMMARY</div>
+
+<div class="stat">
+<small>🃏 TOTAL CARDS</small>
+<b id="totalCards">0</b>
+</div>
+
+<div class="stat">
+<small>🪙 TOTAL VALUE</small>
+<b id="totalValue">0 🪙</b>
+</div>
+
+<div class="stat">
+<small>⚔️ BATTLES WON</small>
+<b>0</b>
+</div>
+
+<div class="stat">
+<small>🔥 BEST STREAK</small>
+<b>0</b>
+</div>
+
+</aside>
+
+</div>
+
+
+<div class="lower">
+
+<section class="panel">
+
+<div class="title">
+MY COLLECTION (<span id="count" style="color:#ffd42a">0</span>)
+</div>
+
+<div class="collection" id="collection">
+<div class="empty">
+<div>
+<div style="font-size:45px;opacity:.3">🃏</div>
+<b>You don't have any cards yet.</b>
+<br>
+Buy packs to start your collection!
+</div>
+</div>
+</div>
+
+</section>
+
+
+<section class="panel" id="battle">
+
+<div class="title">QUICK BATTLE</div>
+
+<div style="color:#9ca9bd;font-size:11px">
+Choose your card and challenge a random opponent
+</div>
+
+<div class="battleArea">
+
+<div>
+<div class="battleCard">🃏</div>
+<small>Select a card</small>
+</div>
+
+<div class="vs">VS</div>
+
+<div>
+<div class="battleCard">❓</div>
+<small>Random opponent</small>
+</div>
+
+</div>
+
+<button class="find" onclick="battle()">
+FIND OPPONENT
+</button>
+
+<div id="battleResult"
+style="text-align:center;font-size:10px;color:#9ca9bd;margin-top:8px">
+</div>
+
+</section>
+
+
+<aside>
+
+<button class="side s1" onclick="alert('Leaderboard coming soon')">
+🏆 LEADERBOARD
+</button>
+
+<button class="side s2" onclick="alert('Missions coming soon')">
+🎯 MISSIONS
+</button>
+
+<button class="side s3" onclick="alert('Shop coming soon')">
+🛒 SHOP
+</button>
+
+</aside>
+
+</div>
+
+</div>
+
+
+<button class="deposit" onclick="openDeposit()">
+💳<br>DEPOSIT
+</button>
+
+
+<nav class="nav">
+<button onclick="scrollTo({top:0,behavior:'smooth'})">🏠<br>HOME</button>
+<button onclick="scrollToId('packs')">🎁<br>PACKS</button>
+<button onclick="scrollToId('collection')">🃏<br>COLLECTION</button>
+<button onclick="scrollToId('battle')">⚔️<br>BATTLE</button>
+<button onclick="openDeposit()">👤<br>PROFILE</button>
+</nav>
+
+
+<div class="modal" id="depositModal">
+<div class="box">
+<h2>💳 Deposit Coins</h2>
+<p>Deposit any amount. Payment will be manually verified before coins are credited.</p>
+<input class="input" id="amount" type="number" min="1" placeholder="Enter amount ₹">
+<button class="action" onclick="submitDeposit()">CONTINUE PAYMENT</button>
+<button class="action dark" onclick="closeDeposit()">CLOSE</button>
+</div>
+</div>
+
+
+<div class="modal" id="packModal">
+<div class="box">
+<h2 id="packTitle">PACK OPENED</h2>
+<p id="packInfo"></p>
+<div class="reveal" id="reveal"></div>
+<button class="action" onclick="closePack()">ADD TO COLLECTION</button>
+</div>
+</div>
+
+
+<script>
+
+/* PLAYERS */
+
+const players=[
+{
+name:"Arshdeep-Inspired",
+bat:36,bowl:87,catch:68,speed:82,
+img:"https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=500&q=80"
+},
+{
+name:"Virat-Inspired",
+bat:93,bowl:48,catch:76,speed:83,
+img:"https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=500&q=80"
+},
+{
+name:"Hardik-Inspired",
+bat:71,bowl:72,catch:80,speed:75,
+img:"https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=500&q=80"
+}
+];
+
+
+/* STORAGE */
+
+let coins=Number(localStorage.getItem("cca_coins")||0);
+
+let collection=JSON.parse(
+localStorage.getItem("cca_cards")||"[]"
+);
+
+
+/* SAVE */
+
+function save(){
+localStorage.setItem("cca_coins",coins);
+localStorage.setItem("cca_cards",JSON.stringify(collection));
+}
+
+
+/* UPDATE */
+
+function update(){
+
+document.getElementById("coins").textContent=coins;
+
+document.getElementById("totalCards").textContent=
+collection.length;
+
+document.getElementById("count").textContent=
+collection.length;
+
+document.getElementById("totalValue").textContent=
+collection.reduce((a,b)=>a+Number(b.value||0),0)+" 🪙";
+
+render();
+
+}
+
+
+/* RANDOM 3 CARDS WITH TOTAL RANGE */
+
+function randomCards(min,max){
+
+let cards,total;
+
+do{
+
+cards=[];
+total=0;
+
+for(let i=0;i<3;i++){
+
+let p=players[
+Math.floor(Math.random()*players.length)
+];
+
+let c={
+...p,
+value:Math.floor(Math.random()*9)+5
+};
+
+cards.push(c);
+total+=c.value;
+
+}
+
+}while(total<min||total>max);
+
+return cards;
+
+}
+
+
+/* BUY PACK */
+
+function buyPack(name,price,min,max){
+
+if(coins<price){
+
+openDeposit();
+return;
+
+}
+
+coins-=price;
+
+let cards=randomCards(min,max);
+
+collection.push(...cards);
+
+save();
+update();
+
+document.getElementById("packTitle").textContent=
+name+" PACK OPENED";
+
+document.getElementById("packInfo").textContent=
+"3 CARDS • TOTAL VALUE "+
+cards.reduce((a,b)=>a+b.value,0)+
+" COINS";
+
+document.getElementById("reveal").innerHTML=
+cards.map(c=>`
+
+<div class="rcard">
+<img src="${c.img}">
+<b>${c.name}</b>
+<br>
+<span style="color:#ffd42a">🪙 ${c.value}</span>
+</div>
+
+`).join("");
+
+document.getElementById("packModal").classList.add("show");
+
+}
+
+
+/* COLLECTION */
+
+function render(){
+
+let box=document.getElementById("collection");
+
+if(!collection.length){
+
+box.innerHTML=`
+<div class="empty">
+<div>
+<div style="font-size:45px;opacity:.3">🃏</div>
+<b>You don't have any cards yet.</b>
+<br>
+Buy packs to start your collection!
+</div>
+</div>`;
+return;
+
+}
+
+box.innerHTML=collection.map((c,i)=>`
+
+<div style="
+min-width:160px;
+height:250px;
+background:#071127;
+border:2px solid ${i%3===0?"#ffd42a":i%3===1?"#a43cff":"#159cff"};
+border-radius:10px;
+padding:6px;
+text-align:center;
+">
+
+<img src="${c.img}"
+style="
+width:100%;
+height:135px;
+object-fit:cover;
+border-radius:6px;
+">
+
+<div style="font-size:9px;font-weight:1000;margin-top:5px">
+${c.name}
+</div>
+
+<div style="font-size:7px;color:#9ca9bd;margin-top:5px">
+BAT ${c.bat} • BOW ${c.bowl}
+</div>
+
+<div style="color:#ffd42a;font-size:9px;margin-top:5px">
+🪙 ${c.value}
+</div>
+
+<button
+onclick="sellCard(${i})"
+style="
+position:static;
+width:100%;
+margin-top:6px;
+padding:6px;
+border:0;
+border-radius:5px;
+background:#35c936;
+font-size:8px;
+font-weight:1000;
+">
+
+SELL ${c.value}
+
+</button>
+
+</div>
+
+`).join("");
+
+}
+
+
+/* SELL */
+
+function sellCard(i){
+
+let c=collection[i];
+
+if(!c)return;
+
+if(confirm("Sell this card for "+c.value+" coins?")){
+
+coins+=Number(c.value);
+
+collection.splice(i,1);
+
+save();
+update();
+
+}
+
+}
+
+
+/* DEPOSIT */
+
+function openDeposit(){
+document.getElementById("depositModal").classList.add("show");
+}
+
+function closeDeposit(){
+document.getElementById("depositModal").classList.remove("show");
+}
+
+function submitDeposit(){
+
+let amount=Number(
+document.getElementById("amount").value
+);
+
+if(!amount||amount<1){
+
+alert("Enter a valid amount");
+return;
+
+}
+
+closeDeposit();
+
+alert(
+"Deposit request of ₹"+
+amount+
+" created. Manual verification required."
+);
+
+}
+
+
+/* BATTLE */
+
+function battle(){
+
+if(!collection.length){
+
+alert("Buy a pack first.");
+scrollToId("packs");
+return;
+
+}
+
+let mine=
+collection[
+Math.floor(Math.random()*collection.length)
+];
+
+let enemy=
+players[
+Math.floor(Math.random()*players.length)
+];
+
+let stats=["bat","bowl","catch","speed"];
+
+let stat=
+stats[
+Math.floor(Math.random()*stats.length)
+];
+
+let a=mine[stat];
+let b=enemy[stat];
+
+document.getElementById("battleResult").textContent=
+a>=b
+?
+"🏆 YOU WIN • "+a+" VS "+b
+:
+"❌ YOU LOSE • "+a+" VS "+b;
+
+}
+
+
+/* NAV */
+
+function scrollToId(id){
+
+document.getElementById(id)
+.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+}
+
+
+/* INIT */
+
+update();
+
+</script>
+
+</body>
+      </html>
