@@ -8,603 +8,1001 @@
 <style>
 *{box-sizing:border-box}
 
+:root{
+--bg:#02030a;
+--bg2:#060b18;
+--panel:#091225;
+--panel2:#0d1830;
+--gold:#ffd84a;
+--gold2:#ffae00;
+--purple:#9d4dff;
+--purple2:#641ee0;
+--blue:#28a9ff;
+--cyan:#3de2ff;
+--green:#3bea6d;
+--red:#ff4058;
+--text:#f8faff;
+--muted:#8f9bb1;
+--line:#294266;
+}
+
+html{
+scroll-behavior:smooth
+}
+
 body{
- margin:0;
- background:#020713;
- color:#fff;
- font-family:Arial,sans-serif
+margin:0;
+color:var(--text);
+font-family:Arial,sans-serif;
+overflow-x:hidden;
+background:
+radial-gradient(circle at 50% -15%,#19356e 0,#091126 25%,#02030a 63%);
+}
+
+body:before{
+content:"";
+position:fixed;
+inset:0;
+pointer-events:none;
+z-index:-1;
+opacity:.18;
+background-image:
+linear-gradient(#fff 1px,transparent 1px),
+linear-gradient(90deg,#fff 1px,transparent 1px);
+background-size:48px 48px;
+mask-image:linear-gradient(to bottom,#000,transparent 75%);
 }
 
 .app{
- max-width:1450px;
- margin:auto;
- padding:10px 14px 80px
+max-width:1500px;
+margin:auto;
+padding:12px 18px 100px
 }
 
 .head{
- height:70px;
- display:flex;
- align-items:center;
- justify-content:space-between
+height:76px;
+display:flex;
+align-items:center;
+justify-content:space-between
 }
 
 .logo{
- font-size:24px;
- font-weight:900;
- font-style:italic
+font-size:25px;
+font-weight:1000;
+font-style:italic;
+letter-spacing:-1px;
+text-shadow:0 0 25px #ffd84a22
 }
 
 .logo span{
- display:block;
- color:#ffd329;
- font-size:11px;
- letter-spacing:3px
+display:block;
+color:var(--gold);
+font-size:10px;
+letter-spacing:4px
 }
 
 .coins{
- padding:10px 18px;
- border:1px solid #465878;
- border-radius:30px;
- background:#050c1b;
- color:#ffd329
+padding:11px 18px;
+border:1px solid #ffd84a45;
+border-radius:30px;
+background:linear-gradient(145deg,#15223d,#040814);
+color:var(--gold);
+box-shadow:
+inset 0 1px #fff1,
+0 10px 30px #000a,
+0 0 22px #ffd84a12;
+backdrop-filter:blur(15px)
+}
+
+.coins b{
+color:#fff;
+font-size:17px
+}
+
+.coins span{
+font-size:24px
 }
 
 .hero{
- height:390px;
- position:relative;
- overflow:hidden;
- border:1px solid #315083;
- border-radius:16px;
- background:
- radial-gradient(circle at 75% 25%,#1b4d9c,#07152e 38%,#020713 75%);
- box-shadow:inset 0 0 80px #0b4da855
+height:420px;
+position:relative;
+overflow:hidden;
+border:1px solid #4386d855;
+border-radius:22px;
+background:
+radial-gradient(circle at 78% 22%,#278cff66,transparent 23%),
+radial-gradient(circle at 45% 85%,#913eff22,transparent 32%),
+linear-gradient(125deg,#07162f,#020713 57%,#060b19);
+box-shadow:
+inset 0 0 100px #1268ff18,
+inset 0 -80px 100px #000a,
+0 25px 80px #000d
+}
+
+.hero:before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:22px;
+pointer-events:none;
+background:
+linear-gradient(120deg,transparent 25%,#fff1,transparent 55%)
 }
 
 .hero:after{
- content:"";
- position:absolute;
- left:0;
- right:0;
- bottom:0;
- height:32%;
- background:radial-gradient(ellipse,#285335,#06120b)
+content:"";
+position:absolute;
+left:-10%;
+right:-10%;
+bottom:-13%;
+height:48%;
+border-radius:50% 50% 0 0;
+background:
+radial-gradient(ellipse,#285c39,#07140b 65%);
+box-shadow:0 -25px 70px #27894b22
 }
 
 .copy{
- position:relative;
- z-index:3;
- width:45%;
- padding:48px
+position:relative;
+z-index:5;
+width:46%;
+padding:55px 50px
 }
 
 .copy small{
- color:#ffd329;
- font-weight:900;
- letter-spacing:2px
+color:var(--gold);
+font-size:10px;
+font-weight:1000;
+letter-spacing:3px;
+text-shadow:0 0 16px #ffd84a55
 }
 
 .copy h1{
- font-size:43px;
- line-height:1.02;
- font-style:italic;
- margin:12px 0
+font-size:46px;
+line-height:.98;
+font-style:italic;
+font-weight:1000;
+letter-spacing:-2px;
+margin:13px 0 18px;
+text-shadow:0 10px 30px #000
 }
 
 .copy h1 span{
- color:#ffd329
+color:var(--gold);
+text-shadow:0 0 25px #ffd84a30
 }
 
 .copy p{
- color:#d6dfed;
- line-height:1.5
+max-width:400px;
+color:#cbd5e6;
+line-height:1.6;
+font-size:14px
 }
 
 .buy,
 .pack button,
 .find,
 .action{
- border:0;
- border-radius:7px;
- padding:12px 25px;
- background:linear-gradient(#ffe43b,#e9b319);
- font-weight:900
+border:0;
+border-radius:9px;
+padding:13px 26px;
+background:
+linear-gradient(
+180deg,
+#fff16a,
+#ffd52f 48%,
+#df9c00
+);
+font-weight:1000;
+box-shadow:
+0 10px 30px #ffb30035,
+inset 0 1px #fff8;
+transition:.2s
+}
+
+.buy:hover,
+.pack button:hover,
+.find:hover,
+.action:hover{
+filter:brightness(1.12);
+transform:translateY(-2px)
 }
 
 .players{
- position:absolute;
- right:25px;
- bottom:0;
- width:55%;
- height:330px;
- z-index:4
+position:absolute;
+right:25px;
+bottom:0;
+width:56%;
+height:350px;
+z-index:8
 }
 
 .card{
- position:absolute;
- bottom:10px;
- width:190px;
- height:285px;
- padding:7px;
- border-radius:13px;
- background:#061025;
- overflow:hidden;
- box-shadow:0 20px 45px #000
+position:absolute;
+bottom:10px;
+width:195px;
+height:300px;
+padding:7px;
+border-radius:16px;
+overflow:hidden;
+background:
+linear-gradient(
+145deg,
+#101c36,
+#020712
+);
+box-shadow:
+0 25px 60px #000e,
+inset 0 0 30px #fff08
+}
+
+.card:before{
+content:"";
+position:absolute;
+inset:0;
+pointer-events:none;
+z-index:2;
+background:
+linear-gradient(
+125deg,
+#fff2,
+transparent 27%,
+transparent 60%,
+#fff08
+)
 }
 
 .card:nth-child(1){
- left:3%;
- border:2px solid #a43cff;
- transform:rotate(-6deg)
+left:3%;
+border:2px solid #a855ff;
+transform:rotate(-7deg);
+box-shadow:
+0 25px 60px #000e,
+0 0 35px #8a35ff35
 }
 
 .card:nth-child(2){
- left:32%;
- border:2px solid #ffd329;
- z-index:3
+left:32%;
+z-index:4;
+border:2px solid var(--gold);
+box-shadow:
+0 0 45px #ffd3292c,
+0 25px 60px #000e
 }
 
 .card:nth-child(3){
- right:2%;
- border:2px solid #159cff;
- transform:rotate(6deg)
+right:2%;
+border:2px solid var(--blue);
+transform:rotate(7deg);
+box-shadow:
+0 0 35px #159cff30,
+0 25px 60px #000e
+}
+
+.card:hover{
+transform:translateY(-10px) rotate(0);
+z-index:10
 }
 
 .art{
- height:195px;
- border-radius:8px;
- background:linear-gradient(145deg,#193d70,#071022);
- position:relative
+height:205px;
+margin-top:3px;
+position:relative;
+overflow:hidden;
+border-radius:10px;
+background:
+radial-gradient(
+circle at 50% 24%,
+#e8b692 0 9%,
+transparent 10%
+),
+radial-gradient(
+ellipse at 50% 105%,
+#246bc7 0 34%,
+#0a234a 35%,
+transparent 36%
+),
+linear-gradient(
+145deg,
+#1c437b,
+#040a17
+);
+box-shadow:inset 0 0 35px #0009
 }
 
 .art:before{
- content:"";
- position:absolute;
- top:18px;
- left:50%;
- transform:translateX(-50%);
- width:62px;
- height:62px;
- border-radius:50%;
- background:
- radial-gradient(circle at 35% 35%,#e5b18c,#9d5f43 55%,#211b20 56%)
+content:"";
+position:absolute;
+top:18px;
+left:50%;
+transform:translateX(-50%);
+width:65px;
+height:65px;
+border-radius:50%;
+background:
+radial-gradient(
+circle at 35% 32%,
+#f0c5a1 0 10%,
+#bb7957 32%,
+#35242a 55%,
+#17151c 56%
+);
+box-shadow:0 4px 20px #0008
 }
 
 .art:after{
- content:"";
- position:absolute;
- bottom:-20px;
- left:50%;
- transform:translateX(-50%);
- width:130px;
- height:170px;
- border-radius:50% 50% 0 0;
- background:linear-gradient(90deg,#071c40,#2467bd,#071c40)
+content:"";
+position:absolute;
+left:50%;
+bottom:-30px;
+transform:translateX(-50%);
+width:145px;
+height:180px;
+border-radius:50% 50% 0 0;
+background:
+linear-gradient(
+90deg,
+#071b3b,
+#2169c5 48%,
+#071b3b
+);
+box-shadow:inset 0 0 25px #fff2
 }
 
 .name{
- text-align:center;
- font-size:9px;
- font-weight:900;
- margin-top:5px
+position:relative;
+z-index:5;
+text-align:center;
+margin-top:6px;
+font-size:9px;
+font-weight:1000
 }
 
 .stats{
- display:flex;
- justify-content:space-around;
- font-size:7px;
- color:#bcc8da;
- margin-top:5px
+display:flex;
+justify-content:space-around;
+margin-top:6px;
+color:#b8c4d8;
+font-size:7px
 }
 
 .grid{
- display:grid;
- grid-template-columns:1fr 250px;
- gap:14px;
- margin-top:14px
+display:grid;
+grid-template-columns:1fr 250px;
+gap:14px;
+margin-top:14px
 }
 
 .panel{
- background:linear-gradient(145deg,#08162d,#030a18);
- border:1px solid #243d65;
- border-radius:14px;
- padding:14px
+position:relative;
+overflow:hidden;
+background:
+linear-gradient(
+145deg,
+#0c162cdd,
+#030711f5
+);
+border:1px solid #688fca3d;
+border-radius:17px;
+padding:16px;
+box-shadow:
+0 20px 50px #0009,
+inset 0 1px #fff08;
+backdrop-filter:blur(16px)
+}
+
+.panel:before{
+content:"";
+position:absolute;
+top:0;
+left:12%;
+right:12%;
+height:1px;
+background:
+linear-gradient(
+90deg,
+transparent,
+#78b0ff77,
+transparent
+)
 }
 
 .title{
- font-size:20px;
- font-weight:900;
- margin-bottom:12px
+font-size:20px;
+font-weight:1000;
+letter-spacing:-.3px;
+margin-bottom:13px
 }
 
 .packs{
- display:grid;
- grid-template-columns:repeat(5,1fr);
- gap:9px
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:10px
 }
 
 .pack{
- padding:7px;
- border-radius:10px;
- text-align:center;
- background:#030a17
+position:relative;
+padding:8px;
+border-radius:13px;
+text-align:center;
+background:
+linear-gradient(
+145deg,
+#091124,
+#020611
+);
+overflow:hidden;
+transition:.2s
 }
 
-.common{border:2px solid #31d34b}
-.rare{border:2px solid #159cff}
-.epic{border:2px solid #a43cff}
-.legendary{border:2px solid #e5b72b}
-.ultimate{border:2px solid #ef3131}
+.pack:hover{
+transform:translateY(-5px);
+box-shadow:0 18px 40px #000d
+}
+
+.common{
+border:1px solid #35e968;
+box-shadow:inset 0 0 22px #31d34b18
+}
+
+.rare{
+border:1px solid #1ca8ff;
+box-shadow:inset 0 0 22px #159cff18
+}
+
+.epic{
+border:1px solid #a855ff;
+box-shadow:inset 0 0 22px #a43cff1b
+}
+
+.legendary{
+border:1px solid #e6bb31;
+box-shadow:inset 0 0 25px #ffd32920
+}
+
+.ultimate{
+border:1px solid #ff4058;
+box-shadow:inset 0 0 25px #ef31311b
+}
 
 .packname{
- font-size:10px;
- font-weight:900
+font-size:10px;
+font-weight:1000;
+letter-spacing:.6px
 }
 
 .packart{
- height:165px;
- margin-top:7px;
- border-radius:7px;
- display:grid;
- place-items:center
+height:175px;
+margin-top:8px;
+display:grid;
+place-items:center;
+position:relative;
+overflow:hidden;
+border-radius:9px
 }
 
 .common .packart{
- background:linear-gradient(145deg,#073714,#21a82f)
+background:
+radial-gradient(circle,#63ff7850,transparent 50%),
+linear-gradient(145deg,#052d12,#159d2b)
 }
 
 .rare .packart{
- background:linear-gradient(145deg,#052c60,#087ed4)
+background:
+radial-gradient(circle,#5edaff55,transparent 50%),
+linear-gradient(145deg,#032453,#087ed4)
 }
 
 .epic .packart{
- background:linear-gradient(145deg,#2e0750,#8422dc)
+background:
+radial-gradient(circle,#e568ff55,transparent 50%),
+linear-gradient(145deg,#25053f,#8124d7)
 }
 
 .legendary .packart{
- background:linear-gradient(145deg,#523802,#d49a12)
+background:
+radial-gradient(circle,#fff27a66,transparent 50%),
+linear-gradient(145deg,#493000,#d39a0f)
 }
 
 .ultimate .packart{
- background:linear-gradient(145deg,#4e0606,#d82a27)
+background:
+radial-gradient(circle,#ff685866,transparent 50%),
+linear-gradient(145deg,#430505,#d82b28)
 }
 
 .packet{
- width:100px;
- height:140px;
- border:2px solid #ffffff55;
- border-radius:7px;
- background:linear-gradient(
-  120deg,
-  #ffffff22,
-  transparent 35%,
-  #0005
- );
- position:relative;
- overflow:hidden
-}
-
-.packet b{
- position:absolute;
- top:8px;
- left:0;
- right:0;
- text-align:center;
- font-size:8px
-}
-
-.packet:before{
- content:"";
- position:absolute;
- width:45px;
- height:45px;
- border-radius:50%;
- left:50%;
- top:35px;
- transform:translateX(-50%);
- background:#c17b57
+width:105px;
+height:145px;
+position:relative;
+overflow:hidden;
+border-radius:9px;
+border:2px solid #fff6;
+background:
+linear-gradient(
+135deg,
+#ffffff22,
+transparent 30%,
+#0006
+);
+box-shadow:
+0 15px 30px #0009,
+inset 0 0 25px #fff1
 }
 
 .packet:after{
- content:"🏏";
- position:absolute;
- font-size:70px;
- left:17px;
- top:62px
+content:"";
+position:absolute;
+width:160%;
+height:18px;
+left:-40%;
+top:50%;
+transform:rotate(-35deg);
+background:
+linear-gradient(
+90deg,
+transparent,
+#fff4,
+transparent
+)
+}
+
+.packet:before{
+content:"🏏";
+position:absolute;
+left:50%;
+top:45%;
+transform:translate(-50%,-50%);
+font-size:54px;
+filter:drop-shadow(0 5px 8px #0008)
+}
+
+.packet b{
+position:absolute;
+top:9px;
+left:0;
+right:0;
+z-index:3;
+text-align:center;
+font-size:8px;
+text-shadow:0 2px 5px #000
 }
 
 .range{
- font-size:9px;
- margin-top:6px
+margin-top:7px;
+color:#aab6c9;
+font-size:9px;
+line-height:1.35
 }
 
 .range b{
- font-size:13px;
- color:#ffd329
+color:var(--gold);
+font-size:13px
 }
 
 .pack button{
- width:100%;
- padding:8px;
- margin-top:5px
+width:100%;
+margin-top:6px;
+padding:8px
 }
 
 .lower{
- display:grid;
- grid-template-columns:1fr 1.1fr 250px;
- gap:14px;
- margin-top:14px
+display:grid;
+grid-template-columns:1fr 1.1fr 250px;
+gap:14px;
+margin-top:14px
 }
 
 .stat{
- display:flex;
- justify-content:space-between;
- padding:13px;
- border:1px solid #294166;
- border-radius:8px;
- margin-bottom:8px;
- background:#07142a
+display:flex;
+align-items:center;
+justify-content:space-between;
+min-height:62px;
+padding:12px 13px;
+margin-bottom:8px;
+border-radius:10px;
+border:1px solid #46689d4d;
+background:
+linear-gradient(
+135deg,
+#0d1b35dd,
+#050a15dd
+);
+box-shadow:inset 0 1px #fff06
 }
 
 .stat small{
- color:#aab6c9
+color:#aab6ca
+}
+
+.stat b{
+font-size:17px;
+text-shadow:0 0 12px #fff2
 }
 
 .empty{
- height:220px;
- border:1px dashed #314668;
- border-radius:10px;
- display:grid;
- place-items:center;
- text-align:center;
- color:#9aa8bc
+height:220px;
+border:1px dashed #3b5277;
+border-radius:11px;
+display:grid;
+place-items:center;
+text-align:center;
+color:#8f9db3;
+background:
+radial-gradient(
+circle,
+#14294b22,
+transparent 60%
+)
 }
 
 .battle{
- display:flex;
- justify-content:center;
- align-items:center;
- gap:18px;
- margin:30px 0
+display:flex;
+justify-content:center;
+align-items:center;
+gap:20px;
+margin:30px 0
 }
 
 .bcard{
- width:95px;
- height:120px;
- border:1px solid #405477;
- border-radius:10px;
- display:grid;
- place-items:center;
- font-size:40px;
- background:#08142a
+width:100px;
+height:125px;
+display:grid;
+place-items:center;
+border-radius:11px;
+border:1px solid #3c5276;
+background:
+linear-gradient(
+145deg,
+#0b1a35,
+#030813
+);
+box-shadow:
+inset 0 0 25px #fff05,
+0 12px 25px #0008;
+font-size:42px
 }
 
 .vs{
- font-size:32px;
- color:#ffd329;
- font-weight:900;
- font-style:italic
+color:var(--gold);
+font-size:34px;
+font-weight:1000;
+font-style:italic;
+text-shadow:0 0 22px #ffd32966
 }
 
 .find{
- display:block;
- margin:auto;
- background:linear-gradient(90deg,#5d18d3,#8c2cff);
- color:#fff;
- width:85%
+display:block;
+width:85%;
+margin:auto;
+background:
+linear-gradient(
+90deg,
+#5c17cf,
+#a23cff
+);
+color:#fff
 }
 
 .side button{
- width:100%;
- height:60px;
- margin-bottom:8px;
- border-radius:10px;
- color:#fff;
- font-weight:900;
- border:1px solid #3b5073
+width:100%;
+height:65px;
+margin-bottom:9px;
+border-radius:12px;
+color:#fff;
+font-weight:1000;
+border:1px solid #7896c844;
+box-shadow:
+0 10px 25px #0008,
+inset 0 1px #fff08;
+transition:.2s
+}
+
+.side button:hover{
+transform:translateY(-3px)
 }
 
 .deposit{
- position:fixed;
- right:18px;
- bottom:70px;
- width:88px;
- height:88px;
- border-radius:50%;
- border:2px solid #a967ff;
- background:radial-gradient(circle,#a75cff,#351078);
- color:#fff;
- font-weight:900;
- z-index:20;
- box-shadow:0 0 35px #8b42ff99
+position:fixed;
+right:24px;
+bottom:76px;
+width:108px;
+height:108px;
+border-radius:50%;
+z-index:30;
+border:2px solid #b879ff;
+background:
+radial-gradient(
+circle at 35% 25%,
+#b866ff,
+#351075 70%
+);
+color:#fff;
+font-size:12px;
+font-weight:1000;
+box-shadow:
+0 0 45px #8e43ff99,
+0 20px 45px #000d,
+inset 0 1px #fff5;
+transition:.2s
+}
+
+.deposit:hover{
+transform:translateY(-5px) scale(1.03)
 }
 
 .nav{
- display:none
+display:none
 }
 
 .modal{
- display:none;
- position:fixed;
- inset:0;
- background:#000d;
- z-index:50;
- align-items:center;
- justify-content:center;
- padding:15px
+display:none;
+position:fixed;
+inset:0;
+background:#000d;
+z-index:50;
+align-items:center;
+justify-content:center;
+padding:15px;
+backdrop-filter:blur(10px)
 }
 
 .modal.show{
- display:flex
+display:flex
 }
 
 .box{
- width:min(460px,95vw);
- background:#071329;
- border:1px solid #7545da;
- border-radius:15px;
- padding:20px
+width:min(460px,95vw);
+background:
+linear-gradient(
+145deg,
+#101c38,
+#040913
+);
+border:1px solid #a45aff88;
+border-radius:17px;
+padding:20px;
+box-shadow:
+0 30px 90px #000,
+0 0 35px #8d43ff22
 }
 
 .box input{
- width:100%;
- padding:12px;
- margin:10px 0;
- background:#030a17;
- color:#fff;
- border:1px solid #29436a;
- border-radius:7px
+width:100%;
+padding:12px;
+margin:10px 0;
+background:#030a17;
+color:#fff;
+border:1px solid #35537e;
+border-radius:8px
 }
 
 .action{
- width:100%;
- margin-top:8px
+width:100%;
+margin-top:8px
 }
 
 .close{
- background:#071126;
- color:#fff;
- border:1px solid #29436a
+background:#071126;
+color:#fff;
+border:1px solid #29436a
 }
 
 .revealed{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:6px;
- margin-top:10px
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:6px;
+margin-top:10px
 }
 
 .rc{
- padding:6px;
- text-align:center;
- background:#081329;
- border:1px solid #30496e;
- border-radius:7px;
- font-size:8px
+padding:6px;
+text-align:center;
+background:
+linear-gradient(
+145deg,
+#0d1b35,
+#050a15
+);
+border:1px solid #30496e;
+border-radius:8px;
+font-size:8px;
+box-shadow:inset 0 0 15px #fff04
 }
+
+
+/* MOBILE */
 
 @media(max-width:800px){
 
- .app{
-  padding:6px 7px 75px
- }
+.app{
+padding:6px 7px 78px
+}
 
- .head{
-  height:58px
- }
+.head{
+height:60px
+}
 
- .logo{
-  font-size:17px
- }
+.logo{
+font-size:17px
+}
 
- .logo span{
-  font-size:8px
- }
+.logo span{
+font-size:7px
+}
 
- .hero{
-  height:425px
- }
+.coins{
+min-width:85px;
+height:38px;
+padding:0 10px;
+font-size:12px
+}
 
- .copy{
-  width:100%;
-  padding:25px 17px
- }
+.coins b{
+font-size:13px
+}
 
- .copy h1{
-  font-size:29px
- }
+.hero{
+height:440px;
+border-radius:16px
+}
 
- .copy p{
-  font-size:12px;
-  max-width:260px
- }
+.copy{
+width:100%;
+padding:25px 18px
+}
 
- .players{
-  width:345px;
-  height:220px;
-  left:50%;
-  right:auto;
-  transform:translateX(-50%)
- }
+.copy h1{
+font-size:29px;
+letter-spacing:-1px
+}
 
- .card{
-  width:125px;
-  height:200px
- }
+.copy p{
+max-width:270px;
+font-size:12px
+}
 
- .card:nth-child(2){
-  left:32%
- }
+.players{
+left:50%;
+right:auto;
+bottom:0;
+transform:translateX(-50%);
+width:350px;
+height:225px
+}
 
- .art{
-  height:135px
- }
+.card{
+width:126px;
+height:205px;
+border-radius:11px
+}
 
- .grid,
- .lower{
-  display:block
- }
+.card:nth-child(2){
+left:32%
+}
 
- .panel{
-  margin-top:12px
- }
+.art{
+height:137px;
+border-radius:7px
+}
 
- .packs{
-  display:flex;
-  overflow:auto
- }
+.name{
+font-size:6.5px
+}
 
- .pack{
-  min-width:132px
- }
+.stats{
+font-size:5px
+}
 
- .packart{
-  height:150px
- }
+.grid,
+.lower{
+display:block
+}
 
- .lower .panel{
-  margin-top:12px
- }
+.panel{
+margin-top:11px;
+padding:12px;
+border-radius:13px
+}
 
- .side{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:6px;
-  margin-top:12px
- }
+.title{
+font-size:17px
+}
 
- .side button{
-  font-size:8px
- }
+.packs{
+display:flex;
+overflow-x:auto;
+scrollbar-width:none;
+gap:8px
+}
 
- .deposit{
-  width:75px;
-  height:75px;
-  font-size:10px
- }
+.packs::-webkit-scrollbar{
+display:none
+}
 
- .nav{
-  display:grid;
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
-  height:62px;
-  background:#030917f7;
-  border-top:1px solid #243c62;
-  z-index:25;
-  grid-template-columns:repeat(5,1fr)
- }
+.pack{
+flex:0 0 135px
+}
 
- .nav button{
-  background:none;
-  border:0;
-  color:#9da9bd;
-  font-size:8px
- }
+.packart{
+height:152px
+}
 
- .nav .active{
-  color:#ffd329
- }
+.packet{
+width:92px;
+height:130px
+}
+
+.lower .panel{
+margin-top:11px
+}
+
+.side{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:7px;
+margin-top:11px
+}
+
+.side button{
+height:57px;
+margin:0;
+padding:0;
+font-size:8px;
+text-align:center
+}
+
+.deposit{
+width:78px;
+height:78px;
+right:10px;
+bottom:71px;
+font-size:9px
+}
+
+.nav{
+display:grid;
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:63px;
+z-index:25;
+grid-template-columns:repeat(5,1fr);
+background:#030813f5;
+border-top:1px solid #263d62;
+backdrop-filter:blur(18px);
+box-shadow:0 -10px 30px #000b
+}
+
+.nav button{
+border:0;
+background:none;
+color:#7f8ca3;
+font-size:8px;
+font-weight:1000
+}
+
+.nav .active{
+color:var(--gold);
+text-shadow:0 0 12px #ffd32955
+}
+
+}
+
+@media(max-width:380px){
+
+.players{
+transform:
+translateX(-50%)
+scale(.92);
+transform-origin:center bottom
+}
+
+.copy h1{
+font-size:26px
+}
+
 }
 </style>
 </head>
@@ -614,6 +1012,7 @@ body{
 <div class="app">
 
 <header class="head">
+
 <div class="logo">
 🏏 CRICKET CARD
 <span>ARENA</span>
@@ -622,7 +1021,9 @@ body{
 <div class="coins">
 🪙 <b id="bal">0</b>　<span>＋</span>
 </div>
+
 </header>
+
 
 <section class="hero" id="home">
 
@@ -647,10 +1048,15 @@ BUY PACKS
 
 </div>
 
+
 <div class="players">
 
 <div class="card">
-<div><b>87</b>　EPIC</div>
+
+<div>
+<b>87</b>　EPIC
+</div>
+
 <div class="art"></div>
 
 <div class="name">
@@ -663,10 +1069,16 @@ ARSHDEEP-INSPIRED
 <span>CAR 68</span>
 <span>SPE 82</span>
 </div>
+
 </div>
 
+
 <div class="card">
-<div><b>94</b>　LEGENDARY</div>
+
+<div>
+<b>94</b>　LEGENDARY
+</div>
+
 <div class="art"></div>
 
 <div class="name">
@@ -679,10 +1091,16 @@ VIRAT-INSPIRED
 <span>CAR 76</span>
 <span>SPE 83</span>
 </div>
+
 </div>
 
+
 <div class="card">
-<div><b>86</b>　RARE</div>
+
+<div>
+<b>86</b>　RARE
+</div>
+
 <div class="art"></div>
 
 <div class="name">
@@ -695,10 +1113,13 @@ HARDIK-INSPIRED
 <span>CAR 80</span>
 <span>SPE 75</span>
 </div>
+
 </div>
 
 </div>
+
 </section>
+
 
 <div class="grid">
 
@@ -710,13 +1131,22 @@ PACKAGES
 
 <div class="packs">
 
+
 <div class="pack common">
-<div class="packname">COMMON PACK</div>
+
+<div class="packname">
+COMMON PACK
+</div>
 
 <div class="packart">
+
 <div class="packet">
-<b>CRICKET CARD<br>ARENA</b>
+<b>
+CRICKET CARD<br>
+ARENA
+</b>
 </div>
+
 </div>
 
 <div class="range">
@@ -727,15 +1157,25 @@ TOTAL VALUE<br>
 <button onclick="buy(30,20,40)">
 30 🪙
 </button>
+
 </div>
+
 
 <div class="pack rare">
-<div class="packname">RARE PACK</div>
+
+<div class="packname">
+RARE PACK
+</div>
 
 <div class="packart">
+
 <div class="packet">
-<b>CRICKET CARD<br>ARENA</b>
+<b>
+CRICKET CARD<br>
+ARENA
+</b>
 </div>
+
 </div>
 
 <div class="range">
@@ -746,15 +1186,25 @@ TOTAL VALUE<br>
 <button onclick="buy(75,60,100)">
 75 🪙
 </button>
+
 </div>
+
 
 <div class="pack epic">
-<div class="packname">EPIC PACK</div>
+
+<div class="packname">
+EPIC PACK
+</div>
 
 <div class="packart">
+
 <div class="packet">
-<b>CRICKET CARD<br>ARENA</b>
+<b>
+CRICKET CARD<br>
+ARENA
+</b>
 </div>
+
 </div>
 
 <div class="range">
@@ -765,15 +1215,25 @@ TOTAL VALUE<br>
 <button onclick="buy(150,125,190)">
 150 🪙
 </button>
+
 </div>
+
 
 <div class="pack legendary">
-<div class="packname">LEGENDARY PACK</div>
+
+<div class="packname">
+LEGENDARY PACK
+</div>
 
 <div class="packart">
+
 <div class="packet">
-<b>CRICKET CARD<br>ARENA</b>
+<b>
+CRICKET CARD<br>
+ARENA
+</b>
 </div>
+
 </div>
 
 <div class="range">
@@ -784,15 +1244,25 @@ TOTAL VALUE<br>
 <button onclick="buy(300,260,400)">
 300 🪙
 </button>
+
 </div>
+
 
 <div class="pack ultimate">
-<div class="packname">ULTIMATE PACK</div>
+
+<div class="packname">
+ULTIMATE PACK
+</div>
 
 <div class="packart">
+
 <div class="packet">
-<b>CRICKET CARD<br>ARENA</b>
+<b>
+CRICKET CARD<br>
+ARENA
+</b>
 </div>
+
 </div>
 
 <div class="range">
@@ -803,16 +1273,24 @@ TOTAL VALUE<br>
 <button onclick="buy(600,550,800)">
 600 🪙
 </button>
-</div>
 
 </div>
 
-<div style="color:#8491a7;font-size:9px;margin-top:9px">
+
+</div>
+
+<div style="
+color:#8491a7;
+font-size:9px;
+margin-top:9px">
+
 ⓘ All packs contain 3 random player cards.
 Total value is shown as a range.
+
 </div>
 
 </section>
+
 
 <aside class="panel">
 
@@ -844,22 +1322,33 @@ MY SUMMARY
 
 </div>
 
+
 <div class="lower">
+
 
 <section class="panel" id="collection">
 
 <div class="title">
 MY COLLECTION
-<span style="color:#ffd329" id="cc">(0)</span>
+<span
+style="color:#ffd329"
+id="cc">
+(0)
+</span>
 </div>
 
 <div class="empty" id="col">
+
 🃏<br>
+
 You don't have any cards yet.<br>
+
 Buy packs to start your collection!
+
 </div>
 
 </section>
+
 
 <section class="panel" id="battle">
 
@@ -867,9 +1356,15 @@ Buy packs to start your collection!
 QUICK BATTLE
 </div>
 
-<div style="color:#9ba9bf;font-size:11px">
-Choose your card and challenge a random opponent
+<div style="
+color:#9ba9bf;
+font-size:11px">
+
+Choose your card and challenge
+a random opponent
+
 </div>
+
 
 <div class="battle">
 
@@ -887,15 +1382,22 @@ VS
 
 </div>
 
+
 <button class="find" onclick="fight()">
 FIND OPPONENT
 </button>
 
-<div id="result"
-style="text-align:center;color:#9ba9bf;font-size:10px;margin-top:8px">
+<div
+id="result"
+style="
+text-align:center;
+color:#9ba9bf;
+font-size:10px;
+margin-top:8px">
 </div>
 
 </section>
+
 
 <aside class="side">
 
@@ -923,34 +1425,52 @@ onclick="alert('Shop coming soon')">
 
 </div>
 
-<button class="deposit" onclick="openD()">
+
+<button
+class="deposit"
+onclick="openD()">
+
 💳<br>
 DEPOSIT
+
 </button>
+
 
 <nav class="nav">
 
-<button class="active" onclick="go('home')">
-🏠<br>HOME
+<button
+class="active"
+onclick="go('home')">
+🏠<br>
+HOME
 </button>
 
-<button onclick="go('packs')">
-🎁<br>PACKS
+<button
+onclick="go('packs')">
+🎁<br>
+PACKS
 </button>
 
-<button onclick="go('collection')">
-🃏<br>COLLECTION
+<button
+onclick="go('collection')">
+🃏<br>
+COLLECTION
 </button>
 
-<button onclick="go('battle')">
-⚔️<br>BATTLE
+<button
+onclick="go('battle')">
+⚔️<br>
+BATTLE
 </button>
 
-<button onclick="openD()">
-👤<br>PROFILE
+<button
+onclick="openD()">
+👤<br>
+PROFILE
 </button>
 
 </nav>
+
 
 <div class="modal" id="dm">
 
@@ -958,8 +1478,13 @@ DEPOSIT
 
 <h2>💳 DEPOSIT COINS</h2>
 
-<p style="color:#9ba9bf;font-size:12px">
-Deposit any amount. Manual verification will be used.
+<p style="
+color:#9ba9bf;
+font-size:12px">
+
+Deposit any amount.
+Manual verification will be used.
+
 </p>
 
 <input
@@ -967,40 +1492,59 @@ id="amt"
 type="number"
 placeholder="Enter amount ₹">
 
-<button class="action" onclick="deposit()">
+<button
+class="action"
+onclick="deposit()">
+
 CONTINUE
+
 </button>
 
-<button class="action close" onclick="closeD()">
+<button
+class="action close"
+onclick="closeD()">
+
 CLOSE
+
 </button>
 
 </div>
 
 </div>
+
 
 <div class="modal" id="pm">
 
 <div class="box">
 
-<h2>🎁 PACK OPENED</h2>
+<h2>
+🎁 PACK OPENED
+</h2>
 
-<p id="pi"
-style="color:#9ba9bf;font-size:12px">
+<p
+id="pi"
+style="
+color:#9ba9bf;
+font-size:12px">
 </p>
 
-<div class="revealed" id="rv">
+<div
+class="revealed"
+id="rv">
 </div>
 
 <button
 class="action"
 onclick="pm.classList.remove('show')">
+
 ADD TO COLLECTION
+
 </button>
 
 </div>
 
 </div>
+
 
 <script>
 
@@ -1011,6 +1555,7 @@ let cards =
 JSON.parse(
 localStorage.getItem('cca_cards') || '[]'
 );
+
 
 function save(){
 
@@ -1025,6 +1570,7 @@ JSON.stringify(cards)
 );
 
 }
+
 
 function ui(){
 
@@ -1042,6 +1588,7 @@ cards.reduce(
 
 }
 
+
 function go(id){
 
 document
@@ -1052,17 +1599,20 @@ behavior:'smooth'
 
 }
 
+
 function openD(){
 
 dm.classList.add('show');
 
 }
 
+
 function closeD(){
 
 dm.classList.remove('show');
 
 }
+
 
 function deposit(){
 
@@ -1081,6 +1631,7 @@ a+
 
 }
 
+
 function buy(price,min,max){
 
 if(coins<price)
@@ -1093,7 +1644,9 @@ let a;
 do{
 
 a=[
-1,2,3
+1,
+2,
+3
 ].map(
 ()=>Math.floor(
 Math.random()*9
@@ -1117,6 +1670,7 @@ pi.textContent=
 a.reduce((x,y)=>x+y,0)+
 ' coins';
 
+
 rv.innerHTML=
 
 a.map(
@@ -1137,9 +1691,11 @@ a.map(
 
 ).join('');
 
+
 pm.classList.add('show');
 
 }
+
 
 function fight(){
 
@@ -1152,6 +1708,7 @@ Math.random()>.5
 :'❌ YOU LOSE';
 
 }
+
 
 ui();
 
