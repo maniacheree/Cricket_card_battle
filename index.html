@@ -232,13 +232,11 @@ h1 span{color:#fff}
 
     <div class="panel" style="margin-top:12px;background:#070707">
       <h3 style="color:#ffd85a;margin-top:0">PAYMENT DETAILS</h3>
-      <p class="muted">After payment, enter the exact details below and submit for manual verification.</p>
+      <p class="muted">Pay the amount shown below. <b style="color:#ffd85a">₹1 = 1 Coin</b>. After payment, enter your UTR and upload the screenshot for manual verification.</p>
 
       <div class="muted">PAYMENT AMOUNT</div>
       <input class="input" id="payAmount" type="number" min="1" step="1" placeholder="Enter payment amount ₹">
-
-      <div class="muted" style="margin-top:8px">COINS REQUESTED</div>
-      <input class="input" id="coinAmount" type="number" min="1" step="1" placeholder="Enter coins to receive">
+      <div id="coinPreview" class="muted" style="margin-top:-2px;color:#ffd85a">🪙 You will receive 1 coin per ₹1</div>
 
       <div class="muted" style="margin-top:8px">UTR / TRANSACTION ID</div>
       <input class="input" id="utr" maxlength="80" placeholder="Enter UTR / transaction ID">
@@ -333,6 +331,13 @@ function toast(t){const x=document.getElementById('toast');x.textContent=t;x.sty
 
 const depositRequests=JSON.parse(localStorage.getItem('cca_deposit_requests')||'[]');
 
+
+document.getElementById('payAmount').addEventListener('input',function(){
+  const v=Number(this.value)||0;
+  document.getElementById('coinPreview').textContent =
+    v ? '🪙 You will receive '+v.toLocaleString()+' coins' : '🪙 You will receive 1 coin per ₹1';
+});
+
 document.getElementById('paymentShot').addEventListener('change',function(){
   const f=this.files[0];
   document.getElementById('shotName').textContent=f?f.name:'No screenshot selected';
@@ -340,7 +345,7 @@ document.getElementById('paymentShot').addEventListener('change',function(){
 
 function submitDeposit(){
   const pay=Number(document.getElementById('payAmount').value);
-  const coin=Number(document.getElementById('coinAmount').value);
+  const coin=pay;
   const utr=document.getElementById('utr').value.trim();
   const file=document.getElementById('paymentShot').files[0];
 
@@ -362,7 +367,6 @@ function submitDeposit(){
   depositRequests.unshift(request);
   localStorage.setItem('cca_deposit_requests',JSON.stringify(depositRequests));
   document.getElementById('payAmount').value='';
-  document.getElementById('coinAmount').value='';
   document.getElementById('utr').value='';
   document.getElementById('paymentShot').value='';
   document.getElementById('shotName').textContent='No screenshot selected';
