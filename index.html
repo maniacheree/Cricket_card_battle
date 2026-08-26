@@ -140,6 +140,11 @@ h1 span{color:#fff}
 </style>
 </head>
 <body>
+
+<div id="dbStatus" style="position:fixed;right:10px;bottom:10px;z-index:40;
+border:1px solid #5d4711;background:#080808;color:#ffd85a;border-radius:20px;
+padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING</div>
+
 <div class="app">
 <header class="top">
   <div class="brand">CRICKET<span>CARD ARENA</span></div>
@@ -176,7 +181,7 @@ h1 span{color:#fff}
 
 <section class="page" id="packs">
 <div class="sectionTitle">PACKS</div>
-<p class="muted">Premium cricket card packs • 3 cards guaranteed in every pack.</p>
+<p class="muted">Premium cricket card packs • 3 cards guaranteed. Players are selected from the connected player database according to pack rarity.</p>
 
 <div class="packGrid">
 <div class="pack"><img src="common_pack.png"><h3>COMMON PACK</h3><div class="range">20 – 40 COINS</div><button class="buy" onclick="openPack('COMMON',30,20,40)">30 🪙</button></div>
@@ -345,13 +350,51 @@ let cards=JSON.parse(localStorage.getItem('cca_cards')||'[]');
 let pendingPack=null;
 let selectedCardIndex=null;
 
-const cardPool=[
- {name:'VIRAT-INSPIRED',role:'BATSMAN',img:'virat_card.jpg',bat:94,bowl:58,field:92},
- {name:'HARDIK-INSPIRED',role:'ALLROUNDER',img:'hardik_card.jpg',bat:88,bowl:84,field:90},
- {name:'BUMRAH-INSPIRED',role:'BOWLER',img:'bumrah_card.jpg',bat:55,bowl:96,field:91},
- {name:'ROHIT-INSPIRED',role:'BATSMAN',img:'rohit_card.jpg',bat:91,bowl:42,field:87},
- {name:'SHUBMAN-INSPIRED',role:'BATSMAN',img:'shubman_card.jpg',bat:90,bowl:38,field:88}
-];
+
+let cardPool=[];
+let playerDBReady=false;
+
+async function loadPlayerDatabase(){
+  try{
+    const response=await fetch('players.json',{cache:'no-store'});
+    if(!response.ok) throw new Error('players.json not found');
+    const data=await response.json();
+    if(!Array.isArray(data)||!data.length) throw new Error('empty database');
+    cardPool=data;
+    playerDBReady=true;
+    document.getElementById('dbStatus').textContent='PLAYER DB: ONLINE • '+data.length;
+  }catch(err){
+    console.error(err);
+    playerDBReady=false;
+    document.getElementById('dbStatus').textContent='PLAYER DB: OFFLINE';
+    toast('Player database load failed');
+  }
+}
+
+function rarityRank(r){
+  return {COMMON:1,RARE:2,EPIC:3,LEGENDARY:4,ULTIMATE:5,ICON:6}[r]||1;
+}
+
+function playersForPack(packRarity){
+  const rank=rarityRank(packRarity);
+  let eligible=cardPool.filter(p=>rarityRank(p.rarity)<=rank);
+  if(rank>=5){
+    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=3);
+  }else if(rank>=4){
+    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=3);
+  }else if(rank>=3){
+    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=2);
+  }else if(rank>=2){
+    eligible=cardPool.filter(p=>rarityRank(p.rarity)<=3 && rarityRank(p.rarity)>=1);
+  }
+  return eligible.length?eligible:cardPool;
+}
+
+function pickPlayer(packRarity){
+  const list=playersForPack(packRarity);
+  return list[Math.floor(Math.random()*list.length)];
+}
+
 
 function save(){
  localStorage.setItem('cca_coins',coins);
@@ -378,6 +421,7 @@ function makeValue(min,max){
  return Math.floor(Math.random()*(max-min+1))+min;
 }
 function openPack(type,price,min,max){
+ if(!playerDBReady){toast('Player database is still loading');return;}
  if(coins<price){
    show('deposit');
    toast('Not enough coins — add coins first');
@@ -387,8 +431,8 @@ function openPack(type,price,min,max){
  const result=[];
  let total=0;
  for(let i=0;i<3;i++){
-   const c=cardPool[Math.floor(Math.random()*cardPool.length)];
-   result.push({...c,value:makeValue(8,40),rarity:type,id:'CARD-'+Date.now()+'-'+i});
+   const c=pickPlayer(type);
+   result.push({...c,value:makeValue(Math.max(5,Math.floor(c.value*0.65)),Math.max(10,Math.floor(c.value*1.15))),rarity:type,id:'CARD-'+Date.now()+'-'+i});
  }
  total=result.reduce((a,c)=>a+c.value,0);
  while(total<min || total>max){
@@ -557,6 +601,7 @@ function escapeHtml(s){
 
 update();
 if(typeof renderDepositHistory==='function')renderDepositHistory();
+loadPlayerDatabase();
 </script>
 
 </body>
