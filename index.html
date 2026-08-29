@@ -138,8 +138,7 @@ h1 span{color:#fff}
 .revealCard img{width:100%;height:190px;object-fit:cover;border-radius:8px}
 @media(max-width:800px){.cardPhoto{height:145px}.revealCard img{height:160px}}
 </style>
-<script src="https://telegram.org/js/telegram-web-app.js">setupTelegramProfile();
-</script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
@@ -363,49 +362,56 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <script>
 
 /* ===== TELEGRAM WEB APP IDENTITY ===== */
-const tg = window.Telegram?.WebApp || null;
+let tg = null;
 let telegramUser = null;
 let telegramUserId = null;
 let telegramInitData = "";
-
-if (tg) {
-  tg.ready();
-  tg.expand();
-
-  telegramInitData = tg.initData || "";
-  telegramUser = tg.initDataUnsafe?.user || null;
-
-  if (telegramUser) {
-    telegramUserId = String(telegramUser.id);
-
-    const nameEl = document.getElementById("userName");
-    const idEl = document.getElementById("userId");
-
-    if (nameEl) {
-      nameEl.textContent =
-        [telegramUser.first_name, telegramUser.last_name]
-        .filter(Boolean).join(" ") || "Telegram User";
-    }
-
-    if (idEl) idEl.textContent = telegramUserId;
-
-    console.log("Telegram User ID:", telegramUserId);
-  }
-}
-
 const ADMIN_ID = "7035868085";
 
-function isAdminTelegramUser() {
-  return telegramUserId === ADMIN_ID;
+function setupTelegramProfile(){
+  tg = window.Telegram?.WebApp || null;
+  const nameEl=document.getElementById("userName");
+  const idEl=document.getElementById("userId");
+  const statusEl=document.getElementById("tgStatus");
+  const avatarEl=document.getElementById("tgAvatar");
+  if(!tg){
+    if(idEl) idEl.textContent="Telegram unavailable";
+    if(statusEl) statusEl.textContent="⚠️ Telegram WebApp not detected";
+    return false;
+  }
+  tg.ready();
+  tg.expand();
+  telegramInitData=tg.initData||"";
+  telegramUser=tg.initDataUnsafe?.user||null;
+  if(!telegramUser){
+    if(idEl) idEl.textContent="Not detected";
+    if(statusEl) statusEl.textContent="⚠️ Open from Telegram bot";
+    return false;
+  }
+  telegramUserId=String(telegramUser.id);
+  if(nameEl) nameEl.textContent=[telegramUser.first_name,telegramUser.last_name].filter(Boolean).join(" ")||telegramUser.username||"Telegram User";
+  if(idEl) idEl.textContent=telegramUserId;
+  if(statusEl){
+    statusEl.textContent=telegramUserId===ADMIN_ID?"✓ Telegram connected • ADMIN":"✓ Telegram account connected";
+    statusEl.style.color="#6bea7b";
+  }
+  if(avatarEl && telegramUser.photo_url){
+    avatarEl.textContent="";
+    avatarEl.style.backgroundImage=`url("${telegramUser.photo_url}")`;
+    avatarEl.style.backgroundSize="cover";
+    avatarEl.style.backgroundPosition="center";
+  }
+  window.CCA_TELEGRAM={webApp:tg,user:telegramUser,userId:telegramUserId,initData:telegramInitData,isAdmin:telegramUserId===ADMIN_ID};
+  return true;
 }
-
-window.CCA_TELEGRAM = {
-  webApp: tg,
-  user: telegramUser,
-  userId: telegramUserId,
-  initData: telegramInitData,
-  isAdmin: isAdminTelegramUser
-};
+window.addEventListener("load",function(){
+  if(setupTelegramProfile()) return;
+  let tries=0;
+  const timer=setInterval(function(){
+    tries++;
+    if(setupTelegramProfile()||tries>=20) clearInterval(timer);
+  },250);
+});
 /* ===== END TELEGRAM WEB APP IDENTITY ===== */
 
 let coins=Number(localStorage.getItem('cca_coins')||0);
