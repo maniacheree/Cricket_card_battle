@@ -1,57 +1,304 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cricket Card Arena</title><style>
-*{box-sizing:border-box}body{margin:0;background:#020713;color:#fff;font-family:Arial,sans-serif}.app{max-width:1450px;margin:auto;padding:10px 14px 80px}.head{height:70px;display:flex;align-items:center;justify-content:space-between}.logo{font-size:24px;font-weight:900;font-style:italic}.logo span{display:block;color:#ffd329;font-size:11px;letter-spacing:3px}.coins{padding:10px 18px;border:1px solid #465878;border-radius:30px;background:#050c1b;color:#ffd329}.hero{height:390px;position:relative;overflow:hidden;border:1px solid #315083;border-radius:16px;background:radial-gradient(circle at 75% 25%,#1b4d9c,#07152e 38%,#020713 75%);box-shadow:inset 0 0 80px #0b4da855}.hero:after{content:"";position:absolute;left:0;right:0;bottom:0;height:32%;background:radial-gradient(ellipse,#285335,#06120b)}.copy{position:relative;z-index:3;width:45%;padding:48px}.copy small{color:#ffd329;font-weight:900;letter-spacing:2px}.copy h1{font-size:43px;line-height:1.02;font-style:italic;margin:12px 0}.copy h1 span{color:#ffd329}.copy p{color:#d6dfed;line-height:1.5}.buy,.pack button,.find,.action{border:0;border-radius:7px;padding:12px 25px;background:linear-gradient(#ffe43b,#e9b319);font-weight:900}.players{position:absolute;right:25px;bottom:0;width:55%;height:330px;z-index:4}.card{position:absolute;bottom:10px;width:190px;height:285px;padding:7px;border-radius:13px;background:#061025;overflow:hidden;box-shadow:0 20px 45px #000}.card:nth-child(1){left:3%;border:2px solid #a43cff;transform:rotate(-6deg)}.card:nth-child(2){left:32%;border:2px solid #ffd329;z-index:3}.card:nth-child(3){right:2%;border:2px solid #159cff;transform:rotate(6deg)}.art{height:195px;border-radius:8px;background:linear-gradient(145deg,#193d70,#071022);position:relative}.art:before{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e5b18c,#9d5f43 55%,#211b20 56%)}.art:after{content:"";position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:130px;height:170px;border-radius:50% 50% 0 0;background:linear-gradient(90deg,#071c40,#2467bd,#071c40)}.name{text-align:center;font-size:9px;font-weight:900;margin-top:5px}.stats{display:flex;justify-content:space-around;font-size:7px;color:#bcc8da;margin-top:5px}.grid{display:grid;grid-template-columns:1fr 250px;gap:14px;margin-top:14px}.panel{background:linear-gradient(145deg,#08162d,#030a18);border:1px solid #243d65;border-radius:14px;padding:14px}.title{font-size:20px;font-weight:900;margin-bottom:12px}.packs{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.pack{padding:7px;border-radius:10px;text-align:center;background:#030a17}.common{border:2px solid #31d34b}.rare{border:2px solid #159cff}.epic{border:2px solid #a43cff}.legendary{border:2px solid #e5b72b}.ultimate{border:2px solid #ef3131}.packname{font-size:10px;font-weight:900}.packart{height:165px;margin-top:7px;border-radius:7px;display:grid;place-items:center}.common .packart{background:linear-gradient(145deg,#073714,#21a82f)}.rare .packart{background:linear-gradient(145deg,#052c60,#087ed4)}.epic .packart{background:linear-gradient(145deg,#2e0750,#8422dc)}.legendary .packart{background:linear-gradient(145deg,#523802,#d49a12)}.ultimate .packart{background:linear-gradient(145deg,#4e0606,#d82a27)}.packet{width:100px;height:140px;border:2px solid #ffffff55;border-radius:7px;background:linear-gradient(120deg,#ffffff22,transparent 35%,#0005);position:relative;overflow:hidden}.packet b{position:absolute;top:8px;left:0;right:0;text-align:center;font-size:8px}.packet:before{content:"";position:absolute;width:45px;height:45px;border-radius:50%;left:50%;top:35px;transform:translateX(-50%);background:#c17b57}.packet:after{content:"🏏";position:absolute;font-size:70px;left:17px;top:62px}.range{font-size:9px;margin-top:6px}.range b{font-size:13px;color:#ffd329}.pack button{width:100%;padding:8px;margin-top:5px}.lower{display:grid;grid-template-columns:1fr 1.1fr 250px;gap:14px;margin-top:14px}.stat{display:flex;justify-content:space-between;padding:13px;border:1px solid #294166;border-radius:8px;margin-bottom:8px;background:#07142a}.stat small{color:#aab6c9}.empty{height:220px;border:1px dashed #314668;border-radius:10px;display:grid;place-items:center;text-align:center;color:#9aa8bc}.battle{display:flex;justify-content:center;align-items:center;gap:18px;margin:30px 0}.bcard{width:95px;height:120px;border:1px solid #405477;border-radius:10px;display:grid;place-items:center;font-size:40px;background:#08142a}.vs{font-size:32px;color:#ffd329;font-weight:900;font-style:italic}.find{display:block;margin:auto;background:linear-gradient(90deg,#5d18d3,#8c2cff);color:#fff;width:85%}.side button{width:100%;height:60px;margin-bottom:8px;border-radius:10px;color:#fff;font-weight:900;border:1px solid #3b5073}.deposit{position:fixed;right:18px;bottom:70px;width:88px;height:88px;border-radius:50%;border:2px solid #a967ff;background:radial-gradient(circle,#a75cff,#351078);color:#fff;font-weight:900;z-index:20;box-shadow:0 0 35px #8b42ff99}.nav{display:none}.modal{display:none;position:fixed;inset:0;background:#000d;z-index:50;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.box{width:min(460px,95vw);background:#071329;border:1px solid #7545da;border-radius:15px;padding:20px}.box input{width:100%;padding:12px;margin:10px 0;background:#030a17;color:#fff;border:1px solid #29436a;border-radius:7px}.action{width:100%;margin-top:8px}.close{background:#071126;color:#fff;border:1px solid #29436a}.revealed{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.rc{padding:6px;text-align:center;background:#081329;border:1px solid #30496e;border-radius:7px;font-size:8px}@media(max-width:800px){.app{padding:6px 7px 75px}.head{height:58px}.logo{font-size:17px}.logo span{font-size:8px}.hero{height:425px}.copy{width:100%;padding:25px 17px}.copy h1{font-size:29px}.copy p{font-size:12px;max-width:260px}.players{width:345px;height:220px;left:50%;right:auto;transform:translateX(-50%)}.card{width:125px;height:200px}.card:nth-child(2){left:32%}.art{height:135px}.grid,.lower{display:block}.panel{margin-top:12px}.packs{display:flex;overflow:auto}.pack{min-width:132px}.packart{height:150px}.lower .panel{margin-top:12px}.side{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}.side button{font-size:8px}.deposit{width:75px;height:75px;font-size:10px}.nav{display:grid;position:fixed;left:0;right:0;bottom:0;height:62px;background:#030917f7;border-top:1px solid #243c62;z-index:25;grid-template-columns:repeat(5,1fr)}.nav button{background:none;border:0;color:#9da9bd;font-size:8px}.nav .active{color:#ffd329}}
-</style><script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head><body><div class="app"><header class="head"><div class="logo">🏏 CRICKET CARD<span>ARENA</span></div><div class="coins">🪙 <b id="bal">0</b>　<span>＋</span></div></header><section class="hero" id="home"><div class="copy"><small>🏆 CRICKET CARD ARENA</small><h1>BUILD YOUR SQUAD.<br><span>DOMINATE THE ARENA.</span></h1><p>Collect powerful cricket cards, build your ultimate team and win epic battles!</p><button class="buy" onclick="go('packs')">BUY PACKS</button></div><div class="players"><div class="card"><div><b>87</b>　EPIC</div><div class="art"></div><div class="name">ARSHDEEP-INSPIRED</div><div class="stats"><span>BOW 87</span><span>BAT 36</span><span>CAR 68</span><span>SPE 82</span></div></div><div class="card"><div><b>94</b>　LEGENDARY</div><div class="art"></div><div class="name">VIRAT-INSPIRED</div><div class="stats"><span>BAT 93</span><span>BOW 48</span><span>CAR 76</span><span>SPE 83</span></div></div><div class="card"><div><b>86</b>　RARE</div><div class="art"></div><div class="name">HARDIK-INSPIRED</div><div class="stats"><span>BAT 71</span><span>BOW 72</span><span>CAR 80</span><span>SPE 75</span></div></div></div></section><div class="grid"><section class="panel" id="packs"><div class="title">PACKAGES</div><div class="packs"><div class="pack common"><div class="packname">COMMON PACK</div><div class="packart"><div class="packet"><b>CRICKET CARD<br>ARENA</b></div></div><div class="range">TOTAL VALUE<br><b>20 - 40</b></div><button onclick="buy(30,20,40)">30 🪙</button></div><div class="pack rare"><div class="packname">RARE PACK</div><div class="packart"><div class="packet"><b>CRICKET CARD<br>ARENA</b></div></div><div class="range">TOTAL VALUE<br><b>60 - 100</b></div><button onclick="buy(75,60,100)">75 🪙</button></div><div class="pack epic"><div class="packname">EPIC PACK</div><div class="packart"><div class="packet"><b>CRICKET CARD<br>ARENA</b></div></div><div class="range">TOTAL VALUE<br><b>125 - 190</b></div><button onclick="buy(150,125,190)">150 🪙</button></div><div class="pack legendary"><div class="packname">LEGENDARY PACK</div><div class="packart"><div class="packet"><b>CRICKET CARD<br>ARENA</b></div></div><div class="range">TOTAL VALUE<br><b>260 - 400</b></div><button onclick="buy(300,260,400)">300 🪙</button></div><div class="pack ultimate"><div class="packname">ULTIMATE PACK</div><div class="packart"><div class="packet"><b>CRICKET CARD<br>ARENA</b></div></div><div class="range">TOTAL VALUE<br><b>550 - 800</b></div><button onclick="buy(600,550,800)">600 🪙</button></div></div><div style="color:#8491a7;font-size:9px;margin-top:9px">ⓘ All packs contain 3 random player cards. Total value is shown as a range.</div></section><aside class="panel"><div class="title">MY SUMMARY</div><div class="stat"><small>🃏 TOTAL CARDS</small><b id="tc">0</b></div><div class="stat"><small>🪙 TOTAL VALUE</small><b id="tv">0</b></div><div class="stat"><small>⚔️ BATTLES WON</small><b>0</b></div><div class="stat"><small>🔥 BEST STREAK</small><b>0</b></div></aside></div><div class="lower"><section class="panel" id="collection"><div class="title">MY COLLECTION <span style="color:#ffd329" id="cc">(0)</span></div><div class="empty" id="col">🃏<br>You don't have any cards yet.<br>Buy packs to start your collection!</div></section><section class="panel" id="battle"><div class="title">QUICK BATTLE</div><div style="color:#9ba9bf;font-size:11px">Choose your card and challenge a random opponent</div><div class="battle"><div class="bcard">🃏</div><div class="vs">VS</div><div class="bcard">❓</div></div><button class="find" onclick="fight()">FIND OPPONENT</button><div id="result" style="text-align:center;color:#9ba9bf;font-size:10px;margin-top:8px"></div></section><aside class="side"><button style="background:#503b0b" onclick="alert('Leaderboard coming soon')">🏆 LEADERBOARD</button><button style="background:#092d63" onclick="alert('Missions coming soon')">🎯 MISSIONS</button><button style="background:#006365" onclick="alert('Shop coming soon')">🛒 SHOP</button></aside></div></div><button class="deposit" onclick="openD()">💳<br>DEPOSIT</button><nav class="nav"><button class="active" onclick="go('home')">🏠<br>HOME</button><button onclick="go('packs')">🎁<br>PACKS</button><button onclick="go('collection')">🃏<br>COLLECTION</button><button onclick="go('battle')">⚔️<br>BATTLE</button><button onclick="openD()">👤<br>PROFILE</button></nav><div class="modal" id="dm"><div class="box"><h2>💳 DEPOSIT COINS</h2><p style="color:#9ba9bf;font-size:12px">Deposit any amount. Manual verification will be used.</p><input id="amt" type="number" placeholder="Enter amount ₹"><button class="action" onclick="deposit()">CONTINUE</button><button class="action close" onclick="closeD()">CLOSE</button></div></div><div class="modal" id="pm"><div class="box"><h2>🎁 PACK OPENED</h2><p id="pi" style="color:#9ba9bf;font-size:12px"></p><div class="revealed" id="rv"></div><button class="action" onclick="pm.classList.remove('show')">ADD TO COLLECTION</button></div></div><script>let coins=+localStorage.getItem('cca_coins')||0,cards=JSON.parse(localStorage.getItem('cca_cards')||'[]');function save(){localStorage.setItem('cca_coins',coins);localStorage.setItem('cca_cards',JSON.stringify(cards))}function ui(){bal.textContent=coins;tc.textContent=cards.length;cc.textContent='('+cards.length+')';tv.textContent=cards.reduce((a,c)=>a+c,0)}function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}function openD(){dm.classList.add('show')}function closeD(){dm.classList.remove('show')}function deposit(){let a=+amt.value;if(!a)return alert('Enter amount');closeD();alert('Deposit request created for ₹'+a+'. Manual verification required.')}function buy(price,min,max){if(coins<price)return openD();coins-=price;let a;do{a=[1,2,3].map(()=>Math.floor(Math.random()*9)+5)}while(a.reduce((x,y)=>x+y,0)<min||a.reduce((x,y)=>x+y,0)>max);cards.push(...a);save();ui();pi.textContent='3 cards • Total value '+a.reduce((x,y)=>x+y,0)+' coins';rv.innerHTML=a.map((v,i)=>'<div class="rc">🏏<br>'+['Arshdeep-Inspired','Virat-Inspired','Hardik-Inspired'][i]+'<br><b style="color:#ffd329">🪙 '+v+'</b></div>').join('');pm.classList.add('show')}function fight(){if(!cards.length)return alert('Buy a pack first');result.textContent=Math.random()>.5?'🏆 YOU WIN':'❌ YOU LOSE'}ui();</script>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>Cricket Card Arena</title>
+<style>
+:root{
+ --bg:#030303;--panel:#090909;--panel2:#0d0d0d;--gold:#f4c84b;--gold2:#ffdf78;
+ --line:#70520c;--muted:#a9a9a9;--green:#48df62;--red:#ff3b35;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;background:
+ radial-gradient(circle at 50% -10%,#39270033,transparent 35%),
+ #030303;color:#fff;font-family:Arial,Helvetica,sans-serif;
+ min-height:100vh;
+}
+button{font:inherit;cursor:pointer}
+button:active{transform:scale(.98)}
+.app{max-width:1180px;margin:auto;padding-bottom:30px}
+.top{
+ min-height:92px;display:flex;align-items:center;justify-content:space-between;
+ padding:12px 18px;border-bottom:1px solid #2e260f;
+ background:linear-gradient(180deg,#090909,#030303);
+ position:sticky;top:0;z-index:30
+}
+.brand{font-weight:1000;font-style:italic;font-size:35px;letter-spacing:-1px;
+ color:#fff;text-shadow:0 0 14px #d89b2344}
+.brand span{display:block;font-size:12px;letter-spacing:5px;color:var(--gold);font-style:normal}
+.topRight{display:flex;gap:10px;align-items:center}
+.coinBox,.profileBox{
+ border:1px solid #a37a14;border-radius:12px;background:linear-gradient(145deg,#0b0b0b,#15110a);
+ box-shadow:0 0 18px #e4ad2820,inset 0 0 20px #e4ad2810
+}
+.coinBox{padding:9px 14px;min-width:180px}
+.coinBox small,.profileBox small{color:#aaa;font-size:9px;display:block}
+.coinVal{color:#ffd84f;font-size:20px;font-weight:1000}
+.plus{float:right;margin-top:-28px;width:32px;height:32px;border-radius:8px;border:1px solid #a97a13;background:linear-gradient(#ffe37a,#c8890b);font-weight:1000}
+.profileBox{padding:8px 12px;min-width:170px}
+.profileName{color:#ffe16d;font-weight:900}
+.nav{
+ display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid #211b0b;
+ background:#050505;position:sticky;top:92px;z-index:29
+}
+.nav button{
+ border:0;border-right:1px solid #1c1c1c;background:#050505;color:#b7b7b7;
+ padding:13px 4px 11px;font-weight:900;font-size:12px
+}
+.nav button span{display:block;font-size:22px;margin-bottom:4px;filter:grayscale(1)}
+.nav button.active{color:var(--gold);background:linear-gradient(#171208,#050505);box-shadow:inset 0 -3px #e9b929}
+main{padding:0 14px}
+.page{display:none;animation:fade .18s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:.3;transform:translateY(4px)}to{opacity:1;transform:none}}
+.hero{
+ margin-top:14px;min-height:430px;border:1px solid #6d5011;border-radius:16px;overflow:hidden;
+ position:relative;background:#090909 url("hero_gold.jpg") center/cover no-repeat;
+ box-shadow:0 0 35px #d39a2418,inset 0 0 80px #000
+}
+.heroShade{position:absolute;inset:0;background:linear-gradient(90deg,#000b 0%,#0004 48%,#0001),linear-gradient(0deg,#000a,transparent 45%)}
+.heroText{position:relative;padding:65px 7%;max-width:650px}
+.kicker{color:#f2cb58;font-weight:1000;letter-spacing:3px;font-size:12px}
+h1{font-size:62px;line-height:.95;margin:13px 0;color:#ffe083;font-style:italic;text-shadow:0 0 22px #f4b92a66}
+h1 span{color:#fff}
+.heroText p{color:#e5e5e5;line-height:1.5;max-width:470px}
+.goldBtn{
+ border:1px solid #c8951b;border-radius:8px;padding:13px 26px;
+ color:#100d04;background:linear-gradient(180deg,#ffe990,#e0a818 58%,#b87905);
+ font-weight:1000;box-shadow:0 0 22px #d59b1f35
+}
+.sectionTitle{font-size:25px;color:#f7d05b;font-weight:1000;letter-spacing:1px;margin:22px 0 10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.panel{
+ border:1px solid #684d0e;border-radius:13px;background:linear-gradient(145deg,#0c0c0c,#050505);
+ padding:17px;box-shadow:inset 0 0 30px #c8922010,0 0 18px #000
+}
+.balance{display:flex;align-items:center;gap:20px;justify-content:center;min-height:180px}
+.balanceIcon{font-size:60px;filter:drop-shadow(0 0 12px #e7ad2b)}
+.bigCoin{font-size:44px;color:#ffd85a;font-weight:1000}
+.muted{color:#a9a9a9;font-size:12px}
+.packGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.pack{
+ background:#050505;border:1px solid #6b5012;border-radius:12px;padding:7px;text-align:center;
+ box-shadow:0 0 16px #e2a51e18
+}
+.pack img{width:100%;height:230px;object-fit:cover;border-radius:8px;display:block}
+.pack h3{margin:9px 0 4px;font-size:13px}
+.pack .range{color:#ffd85a;font-weight:900;font-size:11px}
+.pack .buy{margin-top:8px;width:100%;padding:9px;border-radius:7px;border:1px solid #9b7112;background:linear-gradient(#ffe67f,#c98808);font-weight:1000}
+.cardGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.playerCard{
+ min-height:240px;border:1px solid #6c5010;border-radius:12px;padding:10px;
+ background:linear-gradient(145deg,#161108,#070707);text-align:center
+}
+.playerArt{height:155px;border-radius:9px;background:radial-gradient(circle at 50% 30%,#8c6a21,#111 60%,#030303);display:grid;place-items:center;font-size:70px}
+.playerCard b{color:#ffd75a}.statsRow{display:flex;justify-content:space-around;font-size:10px;color:#bbb;margin-top:8px}
+.battleHero{min-height:370px;border:1px solid #6d5011;border-radius:15px;background:#050505 url("battle_gold.jpg") center/cover;position:relative;overflow:hidden}
+.battleHero:after{content:"";position:absolute;inset:0;background:#0007}
+.battleContent{position:relative;z-index:1;text-align:center;padding:45px}
+.vs{font-size:76px;font-weight:1000;color:#ffd34c;text-shadow:0 0 25px #e6a51c}
+.battleBtns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.list{display:grid;gap:8px}
+.row{display:grid;grid-template-columns:45px 1fr 120px;gap:10px;align-items:center;border:1px solid #3f310e;background:#0a0a0a;padding:12px;border-radius:9px}
+.rank{color:#ffd34c;font-weight:1000}.win{color:#48df62;font-weight:1000;text-align:right}
+.depositGrid{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}
+.amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.amount{border:1px solid #76580e;background:#080808;color:#ffd75a;border-radius:9px;padding:14px;font-weight:1000}
+.input{width:100%;padding:13px;border-radius:8px;border:1px solid #4d3b11;background:#030303;color:#fff;margin:8px 0}
+.footer{text-align:center;color:#806f3c;border-top:1px solid #251e0b;margin-top:25px;padding:20px}
+.modal{display:none;position:fixed;inset:0;background:#000c;z-index:100;align-items:center;justify-content:center;padding:16px}
+.modal.show{display:flex}
+.modalBox{width:min(460px,96vw);border:1px solid #a67a16;border-radius:14px;background:#080808;padding:20px;box-shadow:0 0 40px #d49a2544}
+.close{float:right;background:none;border:0;color:#aaa;font-size:24px}
+.toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%);background:#111;border:1px solid #9a7116;color:#ffd85a;padding:11px 16px;border-radius:8px;display:none;z-index:120}
+@media(max-width:800px){
+ .app{width:100%}.top{min-height:68px;padding:8px 9px}.brand{font-size:23px}.brand span{font-size:8px;letter-spacing:3px}
+ .topRight{gap:5px}.coinBox{min-width:112px;padding:7px}.coinBox small{font-size:7px}.coinVal{font-size:15px}.plus{width:25px;height:25px;margin-top:-24px}
+ .profileBox{display:none}.nav{top:68px;grid-template-columns:repeat(6,1fr)}.nav button{font-size:8px;padding:8px 1px}.nav button span{font-size:17px}
+ main{padding:0 7px}.hero{min-height:500px;background-position:center}.heroText{padding:40px 22px}.heroText h1{font-size:40px}
+ .grid3,.depositGrid{grid-template-columns:1fr}.packGrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:5px}.pack{min-width:170px;scroll-snap-align:start}.pack img{height:235px}
+ .cardGrid{grid-template-columns:repeat(2,1fr)}.playerCard{min-height:220px}.playerArt{height:135px}
+ .battleHero{min-height:430px}.battleContent{padding:55px 15px}.vs{font-size:60px}.row{grid-template-columns:35px 1fr 90px}
+ .sectionTitle{font-size:21px}.bigCoin{font-size:35px}
+}
+</style>
+<script src="https://telegram.org/js/telegram-web-app.js">setupTelegram();
+</script>
+</head>
+<body>
+<div class="app">
+<div style="margin:10px 14px;padding:10px 12px;border:1px solid #5f4911;border-radius:10px;background:#080808"><div id="userName" style="font-weight:900;color:#ffd85a">Telegram User</div><div style="font-size:10px;color:#aaa;margin-top:4px">🆔 User ID: <b id="userId" style="color:#ffd85a">Checking...</b></div><div id="tgStatus" style="font-size:9px;color:#ffd85a;margin-top:3px">Checking Telegram...</div></div><header class="top">
+  <div class="brand">CRICKET<span>CARD ARENA</span></div>
+  <div class="topRight">
+    <div class="coinBox"><small>YOUR COINS</small><div class="coinVal">🪙 <span id="coins">0</span></div><button class="plus" onclick="show('deposit')">+</button></div>
+    <div class="profileBox"><small>PLAYER</small><div class="profileName">GUEST <span style="color:#aaa">⌄</span></div></div>
+  </div>
+</header>
+
+<nav class="nav">
+<button data-page="home" class="active"><span>⌂</span>HOME</button>
+<button data-page="packs"><span>🎁</span>PACKS</button>
+<button data-page="cards"><span>🃏</span>MY CARDS</button>
+<button data-page="battle"><span>⚔</span>BATTLES</button>
+<button data-page="leaderboard"><span>🏆</span>LEADERBOARD</button>
+<button data-page="support"><span>♧</span>SUPPORT</button>
+</nav>
+
+<main>
+<section class="page active" id="home">
+<div class="hero"><div class="heroShade"></div><div class="heroText">
+<div class="kicker">🏆 CRICKET CARD ARENA</div>
+<h1>OPEN PACKS<br><span>BUILD YOUR SQUAD</span></h1>
+<p>Collect premium cricket cards, upgrade your collection and dominate the arena.</p>
+<button class="goldBtn" onclick="show('packs')">OPEN PACKS</button>
+</div></div>
+<div class="sectionTitle">YOUR ACCOUNT</div>
+<div class="grid3">
+<div class="panel"><h3 style="color:#ffd85a">YOUR ACCOUNT</h3><p>👤 <b>PLAYER</b></p><p class="muted">Rank: <b style="color:#ffd85a">ROOKIE</b></p><p class="muted">Total Cards: <b id="homeCards">0</b></p></div>
+<div class="panel"><h3 style="color:#ffd85a">YOUR BALANCE</h3><div class="balance"><div class="balanceIcon">🪙</div><div class="bigCoin" id="homeCoins">0</div></div><button class="goldBtn" style="width:100%" onclick="show('deposit')">＋ ADD COINS</button></div>
+<div class="panel"><h3 style="color:#ffd85a">BATTLE & WIN</h3><p class="muted">Play quick matches and win coins.</p><button class="goldBtn" style="width:100%" onclick="show('battle')">PLAY BATTLE</button></div>
+</div>
+</section>
+
+<section class="page" id="packs">
+<div class="sectionTitle">PACKS</div>
+<p class="muted">Choose your pack. Every pack contains 3 random cards.</p>
+<div class="packGrid">
+<div class="pack"><img src="common_pack.png"><h3>COMMON PACK</h3><div class="range">20 – 40 COINS</div><button class="buy" onclick="buyPack(30,20,40)">30 🪙</button></div>
+<div class="pack"><img src="rare_pack.png"><h3>RARE PACK</h3><div class="range">60 – 100 COINS</div><button class="buy" onclick="buyPack(75,60,100)">75 🪙</button></div>
+<div class="pack"><img src="epic_pack.png"><h3>EPIC PACK</h3><div class="range">125 – 190 COINS</div><button class="buy" onclick="buyPack(150,125,190)">150 🪙</button></div>
+<div class="pack"><img src="legendary_pack.png"><h3>LEGENDARY PACK</h3><div class="range">260 – 400 COINS</div><button class="buy" onclick="buyPack(300,260,400)">300 🪙</button></div>
+<div class="pack"><img src="ultimate_pack.png"><h3>ULTIMATE PACK</h3><div class="range">550 – 800 COINS</div><button class="buy" onclick="buyPack(600,550,800)">600 🪙</button></div>
+</div>
+</section>
+
+<section class="page" id="cards">
+<div class="sectionTitle">MY CARDS</div>
+<div class="panel"><p class="muted">Your collected cards appear here.</p><div class="cardGrid" id="cardsGrid"></div></div>
+</section>
+
+<section class="page" id="battle">
+<div class="sectionTitle">BATTLE & WIN COINS</div>
+<div class="battleHero"><div class="battleContent">
+<div class="kicker">CRICKET CARD ARENA</div><h1 style="font-size:48px">BATTLE</h1><div class="vs">VS</div>
+<p class="muted">Choose a card and challenge a random opponent.</p>
+<div class="battleBtns"><button class="goldBtn" onclick="playBattle()">⚡ QUICK BATTLE</button><button class="goldBtn" onclick="toast('Tournament mode coming next')">🏆 TOURNAMENT</button><button class="goldBtn" onclick="toast('Friend challenge coming next')">⚔ CHALLENGE FRIEND</button></div>
+<div id="battleResult" style="margin-top:15px;color:#ffd85a;font-weight:1000"></div>
+</div></div>
+</section>
+
+<section class="page" id="leaderboard">
+<div class="sectionTitle">LEADERBOARD</div>
+<div class="panel"><div class="list">
+<div class="row"><div class="rank">1</div><div>ROHIT_45</div><div class="win">+5,000 🪙</div></div>
+<div class="row"><div class="rank">2</div><div>VIRAT_KING</div><div class="win">+3,000 🪙</div></div>
+<div class="row"><div class="rank">3</div><div>MSD_FAN</div><div class="win">+2,000 🪙</div></div>
+<div class="row"><div class="rank">4</div><div>CRICKET_LOVER</div><div class="win">+1,500 🪙</div></div>
+<div class="row"><div class="rank">5</div><div>SURYA_63</div><div class="win">+1,000 🪙</div></div>
+</div></div>
+</section>
+
+<section class="page" id="support">
+<div class="sectionTitle">SUPPORT</div>
+<div class="grid3">
+<div class="panel"><h3 style="color:#ffd85a">🔒 SECURE</h3><p class="muted">Your account is protected.</p></div>
+<div class="panel"><h3 style="color:#ffd85a">⚡ INSTANT HELP</h3><p class="muted">Get help with packs, cards and battles.</p></div>
+<div class="panel"><h3 style="color:#ffd85a">🎧 24/7 SUPPORT</h3><p class="muted">Support centre is ready for your questions.</p><button class="goldBtn" onclick="toast('Support chat coming next')">CONTACT SUPPORT</button></div>
+</div>
+</section>
+
+<section class="page" id="deposit">
+<div class="sectionTitle">ADD COINS</div>
+<div class="depositGrid">
+<div class="panel"><h2 style="color:#ffd85a">CHOOSE AMOUNT</h2><div class="amounts">
+<button class="amount" onclick="selectAmount(100)">100<br>₹10</button><button class="amount" onclick="selectAmount(500)">500<br>₹50</button><button class="amount" onclick="selectAmount(1000)">1,000<br>₹100</button>
+<button class="amount" onclick="selectAmount(5000)">5,000<br>₹500</button><button class="amount" onclick="selectAmount(10000)">10,000<br>₹1,000</button><button class="amount" onclick="selectAmount(20000)">20,000<br>₹2,000</button>
+</div></div>
+<div class="panel"><h2 style="color:#ffd85a">MANUAL DEPOSIT</h2><p class="muted">Enter any amount and submit your deposit request for manual verification.</p><input class="input" id="customAmount" type="number" placeholder="Coins amount"><button class="goldBtn" style="width:100%" onclick="depositRequest()">🛡 DEPOSIT NOW</button></div>
+</div>
+</section>
+</main>
+
+<footer class="footer">CRICKET CARD ARENA • COLLECT • UPGRADE • DOMINATE</footer>
+</div>
+
+<div class="modal" id="packModal"><div class="modalBox"><button class="close" onclick="closeModal('packModal')">×</button><h2 style="color:#ffd85a">🎁 PACK OPENED</h2><p class="muted" id="packInfo"></p><div class="cardGrid" id="revealed"></div><button class="goldBtn" style="width:100%;margin-top:14px" onclick="closeModal('packModal')">CONTINUE</button></div></div>
+<div class="toast" id="toast"></div>
+
 <script>
+/* Telegram Web App identity */
+const TG = window.Telegram?.WebApp || null;
+let telegramUser = null;
+let telegramUserId = null;
+let telegramInitData = "";
+const ADMIN_ID = "7035868085";
 function setupTelegram(){
   const idEl=document.getElementById("userId");
   const nameEl=document.getElementById("userName");
   const statusEl=document.getElementById("tgStatus");
-
-  if(!window.Telegram || !window.Telegram.WebApp){
-    if(idEl) idEl.textContent="Open inside Telegram";
-    if(statusEl) statusEl.textContent="⚠️ Open from Telegram Web App";
-    return;
-  }
-
-  const tg=window.Telegram.WebApp;
-  tg.ready();
-  tg.expand();
-
-  const user=tg.initDataUnsafe && tg.initDataUnsafe.user;
-
-  if(!user){
-    if(idEl) idEl.textContent="Not detected";
-    if(statusEl) statusEl.textContent="⚠️ Open Web App from your bot";
-    return;
-  }
-
-  const telegramId=String(user.id);
-
-  if(nameEl){
-    nameEl.textContent=
-      [user.first_name,user.last_name].filter(Boolean).join(" ") ||
-      user.username || "Telegram User";
-  }
-
-  if(idEl) idEl.textContent=telegramId;
-
-  if(statusEl){
-    statusEl.textContent=
-      telegramId==="7035868085"
-      ? "✓ Telegram connected • ADMIN"
-      : "✓ Telegram account connected";
-    statusEl.style.color="#48df62";
-  }
-
-  window.CCA_TELEGRAM={
-    userId:telegramId,
-    initData:tg.initData,
-    user:user,
-    isAdmin:telegramId==="7035868085"
-  };
+  if(!TG){ if(idEl) idEl.textContent="Open inside Telegram"; if(statusEl) statusEl.textContent="⚠️ Open this Web App from Telegram"; return; }
+  TG.ready(); TG.expand(); telegramInitData=TG.initData||""; telegramUser=TG.initDataUnsafe?.user||null;
+  if(!telegramUser){ if(idEl) idEl.textContent="Not detected"; if(statusEl) statusEl.textContent="⚠️ Open from Telegram Bot"; return; }
+  telegramUserId=String(telegramUser.id);
+  const full=[telegramUser.first_name,telegramUser.last_name].filter(Boolean).join(" ")||telegramUser.username||"Telegram User";
+  if(nameEl) nameEl.textContent=full; if(idEl) idEl.textContent=telegramUserId;
+  if(statusEl){statusEl.textContent=telegramUserId===ADMIN_ID?"✓ Telegram connected • ADMIN":"✓ Telegram account connected";statusEl.style.color="#48df62";}
 }
-window.addEventListener("load",setupTelegram);
-</script>
 
-</body></html>
+let coins=Number(localStorage.getItem('cca_coins')||0);
+let cards=JSON.parse(localStorage.getItem('cca_cards')||'[]');
+const names=['ARSHDEEP-INSPIRED','VIRAT-INSPIRED','HARDIK-INSPIRED','ROHIT-INSPIRED','SURYA-INSPIRED','BUMRAH-INSPIRED'];
+
+function save(){localStorage.setItem('cca_coins',coins);localStorage.setItem('cca_cards',JSON.stringify(cards));update();}
+function update(){
+ document.querySelectorAll('#coins,#homeCoins').forEach(e=>e.textContent=coins.toLocaleString());
+ document.getElementById('homeCards').textContent=cards.length;
+ renderCards();
+}
+function show(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+ scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));
+
+function buyPack(price,min,max){
+ if(coins<price){show('deposit');toast('Not enough coins — add coins first');return;}
+ coins-=price;
+ let vals;
+ do{vals=[1,2,3].map(()=>Math.floor(Math.random()*9)+5)}
+ while(vals.reduce((a,b)=>a+b,0)<min||vals.reduce((a,b)=>a+b,0)>max);
+ vals.forEach((v,i)=>cards.push({name:names[i%names.length],value:v}));
+ save();
+ document.getElementById('packInfo').textContent='3 random cards • Total value '+vals.reduce((a,b)=>a+b,0)+' coins';
+ document.getElementById('revealed').innerHTML=vals.map((v,i)=>`<div class="playerCard"><div class="playerArt">🏏</div><b>${names[i%names.length]}</b><div style="margin-top:8px;color:#ffd85a">🪙 ${v}</div></div>`).join('');
+ document.getElementById('packModal').classList.add('show');
+}
+function renderCards(){
+ const g=document.getElementById('cardsGrid');
+ if(!cards.length){g.innerHTML='<div class="muted" style="padding:30px">No cards yet. Open a pack to start your collection.</div>';return;}
+ g.innerHTML=cards.map((c,i)=>`<div class="playerCard"><div class="playerArt">🏏</div><b>${c.name}</b><div class="statsRow"><span>POWER</span><span>${c.value}</span></div></div>`).join('');
+}
+function playBattle(){
+ if(!cards.length){toast('Open a pack first');show('packs');return;}
+ const win=Math.random()>.5;
+ document.getElementById('battleResult').textContent=win?'🏆 YOU WIN +25 COINS':'❌ YOU LOSE';
+ if(win){coins+=25;save();} else update();
+}
+function selectAmount(v){document.getElementById('customAmount').value=v;show('deposit');}
+function depositRequest(){
+ const v=Number(document.getElementById('customAmount').value);
+ if(!v){toast('Enter a coin amount');return;}
+ toast('Deposit request created for '+v.toLocaleString()+' coins');
+}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function toast(t){const x=document.getElementById('toast');x.textContent=t;x.style.display='block';clearTimeout(window.__t);window.__t=setTimeout(()=>x.style.display='none',2200)}
+update();
+</script>
+</body>
+</html>
