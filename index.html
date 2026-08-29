@@ -125,47 +125,19 @@ h1 span{color:#fff}
  .battleHero{min-height:430px}.battleContent{padding:55px 15px}.vs{font-size:60px}.row{grid-template-columns:35px 1fr 90px}
  .sectionTitle{font-size:21px}.bigCoin{font-size:35px}
 }
-
-.cardPhoto{width:100%;height:170px;object-fit:cover;border-radius:9px;border:1px solid #80611a;display:block}
-.cardTag{display:inline-block;margin-top:7px;padding:4px 7px;border:1px solid #6f5312;border-radius:12px;color:#ffd85a;font-size:8px;font-weight:900}
-.cardValue{font-size:15px;color:#ffd85a;font-weight:1000;margin-top:5px}
-.cardActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
-.smallGold{border:1px solid #9c7315;border-radius:7px;padding:8px;background:linear-gradient(#ffe98c,#bd8108);font-weight:1000;font-size:10px}
-.smallDark{border:1px solid #5a4514;border-radius:7px;padding:8px;background:#090909;color:#ffd85a;font-weight:1000;font-size:10px}
-.packDetail{display:none}
-.packDetail.show{display:block}
-.revealCard{border:1px solid #8a6717;border-radius:12px;background:linear-gradient(145deg,#171208,#060606);padding:9px;text-align:center}
-.revealCard img{width:100%;height:190px;object-fit:cover;border-radius:8px}
-@media(max-width:800px){.cardPhoto{height:145px}.revealCard img{height:160px}}
 </style>
-<script src="https://telegram.org/js/telegram-web-app.js">setupTelegramProfile();
+<script src="https://telegram.org/js/telegram-web-app.js">setupTelegram();
 </script>
 </head>
 <body>
-
-<div id="dbStatus" style="position:fixed;right:10px;bottom:10px;z-index:40;
-border:1px solid #5d4711;background:#080808;color:#ffd85a;border-radius:20px;
-padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING</div>
-
 <div class="app">
-<header class="top">
+<div style="margin:10px 14px;padding:10px 12px;border:1px solid #5f4911;border-radius:10px;background:#080808"><div id="userName" style="font-weight:900;color:#ffd85a">Telegram User</div><div style="font-size:10px;color:#aaa;margin-top:4px">🆔 User ID: <b id="userId" style="color:#ffd85a">Checking...</b></div><div id="tgStatus" style="font-size:9px;color:#ffd85a;margin-top:3px">Checking Telegram...</div></div><header class="top">
   <div class="brand">CRICKET<span>CARD ARENA</span></div>
   <div class="topRight">
     <div class="coinBox"><small>YOUR COINS</small><div class="coinVal">🪙 <span id="coins">0</span></div><button class="plus" onclick="show('deposit')">+</button></div>
     <div class="profileBox"><small>PLAYER</small><div class="profileName">GUEST <span style="color:#aaa">⌄</span></div></div>
   </div>
 </header>
-<div id="telegramProfile" style="margin-top:12px;padding:12px;border:1px solid #5f4911;border-radius:10px;background:linear-gradient(145deg,#0c0c0a,#050505)">
-  <div style="display:flex;align-items:center;gap:10px">
-    <div id="tgAvatar" style="width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#171208;border:1px solid #735511;color:#ffd85a;font-weight:900">👤</div>
-    <div style="min-width:0">
-      <div id="userName" style="font-weight:900;color:#fff">Telegram User</div>
-      <div style="font-size:10px;color:#999;margin-top:3px">🆔 User ID: <b id="userId" style="color:#ffd85a">Open inside Telegram</b></div>
-      <div id="tgStatus" style="font-size:9px;color:#6bea7b;margin-top:3px">Checking Telegram...</div>
-    </div>
-  </div>
-</div>
-
 
 <nav class="nav">
 <button data-page="home" class="active"><span>⌂</span>HOME</button>
@@ -194,67 +166,21 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 
 <section class="page" id="packs">
 <div class="sectionTitle">PACKS</div>
-<p class="muted">Premium cricket card packs • 3 cards guaranteed. Players are selected from the connected player database according to pack rarity.</p>
-
+<p class="muted">Choose your pack. Every pack contains 3 random cards.</p>
 <div class="packGrid">
-<div class="pack"><img src="common_pack.png"><h3>COMMON PACK</h3><div class="range">20 – 40 COINS</div><button class="buy" onclick="openPack('COMMON',30,20,40)">30 🪙</button></div>
-<div class="pack"><img src="rare_pack.png"><h3>RARE PACK</h3><div class="range">60 – 100 COINS</div><button class="buy" onclick="openPack('RARE',75,60,100)">75 🪙</button></div>
-<div class="pack"><img src="epic_pack.png"><h3>EPIC PACK</h3><div class="range">125 – 190 COINS</div><button class="buy" onclick="openPack('EPIC',150,125,190)">150 🪙</button></div>
-<div class="pack"><img src="legendary_pack.png"><h3>LEGENDARY PACK</h3><div class="range">260 – 400 COINS</div><button class="buy" onclick="openPack('LEGENDARY',300,260,400)">300 🪙</button></div>
-<div class="pack"><img src="ultimate_pack.png"><h3>ULTIMATE PACK</h3><div class="range">550 – 800 COINS</div><button class="buy" onclick="openPack('ULTIMATE',600,550,800)">600 🪙</button></div>
-</div>
-
-<div id="packOpening" class="panel packDetail" style="margin-top:15px">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <div>
-      <div class="kicker">PACK OPENING</div>
-      <h2 id="openingTitle" style="color:#ffd85a;margin:5px 0">OPENING PACK...</h2>
-    </div>
-    <div id="openingCost" class="cardTag"></div>
-  </div>
-  <div class="grid3" id="revealGrid" style="margin-top:14px"></div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
-    <div id="openingTotal" style="color:#ffd85a;font-weight:1000"></div>
-    <button class="goldBtn" onclick="finishPack()">ADD TO MY CARDS</button>
-  </div>
+<div class="pack"><img src="common_pack.png"><h3>COMMON PACK</h3><div class="range">20 – 40 COINS</div><button class="buy" onclick="buyPack(30,20,40)">30 🪙</button></div>
+<div class="pack"><img src="rare_pack.png"><h3>RARE PACK</h3><div class="range">60 – 100 COINS</div><button class="buy" onclick="buyPack(75,60,100)">75 🪙</button></div>
+<div class="pack"><img src="epic_pack.png"><h3>EPIC PACK</h3><div class="range">125 – 190 COINS</div><button class="buy" onclick="buyPack(150,125,190)">150 🪙</button></div>
+<div class="pack"><img src="legendary_pack.png"><h3>LEGENDARY PACK</h3><div class="range">260 – 400 COINS</div><button class="buy" onclick="buyPack(300,260,400)">300 🪙</button></div>
+<div class="pack"><img src="ultimate_pack.png"><h3>ULTIMATE PACK</h3><div class="range">550 – 800 COINS</div><button class="buy" onclick="buyPack(600,550,800)">600 🪙</button></div>
 </div>
 </section>
+
 <section class="page" id="cards">
 <div class="sectionTitle">MY CARDS</div>
-<div class="panel">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-    <div class="muted">COLLECTION: <b id="collectionCount" style="color:#ffd85a">0</b> cards</div>
-    <select id="cardFilter" class="input" style="max-width:180px;margin:0" onchange="renderCards()">
-      <option value="ALL">ALL CARDS</option>
-      <option value="BATTING">BATSMEN</option>
-      <option value="BOWLING">BOWLERS</option>
-      <option value="ALLROUNDER">ALL ROUNDERS</option>
-    </select>
-  </div>
-  <div class="cardGrid" id="cardsGrid" style="margin-top:14px"></div>
-</div>
-
-<div id="cardDetail" class="panel" style="display:none;margin-top:14px">
-  <div style="display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:center">
-    <img id="detailPhoto" class="cardPhoto" style="height:330px">
-    <div>
-      <div class="kicker">CARD DETAIL</div>
-      <h2 id="detailName" style="color:#ffd85a"></h2>
-      <p id="detailRole" class="muted"></p>
-      <div class="grid3">
-        <div class="panel"><div class="muted">BAT</div><b id="detailBat" style="color:#ffd85a"></b></div>
-        <div class="panel"><div class="muted">BOWL</div><b id="detailBowl" style="color:#ffd85a"></b></div>
-        <div class="panel"><div class="muted">FIELD</div><b id="detailField" style="color:#ffd85a"></b></div>
-      </div>
-      <div style="font-size:22px;color:#ffd85a;font-weight:1000;margin:15px 0">🪙 <span id="detailValue"></span></div>
-      <div class="cardActions">
-        <button class="smallGold" onclick="useSelectedCard()">USE IN BATTLE</button>
-        <button class="smallDark" onclick="sellSelectedCard()">SELL CARD</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="panel"><p class="muted">Your collected cards appear here.</p><div class="cardGrid" id="cardsGrid"></div></div>
 </section>
+
 <section class="page" id="battle">
 <div class="sectionTitle">BATTLE & WIN COINS</div>
 <div class="battleHero"><div class="battleContent">
@@ -287,68 +213,12 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 
 <section class="page" id="deposit">
 <div class="sectionTitle">ADD COINS</div>
-
 <div class="depositGrid">
-  <div class="panel">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2 style="color:#ffd85a;margin:0">💳 SECURE PAYMENT</h2>
-      <span style="border:1px solid #6f5312;border-radius:20px;padding:6px 10px;color:#ffd85a;font-size:9px">UPI</span>
-    </div>
-
-    <div style="margin-top:15px;text-align:center;border:1px solid #6f5312;border-radius:14px;background:#050505;padding:14px">
-      <div style="color:#ffd85a;font-weight:1000;font-size:12px;margin-bottom:10px">SCAN & PAY</div>
-      <img src="payment_qr.jpg" alt="UPI Payment QR"
-           style="width:min(290px,85vw);max-width:100%;border-radius:10px;border:2px solid #b98a22;display:block;margin:auto">
-      <div style="margin-top:12px;color:#aaa;font-size:10px">UPI ID</div>
-      <div style="display:flex;gap:7px;align-items:center;justify-content:center;margin-top:5px">
-        <b id="upiId" style="color:#ffd85a;font-size:15px;word-break:break-all">Maniacheree@axl</b>
-        <button class="goldBtn" style="padding:7px 10px;font-size:10px" onclick="copyUPI()">COPY</button>
-      </div>
-    </div>
-
-    <div class="panel" style="margin-top:12px;background:#070707">
-      <h3 style="color:#ffd85a;margin-top:0">PAYMENT DETAILS</h3>
-      <p class="muted">After payment, enter the exact details below and submit for manual verification.</p>
-
-      <div class="muted">PAYMENT AMOUNT</div>
-      <input class="input" id="payAmount" type="number" min="1" step="1" placeholder="Enter payment amount ₹">
-
-      <div class="muted" style="margin-top:8px;color:#ffd85a">🪙 ₹1 = 1 COIN</div>
-
-      <div class="muted" style="margin-top:8px">UTR / TRANSACTION ID</div>
-      <input class="input" id="utr" maxlength="80" placeholder="Enter UTR / transaction ID">
-    </div>
-
-    <div id="uploadBox" style="margin-top:12px;border:1px dashed #735511;border-radius:10px;padding:14px;text-align:center;background:#080808">
-  <div style="color:#ffd85a;font-weight:900;font-size:11px">📸 PAYMENT SCREENSHOT</div>
-  <input id="paymentShot" type="file" accept="image/jpeg,image/png,image/webp,image/*"
-         style="display:block;width:100%;margin-top:10px;color:#fff;font-size:12px"
-         onchange="handleScreenshot(this)">
-  <div id="shotName" class="muted" style="margin-top:8px">Choose a screenshot</div>
-  <img id="shotPreview" alt="Screenshot preview"
-       style="display:none;max-width:100%;max-height:230px;margin:10px auto 0;border-radius:9px;border:1px solid #735511">
-</div>
-
-    <button class="goldBtn" style="width:100%;margin-top:12px" onclick="submitDeposit()">SUBMIT FOR APPROVAL</button>
-  </div>
-
-  <div>
-    <div class="panel">
-      <h2 style="color:#ffd85a;margin-top:0">🪙 WALLET</h2>
-      <div class="balance">
-        <div class="balanceIcon">🪙</div>
-        <div>
-          <div class="bigCoin" id="depositBalance">0</div>
-          <div class="muted">AVAILABLE COINS</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel" style="margin-top:14px">
-      <h2 style="color:#ffd85a;margin-top:0">📋 DEPOSIT HISTORY</h2>
-      <div id="depositHistory" class="list"></div>
-    </div>
-  </div>
+<div class="panel"><h2 style="color:#ffd85a">CHOOSE AMOUNT</h2><div class="amounts">
+<button class="amount" onclick="selectAmount(100)">100<br>₹10</button><button class="amount" onclick="selectAmount(500)">500<br>₹50</button><button class="amount" onclick="selectAmount(1000)">1,000<br>₹100</button>
+<button class="amount" onclick="selectAmount(5000)">5,000<br>₹500</button><button class="amount" onclick="selectAmount(10000)">10,000<br>₹1,000</button><button class="amount" onclick="selectAmount(20000)">20,000<br>₹2,000</button>
+</div></div>
+<div class="panel"><h2 style="color:#ffd85a">MANUAL DEPOSIT</h2><p class="muted">Enter any amount and submit your deposit request for manual verification.</p><input class="input" id="customAmount" type="number" placeholder="Coins amount"><button class="goldBtn" style="width:100%" onclick="depositRequest()">🛡 DEPOSIT NOW</button></div>
 </div>
 </section>
 </main>
@@ -359,345 +229,76 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <div class="modal" id="packModal"><div class="modalBox"><button class="close" onclick="closeModal('packModal')">×</button><h2 style="color:#ffd85a">🎁 PACK OPENED</h2><p class="muted" id="packInfo"></p><div class="cardGrid" id="revealed"></div><button class="goldBtn" style="width:100%;margin-top:14px" onclick="closeModal('packModal')">CONTINUE</button></div></div>
 <div class="toast" id="toast"></div>
 
-
 <script>
-
-/* ===== TELEGRAM WEB APP IDENTITY ===== */
-const tg = window.Telegram?.WebApp || null;
+/* Telegram Web App identity */
+const TG = window.Telegram?.WebApp || null;
 let telegramUser = null;
 let telegramUserId = null;
 let telegramInitData = "";
-
-if (tg) {
-  tg.ready();
-  tg.expand();
-
-  telegramInitData = tg.initData || "";
-  telegramUser = tg.initDataUnsafe?.user || null;
-
-  if (telegramUser) {
-    telegramUserId = String(telegramUser.id);
-
-    const nameEl = document.getElementById("userName");
-    const idEl = document.getElementById("userId");
-
-    if (nameEl) {
-      nameEl.textContent =
-        [telegramUser.first_name, telegramUser.last_name]
-        .filter(Boolean).join(" ") || "Telegram User";
-    }
-
-    if (idEl) idEl.textContent = telegramUserId;
-
-    console.log("Telegram User ID:", telegramUserId);
-  }
-}
-
 const ADMIN_ID = "7035868085";
-
-function isAdminTelegramUser() {
-  return telegramUserId === ADMIN_ID;
+function setupTelegram(){
+  const idEl=document.getElementById("userId");
+  const nameEl=document.getElementById("userName");
+  const statusEl=document.getElementById("tgStatus");
+  if(!TG){ if(idEl) idEl.textContent="Open inside Telegram"; if(statusEl) statusEl.textContent="⚠️ Open this Web App from Telegram"; return; }
+  TG.ready(); TG.expand(); telegramInitData=TG.initData||""; telegramUser=TG.initDataUnsafe?.user||null;
+  if(!telegramUser){ if(idEl) idEl.textContent="Not detected"; if(statusEl) statusEl.textContent="⚠️ Open from Telegram Bot"; return; }
+  telegramUserId=String(telegramUser.id);
+  const full=[telegramUser.first_name,telegramUser.last_name].filter(Boolean).join(" ")||telegramUser.username||"Telegram User";
+  if(nameEl) nameEl.textContent=full; if(idEl) idEl.textContent=telegramUserId;
+  if(statusEl){statusEl.textContent=telegramUserId===ADMIN_ID?"✓ Telegram connected • ADMIN":"✓ Telegram account connected";statusEl.style.color="#48df62";}
 }
-
-window.CCA_TELEGRAM = {
-  webApp: tg,
-  user: telegramUser,
-  userId: telegramUserId,
-  initData: telegramInitData,
-  isAdmin: isAdminTelegramUser
-};
-/* ===== END TELEGRAM WEB APP IDENTITY ===== */
 
 let coins=Number(localStorage.getItem('cca_coins')||0);
 let cards=JSON.parse(localStorage.getItem('cca_cards')||'[]');
-let pendingPack=null;
-let selectedCardIndex=null;
-let depositRequests=JSON.parse(localStorage.getItem('cca_deposit_requests')||'[]');
+const names=['ARSHDEEP-INSPIRED','VIRAT-INSPIRED','HARDIK-INSPIRED','ROHIT-INSPIRED','SURYA-INSPIRED','BUMRAH-INSPIRED'];
 
-
-let cardPool=[];
-let playerDBReady=false;
-
-async function loadPlayerDatabase(){
-  try{
-    const response=await fetch('players.json',{cache:'no-store'});
-    if(!response.ok) throw new Error('players.json not found');
-    const data=await response.json();
-    if(!Array.isArray(data)||!data.length) throw new Error('empty database');
-    cardPool=data;
-    playerDBReady=true;
-    document.getElementById('dbStatus').textContent='PLAYER DB: ONLINE • '+data.length;
-  }catch(err){
-    console.error(err);
-    playerDBReady=false;
-    document.getElementById('dbStatus').textContent='PLAYER DB: OFFLINE';
-    toast('Player database load failed');
-  }
-}
-
-function rarityRank(r){
-  return {COMMON:1,RARE:2,EPIC:3,LEGENDARY:4,ULTIMATE:5,ICON:6}[r]||1;
-}
-
-function playersForPack(packRarity){
-  const rank=rarityRank(packRarity);
-  let eligible=cardPool.filter(p=>rarityRank(p.rarity)<=rank);
-  if(rank>=5){
-    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=3);
-  }else if(rank>=4){
-    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=3);
-  }else if(rank>=3){
-    eligible=cardPool.filter(p=>rarityRank(p.rarity)>=2);
-  }else if(rank>=2){
-    eligible=cardPool.filter(p=>rarityRank(p.rarity)<=3 && rarityRank(p.rarity)>=1);
-  }
-  return eligible.length?eligible:cardPool;
-}
-
-function pickPlayer(packRarity){
-  const list=playersForPack(packRarity);
-  return list[Math.floor(Math.random()*list.length)];
-}
-
-
-function save(){
- localStorage.setItem('cca_coins',coins);
- localStorage.setItem('cca_cards',JSON.stringify(cards));
- update();
-}
+function save(){localStorage.setItem('cca_coins',coins);localStorage.setItem('cca_cards',JSON.stringify(cards));update();}
 function update(){
- document.querySelectorAll('#coins,#homeCoins,#depositBalance').forEach(e=>e.textContent=coins.toLocaleString());
+ document.querySelectorAll('#coins,#homeCoins').forEach(e=>e.textContent=coins.toLocaleString());
  document.getElementById('homeCards').textContent=cards.length;
- document.getElementById('collectionCount').textContent=cards.length;
  renderCards();
- if(typeof renderDepositHistory==='function') renderDepositHistory();
 }
 function show(id){
  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
- const page=document.getElementById(id);
- if(page) page.classList.add('active');
+ document.getElementById(id).classList.add('active');
  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
  scrollTo({top:0,behavior:'smooth'});
 }
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));
 
-function makeValue(min,max){
- return Math.floor(Math.random()*(max-min+1))+min;
-}
-function openPack(type,price,min,max){
- if(!playerDBReady){toast('Player database is still loading');return;}
- if(coins<price){
-   show('deposit');
-   toast('Not enough coins — add coins first');
-   return;
- }
+function buyPack(price,min,max){
+ if(coins<price){show('deposit');toast('Not enough coins — add coins first');return;}
  coins-=price;
- const result=[];
- let total=0;
- for(let i=0;i<3;i++){
-   const c=pickPlayer(type);
-   result.push({...c,value:makeValue(Math.max(5,Math.floor(c.value*0.65)),Math.max(10,Math.floor(c.value*1.15))),rarity:type,id:'CARD-'+Date.now()+'-'+i});
- }
- total=result.reduce((a,c)=>a+c.value,0);
- while(total<min || total>max){
-   result.forEach(c=>c.value=makeValue(8,40));
-   total=result.reduce((a,c)=>a+c.value,0);
- }
- pendingPack={type,price,cards:result,total};
- document.getElementById('openingTitle').textContent=type+' PACK OPENED';
- document.getElementById('openingCost').textContent='− '+price+' 🪙';
- document.getElementById('openingTotal').textContent='TOTAL CARD VALUE: 🪙 '+total;
- document.getElementById('revealGrid').innerHTML=result.map(c=>`
-   <div class="revealCard">
-     <img src="${c.img}">
-     <div class="cardTag">${c.rarity}</div>
-     <h3 style="margin:7px 0;color:#fff">${c.name}</h3>
-     <div class="cardValue">🪙 ${c.value}</div>
-     <div class="statsRow"><span>BAT ${c.bat}</span><span>BOWL ${c.bowl}</span><span>FIELD ${c.field}</span></div>
-   </div>`).join('');
- document.getElementById('packOpening').classList.add('show');
+ let vals;
+ do{vals=[1,2,3].map(()=>Math.floor(Math.random()*9)+5)}
+ while(vals.reduce((a,b)=>a+b,0)<min||vals.reduce((a,b)=>a+b,0)>max);
+ vals.forEach((v,i)=>cards.push({name:names[i%names.length],value:v}));
  save();
-}
-function finishPack(){
- if(!pendingPack)return;
- cards.push(...pendingPack.cards);
- pendingPack=null;
- document.getElementById('packOpening').classList.remove('show');
- save();
- toast('3 cards added to My Cards');
- show('cards');
+ document.getElementById('packInfo').textContent='3 random cards • Total value '+vals.reduce((a,b)=>a+b,0)+' coins';
+ document.getElementById('revealed').innerHTML=vals.map((v,i)=>`<div class="playerCard"><div class="playerArt">🏏</div><b>${names[i%names.length]}</b><div style="margin-top:8px;color:#ffd85a">🪙 ${v}</div></div>`).join('');
+ document.getElementById('packModal').classList.add('show');
 }
 function renderCards(){
  const g=document.getElementById('cardsGrid');
- if(!g)return;
- const filter=document.getElementById('cardFilter')?.value||'ALL';
- const list=cards.map((c,i)=>({...c,index:i})).filter(c=>filter==='ALL'||c.role===filter);
- if(!list.length){
-   g.innerHTML='<div class="muted" style="padding:30px">No cards here yet. Open a pack to start your collection.</div>';
-   return;
- }
- g.innerHTML=list.map(c=>`
-   <div class="playerCard">
-     <img class="cardPhoto" src="${c.img}">
-     <div class="cardTag">${c.rarity||'COMMON'}</div>
-     <h3 style="margin:7px 0">${c.name}</h3>
-     <div class="cardValue">🪙 ${c.value}</div>
-     <div class="statsRow"><span>BAT ${c.bat}</span><span>BOWL ${c.bowl}</span><span>FIELD ${c.field}</span></div>
-     <button class="smallGold" style="width:100%;margin-top:8px" onclick="viewCard(${c.index})">VIEW CARD</button>
-   </div>`).join('');
-}
-function viewCard(index){
- selectedCardIndex=index;
- const c=cards[index];
- if(!c)return;
- document.getElementById('cardDetail').style.display='block';
- document.getElementById('detailPhoto').src=c.img;
- document.getElementById('detailName').textContent=c.name;
- document.getElementById('detailRole').textContent=(c.rarity||'COMMON')+' • '+c.role;
- document.getElementById('detailBat').textContent=c.bat;
- document.getElementById('detailBowl').textContent=c.bowl;
- document.getElementById('detailField').textContent=c.field;
- document.getElementById('detailValue').textContent=c.value;
- scrollTo({top:document.getElementById('cardDetail').offsetTop-100,behavior:'smooth'});
-}
-function sellSelectedCard(){
- if(selectedCardIndex===null||!cards[selectedCardIndex])return;
- const c=cards[selectedCardIndex];
- coins+=Number(c.value)||0;
- cards.splice(selectedCardIndex,1);
- selectedCardIndex=null;
- document.getElementById('cardDetail').style.display='none';
- save();
- toast('Card sold • coins added to wallet');
-}
-function useSelectedCard(){
- if(selectedCardIndex===null)return toast('Select a card first');
- show('battle');
- toast('Card selected for battle');
+ if(!cards.length){g.innerHTML='<div class="muted" style="padding:30px">No cards yet. Open a pack to start your collection.</div>';return;}
+ g.innerHTML=cards.map((c,i)=>`<div class="playerCard"><div class="playerArt">🏏</div><b>${c.name}</b><div class="statsRow"><span>POWER</span><span>${c.value}</span></div></div>`).join('');
 }
 function playBattle(){
  if(!cards.length){toast('Open a pack first');show('packs');return;}
  const win=Math.random()>.5;
- const result=document.getElementById('battleResult');
- result.textContent=win?'🏆 YOU WIN +25 COINS':'❌ YOU LOSE';
+ document.getElementById('battleResult').textContent=win?'🏆 YOU WIN +25 COINS':'❌ YOU LOSE';
  if(win){coins+=25;save();} else update();
 }
-function selectAmount(v){
- document.getElementById('payAmount').value=v;
- document.getElementById('coinAmount')?.remove();
- show('deposit');
-}
+function selectAmount(v){document.getElementById('customAmount').value=v;show('deposit');}
 function depositRequest(){
- const v=Number(document.getElementById('customAmount')?.value);
+ const v=Number(document.getElementById('customAmount').value);
  if(!v){toast('Enter a coin amount');return;}
  toast('Deposit request created for '+v.toLocaleString()+' coins');
 }
-function closeModal(id){document.getElementById(id)?.classList.remove('show')}
-function toast(t){
- const x=document.getElementById('toast');
- if(!x)return;
- x.textContent=t;x.style.display='block';
- clearTimeout(window.__t);
- window.__t=setTimeout(()=>x.style.display='none',2200);
-}
-
-function copyUPI(){
-  const id='Maniacheree@axl';
-  navigator.clipboard?.writeText(id).then(
-    ()=>toast('UPI ID copied'),
-    ()=>toast('UPI ID: '+id)
-  );
-}
-
-
-function handleScreenshot(input){
-  const file=input && input.files ? input.files[0] : null;
-  const name=document.getElementById('shotName');
-  const preview=document.getElementById('shotPreview');
-  if(!file){
-    if(name) name.textContent='Choose a screenshot';
-    if(preview){preview.removeAttribute('src');preview.style.display='none';}
-    return;
-  }
-  if(!file.type || !file.type.startsWith('image/')){
-    input.value='';
-    if(name) name.textContent='❌ Please select an image';
-    return;
-  }
-  if(file.size > 10*1024*1024){
-    input.value='';
-    if(name) name.textContent='❌ Image must be under 10 MB';
-    return;
-  }
-  if(name) name.textContent='✅ Selected: '+file.name;
-  if(preview){
-    const reader=new FileReader();
-    reader.onload=e=>{
-      preview.src=e.target.result;
-      preview.style.display='block';
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-function submitDeposit(){
-  const pay=Number(document.getElementById('payAmount').value);
-  const coin=pay;
-  const utr=document.getElementById('utr').value.trim();
-  const shot=document.getElementById('paymentShot')?.files?.[0];
-  const file=document.getElementById('paymentShot').files[0];
-
-  if(!pay || pay<=0) return toast('Enter payment amount');
-  if(!utr) return toast('Enter UTR / transaction ID');
-  if(!shot) return toast('Upload payment screenshot');
-  if(!file) return toast('Upload payment screenshot');
-
-  const request={
-    id:'DEP-'+Date.now(),
-    paymentAmount:pay,
-    coinsRequested:coin,
-    utr:utr,
-    screenshotName:file.name,
-    status:'PENDING',
-    createdAt:new Date().toLocaleString()
-  };
-
-  depositRequests.unshift(request);
-  localStorage.setItem('cca_deposit_requests',JSON.stringify(depositRequests));
-  document.getElementById('payAmount').value='';
-  document.getElementById('utr').value='';
-  
-  document.getElementById('shotName').textContent='No screenshot selected';
-  renderDepositHistory();
-  toast('Deposit submitted • Waiting for approval');
-}
-
-function renderDepositHistory(){
-  const box=document.getElementById('depositHistory');
-  if(!depositRequests.length){
-    box.innerHTML='<div class="muted" style="padding:10px 0">No deposit requests yet.</div>';
-    return;
-  }
-  box.innerHTML=depositRequests.slice(0,8).map(r=>`
-    <div class="row" style="grid-template-columns:1fr auto">
-      <div>
-        <b style="color:#ffd85a">${r.id}</b><br>
-        <span class="muted">₹${Number(r.paymentAmount).toLocaleString()} • ${Number(r.coinsRequested).toLocaleString()} coins</span><br>
-        <span class="muted">UTR: ${escapeHtml(r.utr)}</span><br>
-        <span class="muted">${escapeHtml(r.createdAt)}</span>
-      </div>
-      <div style="text-align:right;color:${r.status==='APPROVED'?'#48df62':r.status==='REJECTED'?'#ff5750':'#ffd85a'};font-weight:1000">${r.status}</div>
-    </div>`).join('');
-}
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-}
-
-
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function toast(t){const x=document.getElementById('toast');x.textContent=t;x.style.display='block';clearTimeout(window.__t);window.__t=setTimeout(()=>x.style.display='none',2200)}
 update();
-if(typeof renderDepositHistory==='function')renderDepositHistory();
-loadPlayerDatabase();
 </script>
-
 </body>
 </html>
