@@ -1,7 +1,3 @@
-# server.py
-# Python Flask backend for the Telegram Web App.
-# IMPORTANT: BOT_TOKEN must be set as a Railway environment variable.
-
 import os
 import hmac
 import hashlib
@@ -11,113 +7,127 @@ import time
 from urllib.parse import parse_qsl
 from flask import Flask, request, jsonify, send_from_directory
 
+# =========================================================
+# APP SETUP
+# =========================================================
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__)
 
-BOT_TOKEN = os.environ["BOT_TOKEN"]
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+
+if not BOT_TOKEN:
+    raise RuntimeError("BOT_TOKEN environment variable is missing")
 
 
 # =========================================================
-# SERVE WEBSITE
+# WEBSITE
 # =========================================================
 
-@app.get("/")
+@app.route("/", methods=["GET"])
 def index():
     return send_from_directory(BASE_DIR, "index.html")
 
 
-# Serve website files:
-# hero_gold.jpg
-# battle_gold.jpg
-# common_pack.png
-# rare_pack.png
-# epic_pack.png
-# legendary_pack.png
-# ultimate_pack.png
-# payment_qr.jpg
-# players.json
-# etc.
-
-@app.get("/<path:filename>")
+@app.route("/<path:filename>", methods=["GET"])
 def serve_file(filename):
-    # Never interfere with API routes
+
+    # Don't interfere with API routes
     if filename.startswith("api/"):
-        return jsonify({"error": "Not found"}), 404
+        return jsonify({"ok": False, "error": "Not found"}), 404
 
-    file_path = os.path.join(BASE_DIR, filename)
+    file_path = os.path.abspath(os.path.join(BASE_DIR, filename))
 
-    # Security: don't allow paths outside the project folder
-    if not os.path.abspath(file_path).startswith(BASE_DIR):
-        return jsonify({"error": "Forbidden"}), 403
+    # Security check
+    if not file_path.startswith(BASE_DIR):
+        return jsonify({"ok": False, "error": "Forbidden"}), 403
 
     if os.path.isfile(file_path):
         return send_from_directory(BASE_DIR, filename)
 
-    return jsonify({"error": "Not found"}), 404
+    return jsonify({"ok": False, "error": "Not found"}), 404
 
 
 # =========================================================
 # TELEGRAM INIT DATA VERIFICATION
 # =========================================================
 
-def verify_telegram_init_data(init_data: str):
+def verify_telegram_init_data(init_data):
 
     if not init_data:
         raise ValueError("Missing initData")
 
-    data = dict(parse_qsl(init_data, keep_blank_values=True))
-
-    received = data.pop("hash", None)
-
-    if not received:
-        raise ValueError("Missing hash")
-
-    check = "\n".join(
-        f"{k}={data[k]}"
-        for k in sorted(data)
+    data = dict(
+        parse_qsl(
+            init_data,
+            keep_blank_values=True
+        )
     )
 
-    secret = hmac.new(
+    received_hash = data.pop("hash", None)
+
+    if not received_hash:
+        raise ValueError("Missing hash")
+
+    check_string = "\n".join(
+        f"{key}={data[key]}"
+        for key in sorted(data)
+    )
+
+    secret_key = hmac.new(
         b"WebAppData",
         BOT_TOKEN.encode(),
         hashlib.sha256
     ).digest()
 
-    calculated = hmac.new(
-        secret,
-        check.encode(),
+    calculated_hash = hmac.new(
+        secret_key,
+        check_string.encode(),
         hashlib.sha256
     ).hexdigest()
 
-    if not hmac.compare_digest(calculated, received):
+    if not hmac.compare_digest(
+        calculated_hash,
+        received_hash
+    ):
         raise ValueError("Invalid Telegram initData")
 
-    # Optional freshness check
-    auth_date = int(data.get("auth_date", "0"))
+    # Check auth_date
+    auth_date = int(
+        data.get("auth_date", "0")
+    )
+
+    if auth_date <= 0:
+        raise ValueError("Invalid auth_date")
 
     if time.time() - auth_date > 86400:
         raise ValueError("Expired initData")
 
-    return json.loads(data["user"])
+    user_data = data.get("user")
+
+    if not user_data:
+        raise ValueError("Telegram user data missing")
+
+    return json.loads(user_data)
 
 
 # =========================================================
 # TELEGRAM AUTH
 # =========================================================
 
-@app.post("/api/auth/telegram")
-def auth():
+@app.route("/api/auth/telegram", methods=["POST"])
+def telegram_auth():
 
     try:
-        body = request.get_json(silent=True) or {}
+
+        body = request.get_json(
+            silent=True
+        ) or {}
 
         user = verify_telegram_init_data(
             body.get("initData")
         )
-
-        # TODO:
-        # Load/create this Telegram ID in PostgreSQL.
 
         return jsonify({
             "ok": True,
@@ -140,27 +150,37 @@ def auth():
 # DEPOSITS
 # =========================================================
 
-@app.post("/api/deposits")
+@app.route("/api/deposits", methods=["POST"])
 def deposits():
 
     try:
-        body = request.get_json(silent=True) or {}
+
+        body = request.get_json(
+            silent=True
+        ) or {}
 
         user = verify_telegram_init_data(
             body.get("initData")
         )
 
-        # TODO:
-        # Save amount, coins, UTR and screenshot
-        # to PostgreSQL/storage.
+        amount = body.get("amount")
+        coins = body.get("coins")
+        utr = body.get("utr")
+
+        # -------------------------------------------------
+        # IMPORTANT
+        # Database/storage integration will be added later.
         #
-        # DO NOT CREDIT COINS HERE.
-        # Coins should be credited only after
-        # admin approval.
+        # DO NOT credit coins here.
+        # Coins must be credited only after admin approval.
+        # -------------------------------------------------
 
         return jsonify({
             "ok": True,
             "user_id": user["id"],
+            "amount": amount,
+            "coins": coins,
+            "utr": utr,
             "status": "PENDING"
         })
 
@@ -176,7 +196,7 @@ def deposits():
 # HEALTH CHECK
 # =========================================================
 
-@app.get("/health")
+@app.route("/health", methods=["GET"])
 def health():
 
     return jsonify({
@@ -186,14 +206,19 @@ def health():
 
 
 # =========================================================
-# START SERVER
+# START
 # =========================================================
 
 if __name__ == "__main__":
 
-    port = int(os.getenv("PORT", "8000"))
+    port = int(
+        os.environ.get(
+            "PORT",
+            "8000"
+        )
+    )
 
     app.run(
         host="0.0.0.0",
         port=port
-        )
+    )
