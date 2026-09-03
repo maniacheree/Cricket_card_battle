@@ -116,13 +116,35 @@ button,input,select{font:inherit}.layout{display:flex;min-height:100vh}
 <div id="toast" style="position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:#101010;border:1px solid #9b7417;color:#ffd75a;padding:10px 14px;border-radius:8px;display:none;z-index:100"></div>
 <script>
 const titles={dashboard:'Dashboard',users:'Users',deposits:'Deposits',packs:'Packs',players:'Players',battles:'Battles',wallet:'Wallet',settings:'Settings'};
-const tg=window.Telegram?.WebApp||null; const ADMIN_ID='7035868085'; let telegramInitData=''; let playerDB=[];
-function setupAdminTelegram(){const el=document.getElementById('adminAuthStatus'); if(!tg){el.textContent='❌ Open the admin panel inside Telegram.';return false;} tg.ready();tg.expand();telegramInitData=tg.initData||'';const u=tg.initDataUnsafe?.user||null;if(!u||String(u.id)!==ADMIN_ID){el.textContent='❌ Admin access denied';return false;}el.textContent='✓ Telegram ADMIN authenticated • '+u.id;el.style.color='#45df61';loadAdminDeposits();return true;}
+const ADMIN_ID='7035868085'; let telegramInitData=''; let playerDB=[]; let adminTelegramStarted=false;
+function setupAdminTelegram(){
+ const el=document.getElementById('adminAuthStatus');
+ try{
+  const tg=window.Telegram&&window.Telegram.WebApp;
+  if(!tg){
+   el.textContent='⏳ Waiting for Telegram...';
+   return false;
+  }
+  tg.ready();
+  if(typeof tg.expand==='function') tg.expand();
+  telegramInitData=tg.initData||'';
+  const u=(tg.initDataUnsafe&&tg.initDataUnsafe.user)||null;
+  if(!u){el.textContent='❌ Telegram user data not available';return false;}
+  if(String(u.id)!==ADMIN_ID){el.textContent='❌ Admin access denied';return false;}
+  el.textContent='✓ Telegram ADMIN authenticated • '+u.id;
+  el.style.color='#45df61';
+  if(!adminTelegramStarted){adminTelegramStarted=true;loadAdminDeposits();}
+  return true;
+ }catch(e){el.textContent='❌ Telegram check failed: '+e.message;return false;}
+}
 async function loadAdminDeposits(){const box=document.getElementById('depositRows');if(!telegramInitData)return;try{const r=await fetch('/api/admin/deposits',{headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Unable to load deposits');const pending=d.deposits.filter(x=>x.status==='PENDING').length;document.getElementById('pendingCount').textContent=pending;if(!d.deposits.length){box.innerHTML='<tr><td colspan="8" style="color:#777">No deposits yet.</td></tr>';return;}box.innerHTML=d.deposits.map(x=>{const name=[x.first_name,x.last_name].filter(Boolean).join(' ')||x.username||'Telegram User';const cls=x.status==='APPROVED'?'approved':x.status==='REJECTED'?'rejected':'pending';const act=x.status==='PENDING'?`<button class="action" onclick="approveDeposit('${x.id}')">✓ ACCEPT</button> <button class="action dark" style="color:#ff5750;border-color:#63221f" onclick="rejectDeposit('${x.id}')">✕ DECLINE</button>`:'—';return `<tr><td><b style="color:#ffd75a">${escapeHtml(x.id)}</b><br><span class="sub">${escapeHtml(x.created_at||'')}</span></td><td>${escapeHtml(name)}<br><span class="sub">${escapeHtml(x.telegram_id)}</span></td><td>₹${Number(x.amount).toLocaleString()}</td><td>${Number(x.coins).toLocaleString()} 🪙</td><td><code>${escapeHtml(x.utr)}</code></td><td><a href="/api/admin/deposits/${encodeURIComponent(x.id)}/screenshot" target="_blank" style="color:#ffd75a">VIEW</a></td><td><span class="badge ${cls}">${x.status}</span></td><td>${act}</td></tr>`;}).join('');}catch(e){box.innerHTML='<tr><td colspan="8" style="color:#ff5750">❌ '+escapeHtml(e.message)+'</td></tr>';}}
 async function approveDeposit(id){if(!confirm('Accept this deposit and credit the coins?'))return;try{const r=await fetch('/api/admin/deposits/'+encodeURIComponent(id)+'/approve',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Approval failed');toast('✓ Approved • '+d.credited_coins+' coins credited');loadAdminDeposits();}catch(e){toast('❌ '+e.message)}}
 async function rejectDeposit(id){if(!confirm('Decline this deposit? No coins will be credited.'))return;try{const r=await fetch('/api/admin/deposits/'+encodeURIComponent(id)+'/reject',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Decline failed');toast('✓ Deposit declined');loadAdminDeposits();}catch(e){toast('❌ '+e.message)}}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 setupAdminTelegram();
+window.addEventListener('load',setupAdminTelegram);
+let telegramCheckCount=0;
+const telegramCheckTimer=setInterval(()=>{if(setupAdminTelegram()||++telegramCheckCount>=20)clearInterval(telegramCheckTimer);},500);
 
 async function loadPlayers(){
  try{
