@@ -138,7 +138,8 @@ h1 span{color:#fff}
 .revealCard img{width:100%;height:190px;object-fit:cover;border-radius:8px}
 @media(max-width:800px){.cardPhoto{height:145px}.revealCard img{height:160px}}
 </style>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js">setupTelegramProfile();
+</script>
 </head>
 <body>
 
@@ -362,56 +363,49 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <script>
 
 /* ===== TELEGRAM WEB APP IDENTITY ===== */
-let tg = null;
+const tg = window.Telegram?.WebApp || null;
 let telegramUser = null;
 let telegramUserId = null;
 let telegramInitData = "";
-const ADMIN_ID = "7035868085";
 
-function setupTelegramProfile(){
-  tg = window.Telegram?.WebApp || null;
-  const nameEl=document.getElementById("userName");
-  const idEl=document.getElementById("userId");
-  const statusEl=document.getElementById("tgStatus");
-  const avatarEl=document.getElementById("tgAvatar");
-  if(!tg){
-    if(idEl) idEl.textContent="Telegram unavailable";
-    if(statusEl) statusEl.textContent="⚠️ Telegram WebApp not detected";
-    return false;
-  }
+if (tg) {
   tg.ready();
   tg.expand();
-  telegramInitData=tg.initData||"";
-  telegramUser=tg.initDataUnsafe?.user||null;
-  if(!telegramUser){
-    if(idEl) idEl.textContent="Not detected";
-    if(statusEl) statusEl.textContent="⚠️ Open from Telegram bot";
-    return false;
+
+  telegramInitData = tg.initData || "";
+  telegramUser = tg.initDataUnsafe?.user || null;
+
+  if (telegramUser) {
+    telegramUserId = String(telegramUser.id);
+
+    const nameEl = document.getElementById("userName");
+    const idEl = document.getElementById("userId");
+
+    if (nameEl) {
+      nameEl.textContent =
+        [telegramUser.first_name, telegramUser.last_name]
+        .filter(Boolean).join(" ") || "Telegram User";
+    }
+
+    if (idEl) idEl.textContent = telegramUserId;
+
+    console.log("Telegram User ID:", telegramUserId);
   }
-  telegramUserId=String(telegramUser.id);
-  if(nameEl) nameEl.textContent=[telegramUser.first_name,telegramUser.last_name].filter(Boolean).join(" ")||telegramUser.username||"Telegram User";
-  if(idEl) idEl.textContent=telegramUserId;
-  if(statusEl){
-    statusEl.textContent=telegramUserId===ADMIN_ID?"✓ Telegram connected • ADMIN":"✓ Telegram account connected";
-    statusEl.style.color="#6bea7b";
-  }
-  if(avatarEl && telegramUser.photo_url){
-    avatarEl.textContent="";
-    avatarEl.style.backgroundImage=`url("${telegramUser.photo_url}")`;
-    avatarEl.style.backgroundSize="cover";
-    avatarEl.style.backgroundPosition="center";
-  }
-  window.CCA_TELEGRAM={webApp:tg,user:telegramUser,userId:telegramUserId,initData:telegramInitData,isAdmin:telegramUserId===ADMIN_ID};
-  return true;
 }
-window.addEventListener("load",function(){
-  if(setupTelegramProfile()) return;
-  let tries=0;
-  const timer=setInterval(function(){
-    tries++;
-    if(setupTelegramProfile()||tries>=20) clearInterval(timer);
-  },250);
-});
+
+const ADMIN_ID = "7035868085";
+
+function isAdminTelegramUser() {
+  return telegramUserId === ADMIN_ID;
+}
+
+window.CCA_TELEGRAM = {
+  webApp: tg,
+  user: telegramUser,
+  userId: telegramUserId,
+  initData: telegramInitData,
+  isAdmin: isAdminTelegramUser
+};
 /* ===== END TELEGRAM WEB APP IDENTITY ===== */
 
 let coins=Number(localStorage.getItem('cca_coins')||0);
@@ -646,36 +640,28 @@ function handleScreenshot(input){
   }
 }
 
-function submitDeposit(){
+async function submitDeposit(){
   const pay=Number(document.getElementById('payAmount').value);
-  const coin=pay;
   const utr=document.getElementById('utr').value.trim();
-  const shot=document.getElementById('paymentShot')?.files?.[0];
-  const file=document.getElementById('paymentShot').files[0];
-
+  const file=document.getElementById('paymentShot')?.files?.[0];
   if(!pay || pay<=0) return toast('Enter payment amount');
   if(!utr) return toast('Enter UTR / transaction ID');
-  if(!shot) return toast('Upload payment screenshot');
   if(!file) return toast('Upload payment screenshot');
-
-  const request={
-    id:'DEP-'+Date.now(),
-    paymentAmount:pay,
-    coinsRequested:coin,
-    utr:utr,
-    screenshotName:file.name,
-    status:'PENDING',
-    createdAt:new Date().toLocaleString()
-  };
-
-  depositRequests.unshift(request);
-  localStorage.setItem('cca_deposit_requests',JSON.stringify(depositRequests));
-  document.getElementById('payAmount').value='';
-  document.getElementById('utr').value='';
-  
-  document.getElementById('shotName').textContent='No screenshot selected';
-  renderDepositHistory();
-  toast('Deposit submitted • Waiting for approval');
+  if(!telegramInitData) return toast('Open the app from Telegram');
+  const form=new FormData(); form.append('amount',String(pay)); form.append('utr',utr); form.append('screenshot',file);
+  try{
+    const r=await fetch('/api/deposits',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData},body:form});
+    const data=await r.json(); if(!r.ok||!data.ok) throw new Error(data.error||'Deposit submission failed');
+    document.getElementById('payAmount').value=''; document.getElementById('utr').value=''; document.getElementById('paymentShot').value='';
+    document.getElementById('shotName').textContent='Choose a screenshot'; document.getElementById('shotPreview').style.display='none';
+    toast('Deposit submitted • Waiting for approval'); await loadServerAccount(); await loadServerDeposits();
+  }catch(err){ toast('❌ '+err.message); }
+}
+async function loadServerAccount(){
+  if(!telegramInitData)return; try{const r=await fetch('/api/me',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}}); const d=await r.json(); if(d.ok&&d.user){coins=Number(d.user.coins||0);update();}}catch(e){}
+}
+async function loadServerDeposits(){
+  if(!telegramInitData)return; try{const r=await fetch('/api/deposits',{headers:{'X-Telegram-Init-Data':telegramInitData}}); const d=await r.json(); if(!d.ok)return; depositRequests=d.deposits.map(x=>({id:x.id,paymentAmount:x.amount,coinsRequested:x.coins,utr:x.utr,status:x.status,createdAt:x.created_at})); renderDepositHistory();}catch(e){}
 }
 
 function renderDepositHistory(){
@@ -703,6 +689,8 @@ function escapeHtml(s){
 update();
 if(typeof renderDepositHistory==='function')renderDepositHistory();
 loadPlayerDatabase();
+loadServerAccount();
+loadServerDeposits();
 </script>
 
 </body>

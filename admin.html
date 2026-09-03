@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cricket Card Arena — Admin</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:#030303;--panel:#090909;--gold:#f5c84b;--gold2:#ffe38a;--line:#654b0e;--muted:#aaa;--green:#45df61;--red:#ff4b45}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,#4a350022,transparent 40%),#030303;color:#fff;font-family:Arial,sans-serif}
@@ -75,10 +76,9 @@ button,input,select{font:inherit}.layout{display:flex;min-height:100vh}
 
 <section class="page" id="deposits">
 <div class="panel"><h3 style="color:#ffd75a">💳 DEPOSIT REVIEW</h3>
-<p class="sub">Pending deposit approvals will appear here after backend connection.</p>
-<table class="table"><thead><tr><th>REQUEST</th><th>AMOUNT</th><th>COINS</th><th>UTR</th><th>STATUS</th><th>ACTION</th></tr></thead>
-<tbody id="depositRows"><tr><td colspan="6" style="color:#777">No backend deposit records loaded.</td></tr></tbody></table>
-</div></section>
+<div class="notice" id="adminAuthStatus">Checking Telegram admin access...</div>
+<div style="overflow-x:auto"><table class="table"><thead><tr><th>REQUEST</th><th>USER</th><th>AMOUNT</th><th>COINS</th><th>UTR</th><th>SCREENSHOT</th><th>STATUS</th><th>ACTION</th></tr></thead>
+<tbody id="depositRows"><tr><td colspan="8" style="color:#777">Loading...</td></tr></tbody></table></div></div></section>
 
 <section class="page" id="packs">
 <div class="panel"><h3 style="color:#ffd75a">🎁 PACK MANAGEMENT</h3>
@@ -116,7 +116,14 @@ button,input,select{font:inherit}.layout{display:flex;min-height:100vh}
 <div id="toast" style="position:fixed;left:50%;bottom:25px;transform:translateX(-50%);background:#101010;border:1px solid #9b7417;color:#ffd75a;padding:10px 14px;border-radius:8px;display:none;z-index:100"></div>
 <script>
 const titles={dashboard:'Dashboard',users:'Users',deposits:'Deposits',packs:'Packs',players:'Players',battles:'Battles',wallet:'Wallet',settings:'Settings'};
-let playerDB=[];
+const tg=window.Telegram?.WebApp||null; const ADMIN_ID='7035868085'; let telegramInitData=''; let playerDB=[];
+function setupAdminTelegram(){const el=document.getElementById('adminAuthStatus'); if(!tg){el.textContent='❌ Open the admin panel inside Telegram.';return false;} tg.ready();tg.expand();telegramInitData=tg.initData||'';const u=tg.initDataUnsafe?.user||null;if(!u||String(u.id)!==ADMIN_ID){el.textContent='❌ Admin access denied';return false;}el.textContent='✓ Telegram ADMIN authenticated • '+u.id;el.style.color='#45df61';loadAdminDeposits();return true;}
+async function loadAdminDeposits(){const box=document.getElementById('depositRows');if(!telegramInitData)return;try{const r=await fetch('/api/admin/deposits',{headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Unable to load deposits');const pending=d.deposits.filter(x=>x.status==='PENDING').length;document.getElementById('pendingCount').textContent=pending;if(!d.deposits.length){box.innerHTML='<tr><td colspan="8" style="color:#777">No deposits yet.</td></tr>';return;}box.innerHTML=d.deposits.map(x=>{const name=[x.first_name,x.last_name].filter(Boolean).join(' ')||x.username||'Telegram User';const cls=x.status==='APPROVED'?'approved':x.status==='REJECTED'?'rejected':'pending';const act=x.status==='PENDING'?`<button class="action" onclick="approveDeposit('${x.id}')">✓ ACCEPT</button> <button class="action dark" style="color:#ff5750;border-color:#63221f" onclick="rejectDeposit('${x.id}')">✕ DECLINE</button>`:'—';return `<tr><td><b style="color:#ffd75a">${escapeHtml(x.id)}</b><br><span class="sub">${escapeHtml(x.created_at||'')}</span></td><td>${escapeHtml(name)}<br><span class="sub">${escapeHtml(x.telegram_id)}</span></td><td>₹${Number(x.amount).toLocaleString()}</td><td>${Number(x.coins).toLocaleString()} 🪙</td><td><code>${escapeHtml(x.utr)}</code></td><td><a href="/api/admin/deposits/${encodeURIComponent(x.id)}/screenshot" target="_blank" style="color:#ffd75a">VIEW</a></td><td><span class="badge ${cls}">${x.status}</span></td><td>${act}</td></tr>`;}).join('');}catch(e){box.innerHTML='<tr><td colspan="8" style="color:#ff5750">❌ '+escapeHtml(e.message)+'</td></tr>';}}
+async function approveDeposit(id){if(!confirm('Accept this deposit and credit the coins?'))return;try{const r=await fetch('/api/admin/deposits/'+encodeURIComponent(id)+'/approve',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Approval failed');toast('✓ Approved • '+d.credited_coins+' coins credited');loadAdminDeposits();}catch(e){toast('❌ '+e.message)}}
+async function rejectDeposit(id){if(!confirm('Decline this deposit? No coins will be credited.'))return;try{const r=await fetch('/api/admin/deposits/'+encodeURIComponent(id)+'/reject',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Decline failed');toast('✓ Deposit declined');loadAdminDeposits();}catch(e){toast('❌ '+e.message)}}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+setupAdminTelegram();
+
 async function loadPlayers(){
  try{
   const r=await fetch('players.json',{cache:'no-store'});
