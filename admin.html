@@ -119,15 +119,13 @@ const titles={dashboard:'Dashboard',users:'Users',deposits:'Deposits',packs:'Pac
 const ADMIN_ID='7035868085'; let telegramInitData=''; let playerDB=[]; let adminTelegramStarted=false;
 function setupAdminTelegram(){
  const el=document.getElementById('adminAuthStatus');
+ if(!el) return false;
  try{
   const tg=window.Telegram&&window.Telegram.WebApp;
-  if(!tg){
-   el.textContent='⏳ Waiting for Telegram...';
-   return false;
-  }
+  if(!tg){el.textContent='⏳ Loading Telegram...';return false;}
   tg.ready();
   if(typeof tg.expand==='function') tg.expand();
-  telegramInitData=tg.initData||'';
+  telegramInitData=String(tg.initData||'');
   const u=(tg.initDataUnsafe&&tg.initDataUnsafe.user)||null;
   if(!u){el.textContent='❌ Telegram user data not available';return false;}
   if(String(u.id)!==ADMIN_ID){el.textContent='❌ Admin access denied';return false;}
@@ -141,10 +139,16 @@ async function loadAdminDeposits(){const box=document.getElementById('depositRow
 async function approveDeposit(id){if(!confirm('Accept this deposit and credit the coins?'))return;try{const r=await fetch('/api/admin/deposits/'+encodeURIComponent(id)+'/approve',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Approval failed');toast('✓ Approved • '+d.credited_coins+' coins credited');loadAdminDeposits();}catch(e){toast('❌ '+e.message)}}
 async function rejectDeposit(id){if(!confirm('Decline this deposit? No coins will be credited.'))return;try{const r=await fetch('/api/admin/deposits/'+encodeURIComponent(id)+'/reject',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Decline failed');toast('✓ Deposit declined');loadAdminDeposits();}catch(e){toast('❌ '+e.message)}}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-setupAdminTelegram();
+
+function startTelegramCheck(){
+  setupAdminTelegram();
+  let n=0;
+  const timer=setInterval(()=>{
+    if(setupAdminTelegram() || ++n>=20) clearInterval(timer);
+  },500);
+}
+startTelegramCheck();
 window.addEventListener('load',setupAdminTelegram);
-let telegramCheckCount=0;
-const telegramCheckTimer=setInterval(()=>{if(setupAdminTelegram()||++telegramCheckCount>=20)clearInterval(telegramCheckTimer);},500);
 
 async function loadPlayers(){
  try{

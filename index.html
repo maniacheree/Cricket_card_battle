@@ -374,6 +374,8 @@ if (tg) {
 
   telegramInitData = tg.initData || "";
   telegramUser = tg.initDataUnsafe?.user || null;
+  const statusEl = document.getElementById("tgStatus");
+  if (statusEl) statusEl.textContent = telegramUser ? "✓ Telegram connected" : "⚠ Telegram user data unavailable";
 
   if (telegramUser) {
     telegramUserId = String(telegramUser.id);
