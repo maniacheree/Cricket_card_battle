@@ -294,6 +294,51 @@ def create_deposit():
         conn.close()
 
 
+@app.get("/api/admin/stats")
+@require_admin
+def admin_stats():
+    conn = db()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SELECT COUNT(*) AS total_users, COALESCE(SUM(coins),0) AS total_coins FROM users")
+            u = cur.fetchone()
+            cur.execute("SELECT COUNT(*) AS pending_deposits FROM deposits WHERE status='PENDING'")
+            d = cur.fetchone()
+            return jsonify({
+                "ok": True,
+                "total_users": int(u["total_users"] or 0),
+                "total_coins": int(u["total_coins"] or 0),
+                "pending_deposits": int(d["pending_deposits"] or 0)
+            })
+    finally:
+        conn.close()
+
+
+@app.get("/api/admin/users")
+@require_admin
+def admin_users():
+    conn = db()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("""
+                SELECT u.telegram_id, u.username, u.first_name, u.last_name, u.coins,
+                       u.created_at, u.updated_at,
+                       COUNT(d.id) AS deposit_count
+                FROM users u
+                LEFT JOIN deposits d ON d.telegram_id=u.telegram_id
+                GROUP BY u.telegram_id
+                ORDER BY u.updated_at DESC NULLS LAST, u.created_at DESC
+                LIMIT 500
+            """)
+            rows = cur.fetchall()
+            for r in rows:
+                for k in ("created_at", "updated_at"):
+                    if r[k]: r[k] = r[k].isoformat()
+            return jsonify({"ok": True, "users": rows})
+    finally:
+        conn.close()
+
+
 @app.get("/api/admin/deposits")
 @require_admin
 def admin_deposits():
