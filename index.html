@@ -138,8 +138,7 @@ h1 span{color:#fff}
 .revealCard img{width:100%;height:190px;object-fit:cover;border-radius:8px}
 @media(max-width:800px){.cardPhoto{height:145px}.revealCard img{height:160px}}
 </style>
-<script src="https://telegram.org/js/telegram-web-app.js">setupTelegramProfile();
-</script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
@@ -363,51 +362,32 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <script>
 
 /* ===== TELEGRAM WEB APP IDENTITY ===== */
-const tg = window.Telegram?.WebApp || null;
+let tg = null;
 let telegramUser = null;
 let telegramUserId = null;
 let telegramInitData = "";
 
-if (tg) {
-  tg.ready();
-  tg.expand();
-
-  telegramInitData = tg.initData || "";
-  telegramUser = tg.initDataUnsafe?.user || null;
-  const statusEl = document.getElementById("tgStatus");
-  if (statusEl) statusEl.textContent = telegramUser ? "✓ Telegram connected" : "⚠ Telegram user data unavailable";
-
-  if (telegramUser) {
-    telegramUserId = String(telegramUser.id);
-
-    const nameEl = document.getElementById("userName");
-    const idEl = document.getElementById("userId");
-
-    if (nameEl) {
-      nameEl.textContent =
-        [telegramUser.first_name, telegramUser.last_name]
-        .filter(Boolean).join(" ") || "Telegram User";
-    }
-
-    if (idEl) idEl.textContent = telegramUserId;
-
-    console.log("Telegram User ID:", telegramUserId);
-  }
+function setupTelegram(){
+  tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  const statusEl=document.getElementById("tgStatus");
+  if(!tg){ if(statusEl) statusEl.textContent="⚠ Telegram WebApp not detected"; return false; }
+  try{
+    tg.ready();
+    if(typeof tg.expand==='function') tg.expand();
+    telegramInitData=String(tg.initData||"");
+    telegramUser=(tg.initDataUnsafe&&tg.initDataUnsafe.user)||null;
+    if(telegramUser){
+      telegramUserId=String(telegramUser.id);
+      document.getElementById("userName").textContent=[telegramUser.first_name,telegramUser.last_name].filter(Boolean).join(" ")||"Telegram User";
+      document.getElementById("userId").textContent=telegramUserId;
+      if(statusEl) statusEl.textContent="✓ Telegram connected";
+    }else if(statusEl){ statusEl.textContent="⚠ Telegram user data unavailable"; }
+    window.CCA_TELEGRAM={webApp:tg,user:telegramUser,userId:telegramUserId,initData:telegramInitData,isAdmin:()=>telegramUserId===ADMIN_ID};
+    return !!telegramInitData;
+  }catch(e){ if(statusEl) statusEl.textContent="❌ Telegram check failed"; return false; }
 }
 
 const ADMIN_ID = "7035868085";
-
-function isAdminTelegramUser() {
-  return telegramUserId === ADMIN_ID;
-}
-
-window.CCA_TELEGRAM = {
-  webApp: tg,
-  user: telegramUser,
-  userId: telegramUserId,
-  initData: telegramInitData,
-  isAdmin: isAdminTelegramUser
-};
 /* ===== END TELEGRAM WEB APP IDENTITY ===== */
 
 let coins=Number(localStorage.getItem('cca_coins')||0);
@@ -643,6 +623,7 @@ function handleScreenshot(input){
 }
 
 async function submitDeposit(){
+  if(!telegramInitData && !setupTelegram()) return toast('Open this app inside Telegram');
   const pay=Number(document.getElementById('payAmount').value);
   const utr=document.getElementById('utr').value.trim();
   const file=document.getElementById('paymentShot')?.files?.[0];
@@ -660,10 +641,10 @@ async function submitDeposit(){
   }catch(err){ toast('❌ '+err.message); }
 }
 async function loadServerAccount(){
-  if(!telegramInitData)return; try{const r=await fetch('/api/me',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}}); const d=await r.json(); if(d.ok&&d.user){coins=Number(d.user.coins||0);update();}}catch(e){}
+  if(!telegramInitData && !setupTelegram()) return; try{const r=await fetch('/api/me',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}}); const d=await r.json(); if(d.ok&&d.user){coins=Number(d.user.coins||0);update();}}catch(e){}
 }
 async function loadServerDeposits(){
-  if(!telegramInitData)return; try{const r=await fetch('/api/deposits',{headers:{'X-Telegram-Init-Data':telegramInitData}}); const d=await r.json(); if(!d.ok)return; depositRequests=d.deposits.map(x=>({id:x.id,paymentAmount:x.amount,coinsRequested:x.coins,utr:x.utr,status:x.status,createdAt:x.created_at})); renderDepositHistory();}catch(e){}
+  if(!telegramInitData && !setupTelegram()) return; try{const r=await fetch('/api/deposits',{headers:{'X-Telegram-Init-Data':telegramInitData}}); const d=await r.json(); if(!d.ok)return; depositRequests=d.deposits.map(x=>({id:x.id,paymentAmount:x.amount,coinsRequested:x.coins,utr:x.utr,status:x.status,createdAt:x.created_at})); renderDepositHistory();}catch(e){}
 }
 
 function renderDepositHistory(){
@@ -691,8 +672,10 @@ function escapeHtml(s){
 update();
 if(typeof renderDepositHistory==='function')renderDepositHistory();
 loadPlayerDatabase();
-loadServerAccount();
-loadServerDeposits();
+setupTelegram();
+setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },500);
+setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },1500);
+window.addEventListener('load',()=>{ setupTelegram(); loadServerAccount(); loadServerDeposits(); });
 </script>
 
 </body>
