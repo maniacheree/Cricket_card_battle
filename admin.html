@@ -115,7 +115,20 @@ function filterPlayers(){const q=(document.getElementById('playerSearch').value|
 function toast(t){const x=document.getElementById('toast');x.textContent=t;x.style.display='block';clearTimeout(window.__t);window.__t=setTimeout(()=>x.style.display='none',2200)}
 async function loadPlayers(){try{const r=await fetch('players.json',{cache:'no-store'});if(r.ok){playerDB=await r.json();renderPlayers()}}catch(e){}}
 function startTelegramCheck(){setupAdminTelegram();let n=0;const timer=setInterval(()=>{if(setupAdminTelegram()||++n>=20)clearInterval(timer)},500)}
-startTelegramCheck();window.addEventListener('load',()=>{setupAdminTelegram();loadPlayers()});
+
+// LIVE ADMIN REFRESH: keep dashboard, users and deposits synced automatically.
+let adminRefreshTimer=null;
+function startAutoRefresh(){
+  if(adminRefreshTimer) clearInterval(adminRefreshTimer);
+  adminRefreshTimer=setInterval(()=>{
+    if(document.visibilityState==='visible' && telegramInitData) refreshAdmin();
+  },3000);
+}
+
+startTelegramCheck();
+window.addEventListener('load',()=>{setupAdminTelegram();loadPlayers();startAutoRefresh()});
+window.addEventListener('focus',()=>{if(telegramInitData)refreshAdmin()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible' && telegramInitData)refreshAdmin()});
 </script>
 </body>
 </html>
