@@ -118,7 +118,7 @@ h1 span{color:#fff}
 @media(max-width:800px){
  .app{width:100%}.top{min-height:68px;padding:8px 9px}.brand{font-size:23px}.brand span{font-size:8px;letter-spacing:3px}
  .topRight{gap:5px}.coinBox{min-width:112px;padding:7px}.coinBox small{font-size:7px}.coinVal{font-size:15px}.plus{width:25px;height:25px;margin-top:-24px}
- .profileBox{display:none}.nav{top:68px;grid-template-columns:repeat(6,1fr)}.nav button{font-size:8px;padding:8px 1px}.nav button span{font-size:17px}
+ .profileBox{display:none}.adminBtn{padding:8px 10px;border:1px solid #9c7315;border-radius:8px;background:linear-gradient(#ffe98c,#bd8108);color:#080808;font-weight:1000;font-size:9px;display:none}.adminBtn.show{display:block}.nav{top:68px;grid-template-columns:repeat(6,1fr)}.nav button{font-size:8px;padding:8px 1px}.nav button span{font-size:17px}
  main{padding:0 7px}.hero{min-height:500px;background-position:center}.heroText{padding:40px 22px}.heroText h1{font-size:40px}
  .grid3,.depositGrid{grid-template-columns:1fr}.packGrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:5px}.pack{min-width:170px;scroll-snap-align:start}.pack img{height:235px}
  .cardGrid{grid-template-columns:repeat(2,1fr)}.playerCard{min-height:220px}.playerArt{height:135px}
@@ -151,6 +151,7 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
   <div class="brand">CRICKET<span>CARD ARENA</span></div>
   <div class="topRight">
     <div class="coinBox"><small>YOUR COINS</small><div class="coinVal">🪙 <span id="coins">0</span></div><button class="plus" onclick="show('deposit')">+</button></div>
+    <button id="adminPanelBtn" class="adminBtn" onclick="openAdminPanel()">⚙ ADMIN</button>
     <div class="profileBox"><small>PLAYER</small><div class="profileName">GUEST <span style="color:#aaa">⌄</span></div></div>
   </div>
 </header>
@@ -381,13 +382,28 @@ function setupTelegram(){
       document.getElementById("userName").textContent=[telegramUser.first_name,telegramUser.last_name].filter(Boolean).join(" ")||"Telegram User";
       document.getElementById("userId").textContent=telegramUserId;
       if(statusEl) statusEl.textContent="✓ Telegram connected";
+      updateAdminButton();
     }else if(statusEl){ statusEl.textContent="⚠ Telegram user data unavailable"; }
+    updateAdminButton();
     window.CCA_TELEGRAM={webApp:tg,user:telegramUser,userId:telegramUserId,initData:telegramInitData,isAdmin:()=>telegramUserId===ADMIN_ID};
     return !!telegramInitData;
   }catch(e){ if(statusEl) statusEl.textContent="❌ Telegram check failed"; return false; }
 }
 
 const ADMIN_ID = "7035868085";
+
+function updateAdminButton(){
+  const btn=document.getElementById("adminPanelBtn");
+  if(btn) btn.classList.toggle("show", String(telegramUserId||"")===ADMIN_ID);
+}
+
+function openAdminPanel(){
+  if(String(telegramUserId||"")!==ADMIN_ID){
+    toast("Admin access denied");
+    return;
+  }
+  window.location.href="/admin.html";
+}
 /* ===== END TELEGRAM WEB APP IDENTITY ===== */
 
 let coins=Number(localStorage.getItem('cca_coins')||0);
