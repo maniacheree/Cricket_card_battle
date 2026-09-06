@@ -188,7 +188,7 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <div class="grid3">
 <div class="panel"><h3 style="color:#ffd85a">YOUR ACCOUNT</h3><p>👤 <b>PLAYER</b></p><p class="muted">Rank: <b style="color:#ffd85a">ROOKIE</b></p><p class="muted">Total Cards: <b id="homeCards">0</b></p></div>
 <div class="panel"><h3 style="color:#ffd85a">YOUR BALANCE</h3><div class="balance"><div class="balanceIcon">🪙</div><div class="bigCoin" id="homeCoins">0</div></div><button class="goldBtn" style="width:100%" onclick="show('deposit')">＋ ADD COINS</button></div>
-<div class="panel"><h3 style="color:#ffd85a">BATTLE & WIN</h3><p class="muted">Play quick matches and win coins.</p><button class="goldBtn" style="width:100%" onclick="show('battle')">PLAY BATTLE</button></div>
+<div class="panel"><h3 style="color:#ffd85a">BATTLE & WIN</h3><p class="muted">Play fair live matches and win 1 opponent card.</p><button class="goldBtn" style="width:100%" onclick="show('battle')">PLAY BATTLE</button></div>
 </div>
 </section>
 
@@ -256,14 +256,15 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 </div>
 </section>
 <section class="page" id="battle">
-<div class="sectionTitle">BATTLE & WIN COINS</div>
+<div class="sectionTitle">BATTLES</div>
 <div class="battleHero"><div class="battleContent">
-<div class="kicker">CRICKET CARD ARENA</div><h1 style="font-size:48px">BATTLE</h1><div class="vs">VS</div>
-<p class="muted">Choose a card and challenge a random opponent.</p>
-<div class="battleBtns"><button class="goldBtn" onclick="playBattle()">⚡ QUICK BATTLE</button><button class="goldBtn" onclick="toast('Tournament mode coming next')">🏆 TOURNAMENT</button><button class="goldBtn" onclick="toast('Friend challenge coming next')">⚔ CHALLENGE FRIEND</button></div>
+<div class="kicker">CRICKET CARD ARENA</div><h1 style="font-size:48px">LIVE BATTLE</h1><div class="vs">VS</div>
+<p id="battleSubtitle" class="muted">Play against another real player who is online now. No bots.</p>
+<div id="battleActionArea" class="battleBtns"><button id="battlePlayBtn" class="goldBtn" onclick="playBattle()">⚡ PLAY</button></div>
 <div id="battleResult" style="margin-top:15px;color:#ffd85a;font-weight:1000"></div>
-</div></div>
-</section>
+<div id="battleSelectArea" style="display:none;margin-top:18px"><div class="muted" style="margin-bottom:9px">MATCH FOUND • CHOOSE EXACTLY 3 CARDS</div><div id="battleMyCards" class="cardGrid" style="grid-template-columns:repeat(3,1fr);max-width:760px;margin:0 auto"></div></div>
+<div id="battleClaimArea" style="display:none;margin-top:18px"><div style="color:#ffd85a;font-weight:1000;font-size:16px">🏆 YOU WON</div><div class="muted" style="margin:6px 0 12px">Choose 1 of the 3 hidden cards from your opponent. The card is revealed only after your choice.</div><div id="battleClaimCards" class="cardGrid" style="grid-template-columns:repeat(4,1fr);max-width:760px;margin:0 auto"></div></div>
+</div></div></section>
 
 <section class="page" id="leaderboard">
 <div class="sectionTitle">LEADERBOARD</div>
@@ -477,7 +478,7 @@ function show(id){
  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
  scrollTo({top:0,behavior:'smooth'});
 }
-document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{show(b.dataset.page);if(b.dataset.page==='battle')openBattleScreen();else if(battleSearching){fetch('/api/battle/cancel',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}}).catch(()=>{});battleSearching=false;if(battlePollTimer)clearInterval(battlePollTimer);}});
 
 function makeValue(min,max){
  return Math.floor(Math.random()*(max-min+1))+min;
@@ -549,28 +550,69 @@ function viewCard(index){
  document.getElementById('detailValue').textContent=c.value;
  scrollTo({top:document.getElementById('cardDetail').offsetTop-100,behavior:'smooth'});
 }
-function sellSelectedCard(){
+async function sellSelectedCard(){
  if(selectedCardIndex===null||!cards[selectedCardIndex])return;
  const c=cards[selectedCardIndex];
- coins+=Number(c.value)||0;
- cards.splice(selectedCardIndex,1);
- selectedCardIndex=null;
- document.getElementById('cardDetail').style.display='none';
- save();
- toast('Card sold • coins added to wallet');
+ if(!telegramInitData&&!setupTelegram())return toast('Open this app inside Telegram');
+ try{
+  const r=await fetch('/api/cards/sell',{method:'POST',headers:{'Content-Type':'application/json','X-Telegram-Init-Data':telegramInitData},body:JSON.stringify({card_id:c.id})});
+  const d=await r.json();
+  if(!r.ok||!d.ok)throw new Error(d.error||'Card sale failed');
+  selectedCardIndex=null;document.getElementById('cardDetail').style.display='none';
+  await loadServerAccount();toast('Card sold • coins added to wallet');
+ }catch(e){toast('❌ '+e.message);}
 }
 function useSelectedCard(){
  if(selectedCardIndex===null)return toast('Select a card first');
- show('battle');
- toast('Card selected for battle');
+ show('battle'); openBattleScreen();
 }
-function playBattle(){
- if(!cards.length){toast('Open a pack first');show('packs');return;}
- const win=Math.random()>.5;
- const result=document.getElementById('battleResult');
- result.textContent=win?'🏆 YOU WIN +25 COINS':'❌ YOU LOSE';
- if(win){coins+=25;save();} else update();
+let battleId=null,battlePollTimer=null,battleSearching=false,battleClaimShown=false;
+function battleHeaders(){return {'X-Telegram-Init-Data':telegramInitData,'Content-Type':'application/json'};}
+function battleOpponentName(b){const o=b?.opponent||{};return [o.first_name,o.last_name].filter(Boolean).join(' ')||(o.username?'@'+o.username:'Opponent');}
+function openBattleScreen(){battleSelectedCards=[];const s=document.getElementById('battleSubtitle');const btn=document.getElementById('battlePlayBtn');if(s)s.textContent='Play against another real player who is online now. No bots.';if(btn){btn.disabled=false;btn.textContent='⚡ PLAY';}document.getElementById('battleResult').textContent='';document.getElementById('battleSelectArea').style.display='none';document.getElementById('battleClaimArea').style.display='none';battleClaimShown=false;}
+let battleSelectedCards=[];
+function renderBattleOwnCards(){
+ const box=document.getElementById('battleMyCards'); if(!box)return;
+ if(!cards.length){box.innerHTML='<div class="muted" style="padding:14px">No cards available. Open a pack first.</div>';return;}
+ const selected=new Set(battleSelectedCards);
+ box.innerHTML=cards.map(c=>{
+  const id=String(c.id||''); const on=selected.has(id);
+  return `<button class="playerCard ${on?'battleSelected':''}" style="cursor:pointer;text-align:center;position:relative;outline:${on?'2px solid #ffd85a':'none'}" onclick="toggleBattleCard('${id.replace(/'/g,"\\'")}')">
+   ${on?'<div style="position:absolute;right:7px;top:7px;background:#ffd85a;color:#111;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-weight:1000;z-index:2">✓</div>':''}
+   <img class="cardPhoto" src="${c.img||''}"><div class="cardTag">${escapeHtml(c.rarity||'CARD')}</div><h3 style="margin:7px 0;color:#fff">${escapeHtml(c.name||'Player')}</h3><div class="muted">BAT ${Number(c.bat||0)} • BOWL ${Number(c.bowl||0)} • FIELD ${Number(c.field||0)}</div><div class="cardValue" style="margin-top:6px">🪙 ${Number(c.value||0)}</div></button>`;
+ }).join('') + `<div style="grid-column:1/-1;text-align:center;margin-top:10px"><div id="battleSelectedCount" style="color:#ffd85a;font-weight:1000">${battleSelectedCards.length}/3 SELECTED</div><button id="battleConfirmBtn" class="goldBtn" style="margin-top:10px" onclick="confirmBattleCards()" ${battleSelectedCards.length!==3?'disabled':''}>CONFIRM 3 CARDS</button></div>`;
 }
+function toggleBattleCard(cardId){
+ const i=battleSelectedCards.indexOf(cardId);
+ if(i>=0){battleSelectedCards.splice(i,1);}else{if(battleSelectedCards.length>=3)return toast('You can choose exactly 3 cards');battleSelectedCards.push(cardId);}
+ renderBattleOwnCards();
+}
+async function confirmBattleCards(){
+ if(battleSelectedCards.length!==3)return toast('Choose exactly 3 cards');
+ if(!battleId)return toast('Battle not ready');
+ try{
+  document.getElementById('battleConfirmBtn').disabled=true;
+  const r=await fetch('/api/battle/select',{method:'POST',headers:battleHeaders(),body:JSON.stringify({card_ids:battleSelectedCards})});
+  const d=await r.json(); if(!r.ok||!d.ok)throw new Error(d.error||'Could not lock cards');
+  handleBattleState(d.battle);
+ }catch(e){renderBattleOwnCards();toast('❌ '+e.message);}
+}
+async function playBattle(){
+ if(!telegramInitData&&!setupTelegram())return toast('Open this app inside Telegram');
+ if(cards.length<3){toast('You need at least 3 cards to battle');show('packs');return;}
+ if(battlePollTimer)clearInterval(battlePollTimer);battleSelectedCards=[];battleSearching=true;const btn=document.getElementById('battlePlayBtn');if(btn){btn.disabled=true;btn.textContent='🔎 SEARCHING...';}document.getElementById('battleResult').textContent='Searching for an online opponent...';
+ try{const r=await fetch('/api/battle/find',{method:'POST',headers:battleHeaders(),body:'{}'});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Battle search failed');if(d.battle)handleBattleState(d.battle);else startBattlePolling();}catch(e){battleSearching=false;if(btn){btn.disabled=false;btn.textContent='⚡ PLAY';}toast('❌ '+e.message);}
+}
+function startBattlePolling(){if(battlePollTimer)clearInterval(battlePollTimer);battlePollTimer=setInterval(pollBattle,1200);pollBattle();}
+async function pollBattle(){if(!telegramInitData)return;try{const r=await fetch('/api/battle/status',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Battle status failed');if(d.battle)handleBattleState(d.battle);}catch(e){console.error('battle status',e);}}
+function handleBattleState(b){battleId=b.id;battleSearching=false;const btn=document.getElementById('battlePlayBtn'),res=document.getElementById('battleResult'),sub=document.getElementById('battleSubtitle');
+ if(b.status==='SELECTING'){if(btn){btn.disabled=true;btn.textContent='MATCH FOUND';}if(sub)sub.textContent='Opponent found: '+battleOpponentName(b)+' • Choose exactly 3 cards.';res.textContent=b.opponent_cards_selected?'Opponent has locked 3 cards. Choose yours.':'Choose exactly 3 cards from your collection.';document.getElementById('battleSelectArea').style.display='block';document.getElementById('battleClaimArea').style.display='none';if(b.my_cards_selected){battleSelectedCards=[];res.textContent='Your 3 cards are locked • Waiting for opponent...';document.getElementById('battleMyCards').innerHTML='<div class="muted" style="padding:14px">✅ 3 cards locked in. Waiting for opponent...</div>';}else{renderBattleOwnCards();}startBattlePolling();return;}
+ if(b.status==='DRAW'){if(battlePollTimer)clearInterval(battlePollTimer);if(btn){btn.disabled=false;btn.textContent='⚡ PLAY AGAIN';}if(sub)sub.textContent='Draw. Equal team power.';res.textContent='🤝 DRAW • No card transferred';document.getElementById('battleSelectArea').style.display='none';document.getElementById('battleClaimArea').style.display='none';return;}
+ if(b.status==='FINISHED'){if(battlePollTimer)clearInterval(battlePollTimer);if(btn){btn.disabled=false;btn.textContent='⚡ PLAY AGAIN';}document.getElementById('battleSelectArea').style.display='none';if(b.winner){if(sub)sub.textContent='You beat '+battleOpponentName(b)+'. No coins are awarded.';res.textContent='🏆 YOU WIN • Choose 1 of the opponent’s 3 cards';if(b.can_claim&&!battleClaimShown)renderBattleClaim(b.claim_count);else if(b.claimed)res.textContent='✅ Card already claimed';}else{if(sub)sub.textContent=battleOpponentName(b)+' won this battle.';res.textContent='❌ YOU LOST • No coins awarded';document.getElementById('battleClaimArea').style.display='none';loadServerAccount();}}
+}
+async function selectBattleCard(){return;}
+function renderBattleClaim(count){battleClaimShown=true;const box=document.getElementById('battleClaimCards');const area=document.getElementById('battleClaimArea');if(!box||!area)return;const n=3;if(Number(count)!==3){box.innerHTML='<div class="muted">Claim choices unavailable.</div>';area.style.display='block';return;}box.innerHTML=Array.from({length:n},(_,i)=>`<button class="playerCard" style="cursor:pointer;min-height:170px" onclick="claimBattleCard(${i})"><div style="height:118px;border:1px solid #8e6816;border-radius:10px;background:radial-gradient(circle at 50% 40%,#2a210b,#070707 68%);display:grid;place-items:center;font-size:54px;color:#ffd85a">🂠</div><div style="color:#ffd85a;font-weight:1000;margin-top:8px">HIDDEN CARD ${i+1}</div><div class="muted">Choose blindly</div></button>`).join('');area.style.display='block';}
+async function claimBattleCard(slot){try{document.querySelectorAll('#battleClaimCards button').forEach(b=>b.disabled=true);const r=await fetch('/api/battle/claim',{method:'POST',headers:battleHeaders(),body:JSON.stringify({slot})});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Could not claim card');document.getElementById('battleClaimArea').style.display='none';const c=d.card||{};document.getElementById('battleResult').innerHTML='🎉 YOU CLAIMED <b>'+escapeHtml(c.name||'a card')+'</b> • 🪙 '+Number(c.value||0)+' value';await loadServerAccount();toast('Opponent card added to My Cards');}catch(e){document.querySelectorAll('#battleClaimCards button').forEach(b=>b.disabled=false);toast('❌ '+e.message);}}
 function selectAmount(v){
  document.getElementById('payAmount').value=v;
  document.getElementById('coinAmount')?.remove();

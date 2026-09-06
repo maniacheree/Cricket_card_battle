@@ -77,9 +77,8 @@
 </section>
 
 <section class="page" id="battles">
-<div class="panel"><h3 style="color:#ffd75a">⚔️ BATTLE MANAGEMENT</h3><div class="notice">Battle history, rewards and disputes will be shown here after backend connection.</div>
-<table class="table"><thead><tr><th>MATCH</th><th>PLAYER 1</th><th>PLAYER 2</th><th>RESULT</th><th>REWARD</th></tr></thead><tbody><tr><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table>
-</div></section>
+<div class="panel"><h3 style="color:#ffd75a">⚔️ BATTLE MANAGEMENT</h3><div class="notice">Live battle history • fair server-side comparison • 1 hidden card claimed by the winner.</div>
+<div style="overflow:auto"><table class="table"><thead><tr><th>MATCH</th><th>PLAYER 1</th><th>PLAYER 2</th><th>POWER</th><th>RESULT</th><th>CLAIM</th></tr></thead><tbody id="battleRows"><tr><td colspan="6" style="color:#777">Loading...</td></tr></tbody></table></div></div></section>
 
 <section class="page" id="wallet">
 <div class="panel"><h3 style="color:#ffd75a">🪙 WALLET CONTROL</h3>
@@ -126,7 +125,11 @@ function startAutoRefresh(){
 }
 
 startTelegramCheck();
-window.addEventListener('load',()=>{setupAdminTelegram();loadPlayers();startAutoRefresh()});
+window.addEventListener('load',()=>{setupAdminTelegram();
+async function loadAdminBattles(){try{if(!telegramInitData)return;const r=await fetch('/api/admin/battles',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});const d=await r.json();const box=document.getElementById('battleRows');if(!box)return;if(!r.ok||!d.ok)throw new Error(d.error||'Battle load failed');box.innerHTML=d.battles.length?d.battles.map(b=>{const p1=b.player1_first_name||b.player1_username||b.player1_id;const p2=b.player2_first_name||b.player2_username||b.player2_id;const res=b.status==='DRAW'?'DRAW':(String(b.winner_id)===String(b.player1_id)?'P1 WIN':String(b.winner_id)===String(b.player2_id)?'P2 WIN':'—');return `<tr><td>${b.id}</td><td>${p1}</td><td>${p2}</td><td>${b.player1_power??'—'} • ${b.player2_power??'—'}</td><td>${res}</td><td>${b.claimed_card_id?'YES':'NO'}</td></tr>`}).join(''):'<tr><td colspan="6" style="color:#777">No battles yet.</td></tr>';}catch(e){console.error(e);}}
+
+loadPlayers();
+loadAdminBattles();startAutoRefresh()});
 window.addEventListener('focus',()=>{if(telegramInitData)refreshAdmin()});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible' && telegramInitData)refreshAdmin()});
 </script>

@@ -73,6 +73,37 @@ def init_db():
                 CREATE UNIQUE INDEX IF NOT EXISTS deposits_utr_unique
                 ON deposits (LOWER(utr))
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS battle_queue (
+                    telegram_id TEXT PRIMARY KEY REFERENCES users(telegram_id) ON DELETE CASCADE,
+                    queued_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    last_seen TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+            """)
+            cur.execute("CREATE INDEX IF NOT EXISTS battle_queue_time_idx ON battle_queue (queued_at)")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS battles (
+                    id TEXT PRIMARY KEY,
+                    player1_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+                    player2_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+                    player1_card_id TEXT,
+                    player2_card_id TEXT,
+                    player1_power INTEGER,
+                    player2_power INTEGER,
+                    winner_id TEXT,
+                    loser_id TEXT,
+                    status TEXT NOT NULL DEFAULT 'SELECTING'
+                        CHECK (status IN ('SELECTING','FINISHED','DRAW','CANCELLED')),
+                    claim_slots JSONB,
+                    claimed_card_id TEXT,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    finished_at TIMESTAMPTZ,
+                    claimed_at TIMESTAMPTZ
+                )
+            """)
+            cur.execute("ALTER TABLE battles ADD COLUMN IF NOT EXISTS player1_cards JSONB")
+            cur.execute("ALTER TABLE battles ADD COLUMN IF NOT EXISTS player2_cards JSONB")
+            cur.execute("CREATE INDEX IF NOT EXISTS battles_players_idx ON battles (player1_id, player2_id, created_at DESC)")
             conn.commit()
     finally:
         conn.close()
@@ -419,6 +450,247 @@ def create_deposit():
         return jsonify({"ok": False, "error": "This UTR / transaction ID has already been submitted"}), 409
     finally:
         conn.close()
+
+
+
+@app.post('/api/cards/sell')
+@require_telegram
+def sell_card_server():
+    uid=str(request.telegram_user['id'])
+    data=request.get_json(silent=True) or request.form
+    card_id=str(data.get('card_id','')).strip()
+    if not card_id:
+        return jsonify({'ok':False,'error':'Card ID required'}),400
+    conn=db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                # A card involved in a live match or pending hidden-card claim cannot be sold.
+                cur.execute("""
+                    SELECT 1 FROM battles
+                    WHERE status='SELECTING' AND
+                          ((player1_id=%s AND player1_card_id=%s) OR (player2_id=%s AND player2_card_id=%s))
+                    LIMIT 1
+                """,(uid,card_id,uid,card_id))
+                if cur.fetchone(): return jsonify({'ok':False,'error':'Card is locked for the active battle'}),409
+                cur.execute("""
+                    SELECT 1 FROM battles
+                    WHERE status='FINISHED' AND winner_id=%s AND claimed_card_id IS NULL
+                      AND claim_slots @> %s::jsonb
+                    LIMIT 1
+                """,(uid,json.dumps([card_id])))
+                if cur.fetchone():
+                    return jsonify({'ok':False,'error':'Finish your battle card claim first'}),409
+                cur.execute('SELECT card_json FROM user_cards WHERE id=%s AND telegram_id=%s FOR UPDATE',(card_id,uid))
+                row=cur.fetchone()
+                if not row:return jsonify({'ok':False,'error':'Card not found in your collection'}),404
+                card=row['card_json']; value=int(card.get('value',0) or 0)
+                cur.execute('DELETE FROM user_cards WHERE id=%s AND telegram_id=%s',(card_id,uid))
+                cur.execute('UPDATE users SET coins=coins+%s,updated_at=NOW() WHERE telegram_id=%s RETURNING coins',(value,uid))
+                coins=int(cur.fetchone()['coins'])
+                return jsonify({'ok':True,'coins':coins,'sold_value':value})
+    finally: conn.close()
+
+
+def battle_card_power(card):
+    def n(k):
+        try: return int(card.get(k,0) or 0)
+        except Exception: return 0
+    return n("bat") + n("bowl") + n("field")
+
+def team_power(cards):
+    return sum(battle_card_power(c) for c in cards)
+
+def get_active_battle(cur, uid):
+    cur.execute("""
+        SELECT id, player1_id, player2_id, player1_cards, player2_cards,
+               player1_power, player2_power, winner_id, loser_id, status,
+               claim_slots, claimed_card_id, created_at, finished_at, claimed_at
+        FROM battles
+        WHERE status IN ('SELECTING','FINISHED')
+          AND (player1_id=%s OR player2_id=%s)
+        ORDER BY created_at DESC LIMIT 1
+    """, (uid,uid))
+    return cur.fetchone()
+
+def battle_payload(cur, b, uid):
+    if not b: return {"ok":True,"battle":None}
+    p1=str(b["player1_id"]); p2=str(b["player2_id"])
+    oid=p2 if uid==p1 else p1
+    cur.execute("SELECT telegram_id, username, first_name, last_name FROM users WHERE telegram_id=%s",(oid,))
+    o=cur.fetchone()
+    mine_cards=b.get("player1_cards") if uid==p1 else b.get("player2_cards")
+    opp_cards=b.get("player2_cards") if uid==p1 else b.get("player1_cards")
+    mine_cards=mine_cards or []
+    opp_cards=opp_cards or []
+    mine_power=b["player1_power"] if uid==p1 else b["player2_power"]
+    opp_power=b["player2_power"] if uid==p1 else b["player1_power"]
+    is_win=str(b.get("winner_id") or "")==uid
+    slots=b.get("claim_slots") or []
+    return {"ok":True,"battle":{
+        "id":b["id"],"status":b["status"],
+        "opponent":{"id":oid,"username":o["username"] if o else None,"first_name":o["first_name"] if o else None,"last_name":o["last_name"] if o else None},
+        "my_cards_selected":len(mine_cards)==3,"my_card_count":len(mine_cards),
+        "opponent_cards_selected":len(opp_cards)==3,"opponent_card_count":len(opp_cards),
+        "my_power":mine_power,"opponent_power":(opp_power if b["status"] in ('FINISHED','DRAW') else None),
+        "winner":is_win,"loser":bool(b.get("loser_id")) and str(b.get("loser_id"))==uid,
+        "can_claim":bool(is_win and b["status"]=='FINISHED' and not b.get("claimed_card_id")),
+        "claim_count":len(slots) if is_win and b["status"]=='FINISHED' else 0,
+        "claimed":bool(b.get("claimed_card_id"))
+    }}
+
+@app.post('/api/battle/find')
+@require_telegram
+def battle_find():
+    uid=str(request.telegram_user['id'])
+    conn=db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                ensure_user(conn,request.telegram_user)
+                cur.execute('SELECT COUNT(*) AS n FROM user_cards WHERE telegram_id=%s',(uid,))
+                if int(cur.fetchone()['n'])<1:
+                    return jsonify({'ok':False,'error':'Open at least 1 pack/card before playing'}),400
+                selecting=get_active_battle(cur,uid)
+                if selecting and selecting.get('status')=='SELECTING':
+                    return jsonify(battle_payload(cur,selecting,uid))
+                cur.execute("""SELECT * FROM battles
+                    WHERE status='FINISHED' AND winner_id=%s AND claimed_card_id IS NULL
+                    ORDER BY finished_at DESC LIMIT 1
+                """,(uid,))
+                pending_claim=cur.fetchone()
+                if pending_claim:
+                    return jsonify(battle_payload(cur,pending_claim,uid))
+                cur.execute("""INSERT INTO battle_queue (telegram_id) VALUES (%s)
+                    ON CONFLICT (telegram_id) DO UPDATE SET last_seen=NOW()""",(uid,))
+                cur.execute("""SELECT telegram_id FROM battle_queue
+                    WHERE telegram_id<>%s AND last_seen>NOW()-INTERVAL '20 seconds'
+                    ORDER BY queued_at ASC FOR UPDATE SKIP LOCKED LIMIT 1""",(uid,))
+                opp=cur.fetchone()
+                if not opp:
+                    return jsonify({'ok':True,'searching':True,'battle':None,'message':'Searching for an online opponent...'})
+                oid=str(opp['telegram_id'])
+                cur.execute('DELETE FROM battle_queue WHERE telegram_id IN (%s,%s)',(uid,oid))
+                bid='BAT-'+uuid.uuid4().hex[:12].upper()
+                cur.execute("INSERT INTO battles (id,player1_id,player2_id,status) VALUES (%s,%s,%s,'SELECTING')",(bid,uid,oid))
+                cur.execute("SELECT * FROM battles WHERE id=%s",(bid,))
+                out=battle_payload(cur,cur.fetchone(),uid); out['searching']=False; out['message']='Opponent found. Choose exactly 3 cards.'
+                return jsonify(out)
+    finally: conn.close()
+
+@app.post('/api/battle/select')
+@require_telegram
+def battle_select():
+    uid=str(request.telegram_user['id'])
+    data=request.get_json(silent=True) or request.form
+    raw=data.get('card_ids') if hasattr(data,'get') else None
+    if isinstance(raw,str):
+        try: raw=json.loads(raw)
+        except Exception: raw=[x.strip() for x in raw.split(',') if x.strip()]
+    card_ids=raw or []
+    if not isinstance(card_ids,list) or len(card_ids)!=3:
+        return jsonify({'ok':False,'error':'Choose exactly 3 cards'}),400
+    card_ids=[str(x).strip() for x in card_ids]
+    if len(set(card_ids))!=3 or any(not x for x in card_ids):
+        return jsonify({'ok':False,'error':'Choose 3 different cards'}),400
+    conn=db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                b=get_active_battle(cur,uid)
+                if not b or b['status']!='SELECTING':
+                    return jsonify({'ok':False,'error':'No active card-selection battle'}),400
+                is_p1=str(b['player1_id'])==uid
+                cfield='player1_cards' if is_p1 else 'player2_cards'
+                pfield='player1_power' if is_p1 else 'player2_power'
+                if b.get(cfield):
+                    return jsonify({'ok':False,'error':'Your 3 cards are already locked'}),409
+                cur.execute('SELECT id,card_json FROM user_cards WHERE id=ANY(%s) AND telegram_id=%s FOR UPDATE',(card_ids,uid))
+                rows=cur.fetchall()
+                found={str(r['id']):r['card_json'] for r in rows}
+                if len(found)!=3:
+                    return jsonify({'ok':False,'error':'One or more selected cards are not in your collection'}),400
+                ordered=[found[x] for x in card_ids]
+                power=team_power(ordered)
+                cur.execute(f'UPDATE battles SET {cfield}=%s,{pfield}=%s WHERE id=%s',(json.dumps(card_ids),power,b['id']))
+                cur.execute('SELECT * FROM battles WHERE id=%s FOR UPDATE',(b['id'],)); b=cur.fetchone()
+                p1cards=b.get('player1_cards') or []; p2cards=b.get('player2_cards') or []
+                if len(p1cards)==3 and len(p2cards)==3 and b['status']=='SELECTING':
+                    a=int(b['player1_power'] or 0); z=int(b['player2_power'] or 0)
+                    if a==z:
+                        cur.execute("UPDATE battles SET status='DRAW',finished_at=NOW() WHERE id=%s",(b['id'],))
+                    else:
+                        win=str(b['player1_id']) if a>z else str(b['player2_id'])
+                        lose=str(b['player2_id']) if win==str(b['player1_id']) else str(b['player1_id'])
+                        loser_cards=p2cards if lose==str(b['player2_id']) else p1cards
+                        # Exactly the 3 cards selected by the loser, shuffled only for blind-choice positions.
+                        slots=list(loser_cards); random.shuffle(slots)
+                        cur.execute("UPDATE battles SET status='FINISHED',winner_id=%s,loser_id=%s,claim_slots=%s,finished_at=NOW() WHERE id=%s",(win,lose,json.dumps(slots),b['id']))
+                cur.execute('SELECT * FROM battles WHERE id=%s',(b['id'],)); return jsonify(battle_payload(cur,cur.fetchone(),uid))
+    finally: conn.close()
+
+@app.get('/api/battle/status')
+@require_telegram
+def battle_status():
+    uid=str(request.telegram_user['id']); conn=db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute('UPDATE battle_queue SET last_seen=NOW() WHERE telegram_id=%s',(uid,))
+                return jsonify(battle_payload(cur,get_active_battle(cur,uid),uid))
+    finally: conn.close()
+
+@app.post('/api/battle/cancel')
+@require_telegram
+def battle_cancel():
+    uid=str(request.telegram_user['id']); conn=db()
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute('DELETE FROM battle_queue WHERE telegram_id=%s',(uid,))
+                cur.execute("UPDATE battles SET status='CANCELLED' WHERE status='SELECTING' AND (player1_id=%s OR player2_id=%s)",(uid,uid))
+                return jsonify({'ok':True})
+    finally: conn.close()
+
+@app.post('/api/battle/claim')
+@require_telegram
+def battle_claim():
+    uid=str(request.telegram_user['id']); data=request.get_json(silent=True) or request.form
+    try: slot=int(data.get('slot',-1))
+    except Exception: slot=-1
+    conn=db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                b=get_active_battle(cur,uid)
+                if not b or b['status']!='FINISHED' or str(b.get('winner_id'))!=uid:return jsonify({'ok':False,'error':'Card claim is not available'}),400
+                if b.get('claimed_card_id'):return jsonify({'ok':False,'error':'Reward already claimed'}),409
+                slots=b.get('claim_slots') or []
+                if slot<0 or slot>=len(slots):return jsonify({'ok':False,'error':'Invalid card choice'}),400
+                cid=str(slots[slot]); loser=str(b['loser_id'])
+                cur.execute('SELECT id,card_json FROM user_cards WHERE id=%s AND telegram_id=%s FOR UPDATE',(cid,loser))
+                row=cur.fetchone()
+                if not row:return jsonify({'ok':False,'error':'That hidden card is no longer available'}),409
+                cur.execute('UPDATE user_cards SET telegram_id=%s WHERE id=%s AND telegram_id=%s',(uid,cid,loser))
+                cur.execute('UPDATE battles SET claimed_card_id=%s,claimed_at=NOW() WHERE id=%s AND claimed_card_id IS NULL',(cid,b['id']))
+                return jsonify({'ok':True,'battle_id':b['id'],'card':row['card_json'],'message':'You won and claimed 1 card from your opponent'})
+    finally: conn.close()
+
+@app.get('/api/admin/battles')
+@require_admin
+def admin_battles():
+    conn=db()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("""SELECT b.id,b.player1_id,b.player2_id,b.player1_power,b.player2_power,b.winner_id,b.loser_id,b.status,b.claimed_card_id,b.created_at,b.finished_at,b.claimed_at,
+                u1.username AS player1_username,u1.first_name AS player1_first_name,u2.username AS player2_username,u2.first_name AS player2_first_name
+                FROM battles b JOIN users u1 ON u1.telegram_id=b.player1_id JOIN users u2 ON u2.telegram_id=b.player2_id ORDER BY b.created_at DESC LIMIT 500""")
+            rows=cur.fetchall()
+            for r in rows:
+                for k in ('created_at','finished_at','claimed_at'):
+                    if r[k]:r[k]=r[k].isoformat()
+            return jsonify({'ok':True,'battles':rows})
+    finally: conn.close()
 
 
 @app.get("/api/admin/stats")
