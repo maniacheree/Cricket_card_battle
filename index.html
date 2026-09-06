@@ -482,46 +482,37 @@ document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>show(b.dataset
 function makeValue(min,max){
  return Math.floor(Math.random()*(max-min+1))+min;
 }
-function openPack(type,price,min,max){
+async function openPack(type,price,min,max){
+ if(!telegramInitData && !setupTelegram()) return toast('Open this app inside Telegram');
  if(!playerDBReady){toast('Player database is still loading');return;}
- if(coins<price){
-   show('deposit');
-   toast('Not enough coins — add coins first');
-   return;
- }
- coins-=price;
- const result=[];
- let total=0;
- for(let i=0;i<3;i++){
-   const c=pickPlayer(type);
-   result.push({...c,value:makeValue(Math.max(5,Math.floor(c.value*0.65)),Math.max(10,Math.floor(c.value*1.15))),rarity:type,id:'CARD-'+Date.now()+'-'+i});
- }
- total=result.reduce((a,c)=>a+c.value,0);
- while(total<min || total>max){
-   result.forEach(c=>c.value=makeValue(8,40));
-   total=result.reduce((a,c)=>a+c.value,0);
- }
- pendingPack={type,price,cards:result,total};
- document.getElementById('openingTitle').textContent=type+' PACK OPENED';
- document.getElementById('openingCost').textContent='− '+price+' 🪙';
- document.getElementById('openingTotal').textContent='TOTAL CARD VALUE: 🪙 '+total;
- document.getElementById('revealGrid').innerHTML=result.map(c=>`
-   <div class="revealCard">
-     <img src="${c.img}">
-     <div class="cardTag">${c.rarity}</div>
-     <h3 style="margin:7px 0;color:#fff">${c.name}</h3>
-     <div class="cardValue">🪙 ${c.value}</div>
-     <div class="statsRow"><span>BAT ${c.bat}</span><span>BOWL ${c.bowl}</span><span>FIELD ${c.field}</span></div>
-   </div>`).join('');
- document.getElementById('packOpening').classList.add('show');
- save();
+ try{
+   const r=await fetch('/api/packs/open',{method:'POST',headers:{'Content-Type':'application/json','X-Telegram-Init-Data':telegramInitData},body:JSON.stringify({pack:type})});
+   const d=await r.json();
+   if(!r.ok||!d.ok) throw new Error(d.error||'Pack opening failed');
+   coins=Number(d.coins||0);
+   cards=Array.isArray(d.cards)?cards.concat(d.cards):cards;
+   pendingPack={type,price,cards:d.cards,total:d.cards.reduce((a,c)=>a+Number(c.value||0),0)};
+   document.getElementById('openingTitle').textContent=type+' PACK OPENED';
+   document.getElementById('openingCost').textContent='− '+price+' 🪙';
+   document.getElementById('openingTotal').textContent='TOTAL CARD VALUE: 🪙 '+pendingPack.total;
+   document.getElementById('revealGrid').innerHTML=d.cards.map(c=>`
+     <div class="revealCard">
+       <img src="${c.img}">
+       <div class="cardTag">${c.rarity}</div>
+       <h3 style="margin:7px 0;color:#fff">${c.name}</h3>
+       <div class="cardValue">🪙 ${c.value}</div>
+       <div class="statsRow"><span>BAT ${c.bat}</span><span>BOWL ${c.bowl}</span><span>FIELD ${c.field}</span></div>
+     </div>`).join('');
+   document.getElementById('packOpening').classList.add('show');
+   localStorage.removeItem('cca_coins'); localStorage.removeItem('cca_cards');
+   update();
+ }catch(err){ toast('❌ '+err.message); }
 }
 function finishPack(){
  if(!pendingPack)return;
- cards.push(...pendingPack.cards);
  pendingPack=null;
  document.getElementById('packOpening').classList.remove('show');
- save();
+ update();
  toast('3 cards added to My Cards');
  show('cards');
 }
@@ -657,10 +648,21 @@ async function submitDeposit(){
   }catch(err){ toast('❌ '+err.message); }
 }
 async function loadServerAccount(){
-  if(!telegramInitData && !setupTelegram()) return; try{const r=await fetch('/api/me',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}}); const d=await r.json(); if(d.ok&&d.user){coins=Number(d.user.coins||0);update();}}catch(e){}
+  if(!telegramInitData && !setupTelegram()) return;
+  try{
+    const r=await fetch('/api/state',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});
+    const d=await r.json();
+    if(!r.ok||!d.ok) throw new Error(d.error||'State load failed');
+    coins=Number(d.user?.coins||0);
+    cards=Array.isArray(d.cards)?d.cards:[];
+    localStorage.removeItem('cca_coins');
+    localStorage.removeItem('cca_cards');
+    update();
+  }catch(e){ console.error('state load',e); }
 }
 async function loadServerDeposits(){
-  if(!telegramInitData && !setupTelegram()) return; try{const r=await fetch('/api/deposits',{headers:{'X-Telegram-Init-Data':telegramInitData}}); const d=await r.json(); if(!d.ok)return; depositRequests=d.deposits.map(x=>({id:x.id,paymentAmount:x.amount,coinsRequested:x.coins,utr:x.utr,status:x.status,createdAt:x.created_at})); renderDepositHistory();}catch(e){}
+  if(!telegramInitData && !setupTelegram()) return;
+  try{const r=await fetch('/api/deposits',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'}); const d=await r.json(); if(!d.ok)return; depositRequests=d.deposits.map(x=>({id:x.id,paymentAmount:x.amount,coinsRequested:x.coins,utr:x.utr,status:x.status,createdAt:x.created_at})); renderDepositHistory();}catch(e){}
 }
 
 function renderDepositHistory(){
@@ -692,6 +694,8 @@ setupTelegram();
 setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },500);
 setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },1500);
 window.addEventListener('load',()=>{ setupTelegram(); loadServerAccount(); loadServerDeposits(); });
+setInterval(()=>{ if(document.visibilityState==='visible' && setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },3000);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){ setupTelegram(); loadServerAccount(); loadServerDeposits(); } });
 </script>
 
 </body>

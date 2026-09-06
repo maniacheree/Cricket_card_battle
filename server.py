@@ -3,6 +3,7 @@ import hmac
 import hashlib
 import json
 import uuid
+import random
 from datetime import datetime, timezone
 from functools import wraps
 
@@ -55,6 +56,18 @@ def init_db():
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                     reviewed_at TIMESTAMPTZ
                 )
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS user_cards (
+                    id TEXT PRIMARY KEY,
+                    telegram_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+                    card_json JSONB NOT NULL,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS user_cards_user_idx
+                ON user_cards (telegram_id, created_at DESC)
             """)
             cur.execute("""
                 CREATE UNIQUE INDEX IF NOT EXISTS deposits_utr_unique
@@ -163,6 +176,101 @@ def health():
         return jsonify({"ok": True, "service": "Cricket Card Arena", "database": True})
     except Exception as e:
         return jsonify({"ok": True, "service": "Cricket Card Arena", "database": False, "error": str(e)}), 200
+
+
+def ensure_user(conn, u):
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        cur.execute("""
+            INSERT INTO users (telegram_id, username, first_name, last_name)
+            VALUES (%s,%s,%s,%s)
+            ON CONFLICT (telegram_id) DO UPDATE SET
+                username=EXCLUDED.username, first_name=EXCLUDED.first_name,
+                last_name=EXCLUDED.last_name, updated_at=NOW()
+            RETURNING telegram_id, username, first_name, last_name, coins
+        """, (str(u["id"]), u.get("username"), u.get("first_name"), u.get("last_name")))
+        return cur.fetchone()
+
+def load_card_pool():
+    try:
+        with open(os.path.join(BASE_DIR, "players.json"), "r", encoding="utf-8") as f:
+            data=json.load(f)
+        return data if isinstance(data, list) else []
+    except Exception:
+        return []
+
+def pack_config(pack):
+    return {
+        "COMMON": {"price":30, "min":8, "max":30, "pool_min":1, "pool_max":3},
+        "RARE": {"price":75, "min":15, "max":55, "pool_min":2, "pool_max":4},
+        "EPIC": {"price":150, "min":30, "max":95, "pool_min":2, "pool_max":5},
+        "LEGENDARY": {"price":300, "min":60, "max":180, "pool_min":3, "pool_max":5},
+        "ULTIMATE": {"price":600, "min":120, "max":300, "pool_min":5, "pool_max":6},
+    }.get(pack)
+
+def rarity_rank(r):
+    return {"COMMON":1,"RARE":2,"EPIC":3,"LEGENDARY":4,"ULTIMATE":5,"ICON":6}.get(str(r).upper(),1)
+
+def make_pack_cards(pack):
+    cfg=pack_config(pack)
+    pool=load_card_pool()
+    if not cfg or not pool:
+        raise RuntimeError("Player database unavailable")
+    eligible=[x for x in pool if cfg["pool_min"] <= rarity_rank(x.get("rarity")) <= cfg["pool_max"]]
+    if not eligible:
+        eligible=pool
+    cards=[]
+    for i in range(3):
+        base=random.choice(eligible)
+        # Common pack is intentionally capped at 30 so it cannot repeatedly
+        # hand out >30-value cards. Higher packs scale naturally.
+        value=random.randint(cfg["min"], cfg["max"])
+        c={**base, "value":value, "rarity":pack, "id":"CARD-"+uuid.uuid4().hex[:12].upper()}
+        cards.append(c)
+    return cards
+
+
+@app.get("/api/state")
+@require_telegram
+def get_state():
+    uid=str(request.telegram_user["id"])
+    conn=db()
+    try:
+        ensure_user(conn, request.telegram_user)
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SELECT telegram_id, username, first_name, last_name, coins FROM users WHERE telegram_id=%s", (uid,))
+            user=cur.fetchone()
+            cur.execute("SELECT card_json FROM user_cards WHERE telegram_id=%s ORDER BY created_at DESC", (uid,))
+            cards=[r["card_json"] for r in cur.fetchall()]
+        conn.commit()
+        return jsonify({"ok":True,"user":user,"cards":cards})
+    finally:
+        conn.close()
+
+@app.post("/api/packs/open")
+@require_telegram
+def open_pack_server():
+    uid=str(request.telegram_user["id"])
+    pack=str(request.json.get("pack","")).upper() if request.is_json else str(request.form.get("pack","")).upper()
+    cfg=pack_config(pack)
+    if not cfg:
+        return jsonify({"ok":False,"error":"Invalid pack"}),400
+    conn=db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                ensure_user(conn, request.telegram_user)
+                cur.execute("SELECT coins FROM users WHERE telegram_id=%s FOR UPDATE", (uid,))
+                u=cur.fetchone()
+                if int(u["coins"]) < cfg["price"]:
+                    return jsonify({"ok":False,"error":"Not enough coins"}),400
+                new_cards=make_pack_cards(pack)
+                cur.execute("UPDATE users SET coins=coins-%s, updated_at=NOW() WHERE telegram_id=%s RETURNING coins", (cfg["price"],uid))
+                new_coins=int(cur.fetchone()["coins"])
+                for c in new_cards:
+                    cur.execute("INSERT INTO user_cards (id,telegram_id,card_json) VALUES (%s,%s,%s)", (c["id"],uid,json.dumps(c)))
+                return jsonify({"ok":True,"coins":new_coins,"cards":new_cards})
+    finally:
+        conn.close()
 
 
 @app.post("/api/me")
