@@ -58,6 +58,27 @@ def init_db():
                 )
             """)
             cur.execute("""
+                CREATE TABLE IF NOT EXISTS withdrawals (
+                    id TEXT PRIMARY KEY,
+                    telegram_id TEXT NOT NULL REFERENCES users(telegram_id),
+                    coins INTEGER NOT NULL CHECK (coins >= 20),
+                    upi_id TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'PENDING'
+                        CHECK (status IN ('PENDING','APPROVED','REJECTED')),
+                    admin_id TEXT,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    reviewed_at TIMESTAMPTZ
+                )
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS withdrawals_user_idx
+                ON withdrawals (telegram_id, created_at DESC)
+            """)
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS withdrawals_status_idx
+                ON withdrawals (status, created_at DESC)
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS user_cards (
                     id TEXT PRIMARY KEY,
                     telegram_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
@@ -707,6 +728,116 @@ def admin_battles():
     finally: conn.close()
 
 
+@app.post("/api/withdrawals")
+@require_telegram
+def create_withdrawal():
+    data = request.get_json(silent=True) or {}
+    upi_id = str(data.get("upi_id") or "").strip()[:120]
+    try:
+        amount = int(data.get("coins"))
+    except (TypeError, ValueError):
+        amount = 0
+    if amount < 20:
+        return jsonify({"ok": False, "error": "Minimum withdrawal is 20 coins"}), 400
+    if not upi_id:
+        return jsonify({"ok": False, "error": "UPI ID is required"}), 400
+    if "@" not in upi_id or len(upi_id) < 5:
+        return jsonify({"ok": False, "error": "Enter a valid UPI ID"}), 400
+    uid = str(request.telegram_user["id"])
+    conn = db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                ensure_user(conn, request.telegram_user)
+                cur.execute("SELECT coins FROM users WHERE telegram_id=%s FOR UPDATE", (uid,))
+                u = cur.fetchone()
+                balance = int(u["coins"] or 0)
+                if amount > balance:
+                    return jsonify({"ok": False, "error": f"Insufficient balance. Available: {balance} coins"}), 400
+                # Reserve the requested coins immediately so they cannot be spent twice.
+                cur.execute("UPDATE users SET coins=coins-%s, updated_at=NOW() WHERE telegram_id=%s RETURNING coins", (amount, uid))
+                new_balance = int(cur.fetchone()["coins"])
+                wid = "WDR-" + uuid.uuid4().hex[:12].upper()
+                cur.execute("""INSERT INTO withdrawals
+                    (id, telegram_id, coins, upi_id) VALUES (%s,%s,%s,%s)""",
+                    (wid, uid, amount, upi_id))
+                return jsonify({"ok": True, "id": wid, "coins": amount, "upi_id": upi_id, "status": "PENDING", "balance": new_balance})
+    finally:
+        conn.close()
+
+
+@app.get("/api/withdrawals")
+@require_telegram
+def my_withdrawals():
+    uid = str(request.telegram_user["id"])
+    conn = db()
+    try:
+        ensure_user(conn, request.telegram_user)
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("""SELECT id, coins, upi_id, status, created_at, reviewed_at
+                          FROM withdrawals WHERE telegram_id=%s ORDER BY created_at DESC LIMIT 50""", (uid,))
+            rows = cur.fetchall()
+            for r in rows:
+                for k in ("created_at", "reviewed_at"):
+                    if r[k]: r[k] = r[k].isoformat()
+        conn.commit()
+        return jsonify({"ok": True, "withdrawals": rows})
+    finally:
+        conn.close()
+
+
+@app.get("/api/admin/withdrawals")
+@require_admin
+def admin_withdrawals():
+    conn = db()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("""SELECT w.id,w.telegram_id,w.coins,w.upi_id,w.status,w.created_at,w.reviewed_at,
+                               u.username,u.first_name,u.last_name
+                        FROM withdrawals w JOIN users u ON u.telegram_id=w.telegram_id
+                        ORDER BY CASE WHEN w.status='PENDING' THEN 0 ELSE 1 END, w.created_at DESC LIMIT 500""")
+            rows = cur.fetchall()
+            for r in rows:
+                for k in ("created_at", "reviewed_at"):
+                    if r[k]: r[k] = r[k].isoformat()
+            return jsonify({"ok": True, "withdrawals": rows})
+    finally:
+        conn.close()
+
+
+def _review_withdrawal(wid, approved):
+    conn = db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("SELECT * FROM withdrawals WHERE id=%s FOR UPDATE", (wid,))
+                w = cur.fetchone()
+                if not w:
+                    return jsonify({"ok": False, "error": "Withdrawal not found"}), 404
+                if w["status"] != "PENDING":
+                    return jsonify({"ok": False, "error": "Withdrawal already reviewed"}), 400
+                if approved:
+                    cur.execute("UPDATE withdrawals SET status='APPROVED', admin_id=%s, reviewed_at=NOW() WHERE id=%s", (ADMIN_ID, wid))
+                    return jsonify({"ok": True, "status": "APPROVED", "coins": int(w["coins"])})
+                cur.execute("UPDATE users SET coins=coins+%s, updated_at=NOW() WHERE telegram_id=%s", (int(w["coins"]), w["telegram_id"]))
+                cur.execute("UPDATE withdrawals SET status='REJECTED', admin_id=%s, reviewed_at=NOW() WHERE id=%s", (ADMIN_ID, wid))
+                return jsonify({"ok": True, "status": "REJECTED", "refunded_coins": int(w["coins"])})
+    finally:
+        conn.close()
+
+
+@app.post("/api/admin/withdrawals/<wid>/approve")
+@require_admin
+def approve_withdrawal(wid):
+    return _review_withdrawal(wid, True)
+
+
+@app.post("/api/admin/withdrawals/<wid>/reject")
+@require_admin
+def reject_withdrawal(wid):
+    return _review_withdrawal(wid, False)
+
+
 @app.get("/api/admin/stats")
 @require_admin
 def admin_stats():
@@ -717,11 +848,14 @@ def admin_stats():
             u = cur.fetchone()
             cur.execute("SELECT COUNT(*) AS pending_deposits FROM deposits WHERE status='PENDING'")
             d = cur.fetchone()
+            cur.execute("SELECT COUNT(*) AS pending_withdrawals FROM withdrawals WHERE status='PENDING'")
+            w = cur.fetchone()
             return jsonify({
                 "ok": True,
                 "total_users": int(u["total_users"] or 0),
                 "total_coins": int(u["total_coins"] or 0),
-                "pending_deposits": int(d["pending_deposits"] or 0)
+                "pending_deposits": int(d["pending_deposits"] or 0),
+                "pending_withdrawals": int(w["pending_withdrawals"] or 0)
             })
     finally:
         conn.close()
