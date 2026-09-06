@@ -104,6 +104,20 @@ def init_db():
             cur.execute("ALTER TABLE battles ADD COLUMN IF NOT EXISTS player1_cards JSONB")
             cur.execute("ALTER TABLE battles ADD COLUMN IF NOT EXISTS player2_cards JSONB")
             cur.execute("CREATE INDEX IF NOT EXISTS battles_players_idx ON battles (player1_id, player2_id, created_at DESC)")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS wallet_adjustments (
+                    id TEXT PRIMARY KEY,
+                    telegram_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+                    admin_id TEXT NOT NULL,
+                    action TEXT NOT NULL CHECK (action IN ('ADD','CUT')),
+                    coins INTEGER NOT NULL CHECK (coins > 0),
+                    balance_before INTEGER NOT NULL,
+                    balance_after INTEGER NOT NULL,
+                    reason TEXT,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+            """)
+            cur.execute("CREATE INDEX IF NOT EXISTS wallet_adjustments_user_idx ON wallet_adjustments (telegram_id, created_at DESC)")
             conn.commit()
     finally:
         conn.close()
@@ -734,6 +748,67 @@ def admin_users():
                 for k in ("created_at", "updated_at"):
                     if r[k]: r[k] = r[k].isoformat()
             return jsonify({"ok": True, "users": rows})
+    finally:
+        conn.close()
+
+
+@app.post("/api/admin/wallet/adjust")
+@require_admin
+def admin_wallet_adjust():
+    data = request.get_json(silent=True) or {}
+    uid = str(data.get("telegram_id") or "").strip()
+    action = str(data.get("action") or "").upper().strip()
+    reason = str(data.get("reason") or "").strip()[:300]
+    try:
+        amount = int(data.get("coins"))
+    except (TypeError, ValueError):
+        amount = 0
+    if not uid:
+        return jsonify({"ok": False, "error": "Telegram User ID is required"}), 400
+    if action not in ("ADD", "CUT"):
+        return jsonify({"ok": False, "error": "Action must be ADD or CUT"}), 400
+    if amount <= 0:
+        return jsonify({"ok": False, "error": "Coins must be greater than 0"}), 400
+    conn = db()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SELECT coins FROM users WHERE telegram_id=%s FOR UPDATE", (uid,))
+            user = cur.fetchone()
+            if not user:
+                return jsonify({"ok": False, "error": "User not found"}), 404
+            before = int(user["coins"] or 0)
+            after = before + amount if action == "ADD" else before - amount
+            if after < 0:
+                return jsonify({"ok": False, "error": f"Insufficient balance. Current balance: {before} coins"}), 400
+            cur.execute("UPDATE users SET coins=%s, updated_at=NOW() WHERE telegram_id=%s", (after, uid))
+            adj_id = "WAL-" + uuid.uuid4().hex[:12].upper()
+            cur.execute("""INSERT INTO wallet_adjustments
+                (id, telegram_id, admin_id, action, coins, balance_before, balance_after, reason)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
+                (adj_id, uid, ADMIN_ID, action, amount, before, after, reason or None))
+            conn.commit()
+            return jsonify({"ok": True, "id": adj_id, "telegram_id": uid, "action": action, "coins": amount, "balance": after})
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+@app.get("/api/admin/wallet/history")
+@require_admin
+def admin_wallet_history():
+    conn = db()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("""SELECT w.id,w.telegram_id,w.admin_id,w.action,w.coins,w.balance_before,w.balance_after,w.reason,w.created_at,
+                               u.username,u.first_name,u.last_name
+                        FROM wallet_adjustments w JOIN users u ON u.telegram_id=w.telegram_id
+                        ORDER BY w.created_at DESC LIMIT 200""")
+            rows = cur.fetchall()
+            for r in rows:
+                if r["created_at"]: r["created_at"] = r["created_at"].isoformat()
+            return jsonify({"ok": True, "history": rows})
     finally:
         conn.close()
 
