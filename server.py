@@ -199,12 +199,15 @@ def load_card_pool():
         return []
 
 def pack_config(pack):
+    # Pack price is the hard ceiling for the TOTAL value of all 3 cards.
+    # The first 90% of openings are deliberately below 90% of the pack price.
+    # The remaining 10% are lucky rolls, but still stay below the pack price.
     return {
-        "COMMON": {"price":30, "min":8, "max":30, "pool_min":1, "pool_max":3},
-        "RARE": {"price":75, "min":15, "max":55, "pool_min":2, "pool_max":4},
-        "EPIC": {"price":150, "min":30, "max":95, "pool_min":2, "pool_max":5},
-        "LEGENDARY": {"price":300, "min":60, "max":180, "pool_min":3, "pool_max":5},
-        "ULTIMATE": {"price":600, "min":120, "max":300, "pool_min":5, "pool_max":6},
+        "COMMON": {"price":30, "pool_min":1, "pool_max":3},
+        "RARE": {"price":75, "pool_min":2, "pool_max":4},
+        "EPIC": {"price":150, "pool_min":2, "pool_max":5},
+        "LEGENDARY": {"price":300, "pool_min":3, "pool_max":5},
+        "ULTIMATE": {"price":600, "pool_min":5, "pool_max":6},
     }.get(pack)
 
 def rarity_rank(r):
@@ -215,17 +218,33 @@ def make_pack_cards(pack):
     pool=load_card_pool()
     if not cfg or not pool:
         raise RuntimeError("Player database unavailable")
+
     eligible=[x for x in pool if cfg["pool_min"] <= rarity_rank(x.get("rarity")) <= cfg["pool_max"]]
     if not eligible:
         eligible=pool
+
+    price=int(cfg["price"])
+    # 90% of openings: total reward is 45%-90% of the purchase price.
+    # 10% of openings: lucky reward is 90%-99% of the purchase price.
+    # In BOTH cases total card value is strictly below the pack price.
+    is_lucky = random.random() >= 0.90
+    target_min = max(3, int(price * (0.90 if is_lucky else 0.45)))
+    target_max = max(target_min, int(price * (0.99 if is_lucky else 0.90)))
+    target_total = random.randint(target_min, target_max)
+
+    # Split the target total across exactly 3 cards. Each card is positive and
+    # the sum is guaranteed to remain below the pack purchase price.
+    a = random.randint(1, max(1, target_total - 2))
+    b = random.randint(1, max(1, target_total - a - 1))
+    c = target_total - a - b
+    values=[a,b,c]
+    random.shuffle(values)
+
     cards=[]
-    for i in range(3):
+    for value in values:
         base=random.choice(eligible)
-        # Common pack is intentionally capped at 30 so it cannot repeatedly
-        # hand out >30-value cards. Higher packs scale naturally.
-        value=random.randint(cfg["min"], cfg["max"])
-        c={**base, "value":value, "rarity":pack, "id":"CARD-"+uuid.uuid4().hex[:12].upper()}
-        cards.append(c)
+        card={**base, "value":int(value), "rarity":pack, "id":"CARD-"+uuid.uuid4().hex[:12].upper()}
+        cards.append(card)
     return cards
 
 
