@@ -303,18 +303,15 @@ def ensure_user(conn, u):
         """, (uid, u.get("username"), u.get("first_name"), u.get("last_name")))
         row = cur.fetchone()
 
-        # A referral is credited only once, only for a newly created user, and never to self.
+        # Save the referrer at signup, but DO NOT reward yet.
+        # The referrer earns +2 only after this referred player completes 3 tasks.
         if start_param.startswith("ref_") and row.get("inserted") and not row.get("referred_by"):
             referrer_id = start_param[4:].strip()
             if referrer_id and referrer_id != uid:
                 cur.execute("SELECT telegram_id FROM users WHERE telegram_id=%s", (referrer_id,))
                 ref = cur.fetchone()
                 if ref:
-                    cur.execute("SELECT 1 FROM referrals WHERE referred_id=%s", (uid,))
-                    if not cur.fetchone():
-                        cur.execute("UPDATE users SET referred_by=%s, updated_at=NOW() WHERE telegram_id=%s", (referrer_id, uid))
-                        cur.execute("UPDATE users SET locked_coins=locked_coins+2, updated_at=NOW() WHERE telegram_id=%s", (referrer_id,))
-                        cur.execute("INSERT INTO referrals (id,referrer_id,referred_id,reward_coins) VALUES (%s,%s,%s,2)", ("REF-"+uuid.uuid4().hex[:12].upper(), referrer_id, uid))
+                    cur.execute("UPDATE users SET referred_by=%s, updated_at=NOW() WHERE telegram_id=%s", (referrer_id, uid))
         cur.execute("SELECT telegram_id, username, first_name, last_name, coins, locked_coins, referred_by, pack_open_count FROM users WHERE telegram_id=%s", (uid,))
         return cur.fetchone()
 
@@ -515,7 +512,24 @@ def claim_task(task_id):
                 cur.execute("UPDATE users SET locked_coins=locked_coins+%s,updated_at=NOW() WHERE telegram_id=%s RETURNING locked_coins", (reward,uid))
                 bal=int(cur.fetchone()["locked_coins"])
                 cur.execute("INSERT INTO user_tasks (telegram_id,task_id) VALUES (%s,%s)", (uid,task_id))
-                return jsonify({"ok":True,"reward":reward,"locked_coins":bal})
+
+                # Referral qualification: the referred player must complete 3 tasks.
+                # Count actual completed/claimed tasks, then reward the referrer exactly once.
+                cur.execute("SELECT COUNT(*) AS c FROM user_tasks WHERE telegram_id=%s", (uid,))
+                completed_count=int(cur.fetchone()["c"] or 0)
+                if completed_count >= 3:
+                    cur.execute("SELECT referred_by FROM users WHERE telegram_id=%s FOR UPDATE", (uid,))
+                    user_row=cur.fetchone()
+                    referrer_id=str(user_row["referred_by"] or "").strip() if user_row else ""
+                    if referrer_id and referrer_id != uid:
+                        cur.execute("SELECT 1 FROM referrals WHERE referred_id=%s", (uid,))
+                        if not cur.fetchone():
+                            cur.execute("SELECT telegram_id FROM users WHERE telegram_id=%s", (referrer_id,))
+                            if cur.fetchone():
+                                cur.execute("UPDATE users SET locked_coins=locked_coins+2,updated_at=NOW() WHERE telegram_id=%s RETURNING locked_coins", (referrer_id,))
+                                cur.execute("INSERT INTO referrals (id,referrer_id,referred_id,reward_coins) VALUES (%s,%s,%s,2)", ("REF-"+uuid.uuid4().hex[:12].upper(), referrer_id, uid))
+
+                return jsonify({"ok":True,"reward":reward,"locked_coins":bal,"completed_tasks":completed_count})
     finally: conn.close()
 
 @app.get("/api/membership")
