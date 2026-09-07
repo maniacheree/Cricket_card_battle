@@ -42,7 +42,7 @@ button:active{transform:scale(.98)}
 .profileBox{padding:8px 12px;min-width:170px}
 .profileName{color:#ffe16d;font-weight:900}
 .nav{
- display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid #211b0b;
+ display:grid;grid-template-columns:repeat(8,1fr);border-bottom:1px solid #211b0b;
  background:#050505;position:sticky;top:92px;z-index:29
 }
 .nav button{
@@ -118,7 +118,7 @@ h1 span{color:#fff}
 @media(max-width:800px){
  .app{width:100%}.top{min-height:68px;padding:8px 9px}.brand{font-size:23px}.brand span{font-size:8px;letter-spacing:3px}
  .topRight{gap:5px}.coinBox{min-width:112px;padding:7px}.coinBox small{font-size:7px}.coinVal{font-size:15px}.plus{width:25px;height:25px;margin-top:-24px}
- .profileBox{display:none}.adminBtn{padding:8px 10px;border:1px solid #9c7315;border-radius:8px;background:linear-gradient(#ffe98c,#bd8108);color:#080808;font-weight:1000;font-size:9px;display:none}.adminBtn.show{display:block}.nav{top:68px;grid-template-columns:repeat(6,1fr)}.nav button{font-size:8px;padding:8px 1px}.nav button span{font-size:17px}
+ .profileBox{display:none}.adminBtn{padding:8px 10px;border:1px solid #9c7315;border-radius:8px;background:linear-gradient(#ffe98c,#bd8108);color:#080808;font-weight:1000;font-size:9px;display:none}.adminBtn.show{display:block}.nav{top:68px;grid-template-columns:repeat(4,1fr)}.nav button{font-size:8px;padding:8px 1px}.nav button span{font-size:17px}
  main{padding:0 7px}.hero{min-height:500px;background-position:center}.heroText{padding:40px 22px}.heroText h1{font-size:40px}
  .grid3,.depositGrid{grid-template-columns:1fr}.packGrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:5px}.pack{min-width:170px;scroll-snap-align:start}.pack img{height:235px}
  .cardGrid{grid-template-columns:repeat(2,1fr)}.playerCard{min-height:220px}.playerArt{height:135px}
@@ -175,7 +175,7 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <header class="top">
   <div class="brand">CRICKET<span>CARD ARENA</span></div>
   <div class="topRight">
-    <div class="coinBox"><small>YOUR COINS</small><div class="coinVal">🪙 <span id="coins">0</span></div><button class="plus" onclick="show('deposit')">+</button></div>
+    <div class="coinBox"><small>YOUR COINS</small><div class="coinVal">🪙 <span id="coins">0</span></div><div style="font-size:9px;color:#a9a9a9;margin-top:4px">🔒 LOCKED <b id="lockedCoins" style="color:#ffd85a">0</b></div><button class="plus" onclick="show('deposit')">+</button></div>
     <button id="adminPanelBtn" class="adminBtn" onclick="openAdminPanel()">⚙ ADMIN</button>
     <div class="profileBox"><small>PLAYER</small><div class="profileName">GUEST <span style="color:#aaa">⌄</span></div></div>
   </div>
@@ -199,6 +199,8 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <button data-page="battle"><span>⚔</span>BATTLES</button>
 <button data-page="leaderboard"><span>🏆</span>LEADERBOARD</button>
 <button data-page="support"><span>♧</span>SUPPORT</button>
+<button data-page="referral"><span>👥</span>REFER</button>
+<button data-page="tasks"><span>🎯</span>TASKS</button>
 </nav>
 
 <main>
@@ -309,6 +311,27 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <div class="panel"><h3 style="color:#ffd85a">⚡ INSTANT HELP</h3><p class="muted">Get help with packs, cards and battles.</p></div>
 <div class="panel"><h3 style="color:#ffd85a">🎧 24/7 SUPPORT</h3><p class="muted">Support centre is ready for your questions.</p><button class="goldBtn" onclick="toast('Support chat coming next')">CONTACT SUPPORT</button></div>
 </div>
+</section>
+
+<section class="page" id="referral">
+<div class="sectionTitle">REFER & EARN</div>
+<div class="grid3">
+  <div class="panel"><div class="kicker">YOUR REFERRALS</div><div class="bigCoin" id="refCount">0</div><div class="muted">SUCCESSFUL REFERRALS</div></div>
+  <div class="panel"><div class="kicker">LOCKED REWARDS</div><div class="bigCoin">🔒 <span id="refLocked">0</span></div><div class="muted">+2 LOCKED COINS PER SUCCESSFUL REFERRAL</div></div>
+  <div class="panel"><div class="kicker">PACK RULE</div><h3 style="color:#ffd85a">30 LOCKED COINS</h3><p class="muted">Referral coins are locked. They can only be used for pack openings, in 30-coin blocks. They cannot be withdrawn directly.</p></div>
+</div>
+<div class="panel" style="margin-top:14px">
+  <h3 style="color:#ffd85a">YOUR REFERRAL LINK</h3>
+  <p class="muted">Share this link. A new player must open the Arena through your referral link to become a successful referral.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><input class="input" id="refLink" readonly style="flex:1;min-width:220px;margin:0"><button class="goldBtn" onclick="copyReferral()">COPY LINK</button></div>
+  <div class="notice" style="margin-top:12px">Self-referrals and duplicate referrals are not rewarded.</div>
+</div>
+</section>
+
+<section class="page" id="tasks">
+<div class="sectionTitle">TASKS</div>
+<p class="muted">Complete tasks to earn locked coins. Task rewards can only be used for pack openings.</p>
+<div id="taskList" class="grid3"></div>
 </section>
 
 <section class="page" id="deposit">
@@ -440,6 +463,8 @@ function openAdminPanel(){
 /* ===== END TELEGRAM WEB APP IDENTITY ===== */
 
 let coins=Number(localStorage.getItem('cca_coins')||0);
+let lockedCoins=0;
+let referralData=null;
 let cards=JSON.parse(localStorage.getItem('cca_cards')||'[]');
 let pendingPack=null;
 let selectedCardIndex=null;
@@ -498,6 +523,7 @@ function save(){
 }
 function update(){
  document.querySelectorAll('#coins,#homeCoins,#depositBalance').forEach(e=>e.textContent=coins.toLocaleString());
+ document.querySelectorAll('#lockedCoins,#refLocked').forEach(e=>e.textContent=lockedCoins.toLocaleString());
  document.getElementById('homeCards').textContent=cards.length;
  document.getElementById('collectionCount').textContent=cards.length;
  renderCards();
@@ -510,7 +536,7 @@ function show(id){
  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
  scrollTo({top:0,behavior:'smooth'});
 }
-document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{show(b.dataset.page);if(b.dataset.page==='battle')openBattleScreen();else if(battleSearching){fetch('/api/battle/cancel',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}}).catch(()=>{});battleSearching=false;if(battlePollTimer)clearInterval(battlePollTimer);}});
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{show(b.dataset.page);if(b.dataset.page==='referral')loadReferralData();if(b.dataset.page==='tasks')loadTasks();if(b.dataset.page==='battle')openBattleScreen();else if(battleSearching){fetch('/api/battle/cancel',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}}).catch(()=>{});battleSearching=false;if(battlePollTimer)clearInterval(battlePollTimer);}});
 
 function makeValue(min,max){
  return Math.floor(Math.random()*(max-min+1))+min;
@@ -523,10 +549,12 @@ async function openPack(type,price,min,max){
    const d=await r.json();
    if(!r.ok||!d.ok) throw new Error(d.error||'Pack opening failed');
    coins=Number(d.coins||0);
+   lockedCoins=Number(d.locked_coins||0);
    cards=Array.isArray(d.cards)?cards.concat(d.cards):cards;
    pendingPack={type,price,cards:d.cards,total:d.cards.reduce((a,c)=>a+Number(c.value||0),0)};
    document.getElementById('openingTitle').textContent=type+' PACK OPENED';
-   document.getElementById('openingCost').textContent='− '+price+' 🪙';
+   const usedLocked=Number(d.used_locked_coins||0), usedNormal=Number(d.used_normal_coins||0);
+   document.getElementById('openingCost').textContent='− '+price+' 🪙 • 🔒 '+usedLocked+' locked'+(usedNormal?' • '+usedNormal+' normal':'');
    document.getElementById('openingTotal').textContent='TOTAL CARD VALUE: 🪙 '+pendingPack.total;
    document.getElementById('revealGrid').innerHTML=d.cards.map(c=>`
      <div class="revealCard">
@@ -660,6 +688,16 @@ function closeWithdraw(){const m=document.getElementById('withdrawModal');if(m)m
 async function submitWithdrawal(){if(!telegramInitData&&!setupTelegram())return toast('Open this app inside Telegram');const amount=Number(document.getElementById('withdrawCoins').value),upi=document.getElementById('withdrawUpi').value.trim();if(!Number.isInteger(amount)||amount<=0)return toast('Enter a valid coin amount');if(amount>coins)return toast('Insufficient coins');if(!upi)return toast('Enter your UPI ID');if(!confirm(`Withdraw ${amount.toLocaleString()} coins to ${upi}?`))return;try{const r=await fetch('/api/withdrawals',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData,'Content-Type':'application/json'},body:JSON.stringify({coins:amount,upi_id:upi})});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Withdrawal failed');coins=Number(d.balance);update();document.getElementById('withdrawCoins').value='';document.getElementById('withdrawUpi').value='';document.getElementById('withdrawBalance').textContent=coins.toLocaleString();toast('Withdrawal submitted • Waiting for approval');await loadServerWithdrawals();}catch(e){toast('❌ '+e.message)}}
 async function loadServerWithdrawals(){if(!telegramInitData&&!setupTelegram())return;try{const r=await fetch('/api/withdrawals',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});const d=await r.json();if(!r.ok||!d.ok)return;renderWithdrawHistory(d.withdrawals||[]);}catch(e){}}
 function renderWithdrawHistory(list){const box=document.getElementById('withdrawHistory');if(!box)return;if(!list.length){box.innerHTML='<div class="muted" style="padding:10px 0">No withdrawal requests yet.</div>';return}box.innerHTML=list.slice(0,8).map(x=>`<div class="row" style="grid-template-columns:1fr auto"><div><b style="color:#ffd85a">${escapeHtml(x.id)}</b><br><span class="muted">${Number(x.coins).toLocaleString()} coins • ${escapeHtml(x.upi_id)}</span><br><span class="muted">${escapeHtml(x.created_at||'')}</span></div><div style="text-align:right;color:${x.status==='APPROVED'?'#48df62':x.status==='REJECTED'?'#ff5750':'#ffd85a'};font-weight:1000">${escapeHtml(x.status)}</div></div>`).join('');}
+async function loadReferralData(){
+  if(!telegramInitData&&!setupTelegram())return;
+  try{const r=await fetch('/api/referrals',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});const d=await r.json();if(!r.ok||!d.ok)return;referralData=d;lockedCoins=Number(d.locked_coins||lockedCoins);document.getElementById('refCount').textContent=Number(d.successful_referrals||0);document.getElementById('refLocked').textContent=lockedCoins.toLocaleString();document.getElementById('refLink').value=d.referral_link||'';update();}catch(e){}}
+function copyReferral(){const v=document.getElementById('refLink')?.value||'';if(!v)return toast('Referral link not ready');navigator.clipboard?.writeText(v).then(()=>toast('Referral link copied'),()=>toast(v));}
+async function loadTasks(){
+  if(!telegramInitData&&!setupTelegram())return;
+  try{const r=await fetch('/api/tasks',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});const d=await r.json();if(!r.ok||!d.ok)return;renderTasks(d.tasks||[]);}catch(e){}}
+function renderTasks(list){const box=document.getElementById('taskList');if(!box)return;if(!list.length){box.innerHTML='<div class="panel"><div class="muted">No active tasks right now.</div></div>';return;}box.innerHTML=list.map(t=>{const done=!!t.completed;return `<div class="panel"><div class="kicker">${escapeHtml(t.task_type.replaceAll('_',' '))}</div><h3 style="color:#ffd85a">${escapeHtml(t.title)}</h3><p class="muted">${escapeHtml(t.description)}</p><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:#ffd85a">🔒 +${Number(t.reward_coins)} LOCKED</b><button class="goldBtn" ${done?'disabled':''} onclick="claimTask('${escapeHtml(t.id)}')">${done?'✓ CLAIMED':'CLAIM REWARD'}</button></div></div>`}).join('');}
+async function claimTask(id){if(!telegramInitData&&!setupTelegram())return toast('Open this app inside Telegram');try{const r=await fetch('/api/tasks/'+encodeURIComponent(id)+'/claim',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData}});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Task not completed');lockedCoins=Number(d.locked_coins||lockedCoins);update();toast('✓ Task reward added to locked coins');await loadTasks();await loadReferralData();}catch(e){toast('❌ '+e.message);}}
+
 function closeModal(id){document.getElementById(id)?.classList.remove('show')}
 function toast(t){
  const x=document.getElementById('toast');
@@ -733,6 +771,7 @@ async function loadServerAccount(){
     const d=await r.json();
     if(!r.ok||!d.ok) throw new Error(d.error||'State load failed');
     coins=Number(d.user?.coins||0);
+    lockedCoins=Number(d.user?.locked_coins||0);
     cards=Array.isArray(d.cards)?d.cards:[];
     localStorage.removeItem('cca_coins');
     localStorage.removeItem('cca_cards');
@@ -811,9 +850,9 @@ setupTelegram();
 setTimeout(()=>{ if(setupTelegram()){ checkMandatoryMembership(); } },300);
 setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },700);
 setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },1500);
-window.addEventListener('load',()=>{ setupTelegram(); loadServerAccount(); loadServerDeposits(); });
-setInterval(()=>{ if(document.visibilityState==='visible' && setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },3000);
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){ setupTelegram(); loadServerAccount(); loadServerDeposits(); } });
+window.addEventListener('load',()=>{ setupTelegram(); loadServerAccount(); loadServerDeposits(); loadReferralData(); loadTasks(); });
+setInterval(()=>{ if(document.visibilityState==='visible' && setupTelegram()){ loadServerAccount(); loadServerDeposits(); loadReferralData(); loadTasks(); } },5000);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){ setupTelegram(); loadServerAccount(); loadServerDeposits(); loadReferralData(); loadTasks(); } });
 </script>
 
 </body>

@@ -40,6 +40,8 @@ def init_db():
                     first_name TEXT,
                     last_name TEXT,
                     coins INTEGER NOT NULL DEFAULT 0,
+                    locked_coins INTEGER NOT NULL DEFAULT 0,
+                    referred_by TEXT,
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
@@ -137,6 +139,47 @@ def init_db():
                 )
             """)
             cur.execute("CREATE INDEX IF NOT EXISTS wallet_adjustments_user_idx ON wallet_adjustments (telegram_id, created_at DESC)")
+            cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_coins INTEGER NOT NULL DEFAULT 0")
+            cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by TEXT")
+            cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS pack_open_count INTEGER NOT NULL DEFAULT 0")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS referrals (
+                    id TEXT PRIMARY KEY,
+                    referrer_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+                    referred_id TEXT NOT NULL UNIQUE REFERENCES users(telegram_id) ON DELETE CASCADE,
+                    reward_coins INTEGER NOT NULL DEFAULT 2 CHECK (reward_coins > 0),
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+            """)
+            cur.execute("CREATE INDEX IF NOT EXISTS referrals_referrer_idx ON referrals (referrer_id, created_at DESC)")
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tasks (
+                    id TEXT PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    description TEXT NOT NULL,
+                    task_type TEXT NOT NULL,
+                    target INTEGER NOT NULL DEFAULT 1,
+                    reward_coins INTEGER NOT NULL CHECK (reward_coins > 0),
+                    active BOOLEAN NOT NULL DEFAULT TRUE,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS user_tasks (
+                    telegram_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
+                    task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+                    completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    PRIMARY KEY (telegram_id, task_id)
+                )
+            """)
+            cur.execute("""
+                INSERT INTO tasks (id,title,description,task_type,target,reward_coins) VALUES
+                ('TASK_JOIN_CHANNEL','JOIN THE CHANNEL','Join the official Cricket Card Arena channel.','JOIN_CHANNEL',1,2),
+                ('TASK_JOIN_GROUP','JOIN THE GROUP','Join the official Cricket Card Arena community group.','JOIN_GROUP',1,2),
+                ('TASK_REFER_3','REFER 3 FRIENDS','Bring 3 successful new players to Cricket Card Arena.','REFER_COUNT',3,6),
+                ('TASK_OPEN_PACK','OPEN 1 PACK','Open your first card pack.','OPEN_PACK_COUNT',1,2)
+                ON CONFLICT (id) DO NOTHING
+            """)
             conn.commit()
     finally:
         conn.close()
@@ -181,7 +224,7 @@ def telegram_auth(raw_init_data):
         user = json.loads(user_json)
         if not user.get("id"):
             return None
-
+        user["_start_param"] = pairs.get("start_param", "")
         return user
     except Exception:
         return None
@@ -243,6 +286,8 @@ def health():
 
 
 def ensure_user(conn, u):
+    uid = str(u["id"])
+    start_param = str(u.get("_start_param") or "").strip()
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute("""
             INSERT INTO users (telegram_id, username, first_name, last_name)
@@ -250,8 +295,23 @@ def ensure_user(conn, u):
             ON CONFLICT (telegram_id) DO UPDATE SET
                 username=EXCLUDED.username, first_name=EXCLUDED.first_name,
                 last_name=EXCLUDED.last_name, updated_at=NOW()
-            RETURNING telegram_id, username, first_name, last_name, coins
-        """, (str(u["id"]), u.get("username"), u.get("first_name"), u.get("last_name")))
+            RETURNING telegram_id, username, first_name, last_name, coins, locked_coins, referred_by, pack_open_count, (xmax = 0) AS inserted
+        """, (uid, u.get("username"), u.get("first_name"), u.get("last_name")))
+        row = cur.fetchone()
+
+        # A referral is credited only once, only for a newly created user, and never to self.
+        if start_param.startswith("ref_") and row.get("inserted") and not row.get("referred_by"):
+            referrer_id = start_param[4:].strip()
+            if referrer_id and referrer_id != uid:
+                cur.execute("SELECT telegram_id FROM users WHERE telegram_id=%s", (referrer_id,))
+                ref = cur.fetchone()
+                if ref:
+                    cur.execute("SELECT 1 FROM referrals WHERE referred_id=%s", (uid,))
+                    if not cur.fetchone():
+                        cur.execute("UPDATE users SET referred_by=%s, updated_at=NOW() WHERE telegram_id=%s", (referrer_id, uid))
+                        cur.execute("UPDATE users SET locked_coins=locked_coins+2, updated_at=NOW() WHERE telegram_id=%s", (referrer_id,))
+                        cur.execute("INSERT INTO referrals (id,referrer_id,referred_id,reward_coins) VALUES (%s,%s,%s,2)", ("REF-"+uuid.uuid4().hex[:12].upper(), referrer_id, uid))
+        cur.execute("SELECT telegram_id, username, first_name, last_name, coins, locked_coins, referred_by, pack_open_count FROM users WHERE telegram_id=%s", (uid,))
         return cur.fetchone()
 
 def load_card_pool():
@@ -312,6 +372,89 @@ def make_pack_cards(pack):
     return cards
 
 
+@app.get("/api/referrals")
+@require_telegram
+def get_referrals():
+    uid=str(request.telegram_user["id"])
+    conn=db()
+    try:
+        ensure_user(conn, request.telegram_user)
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("SELECT COUNT(*) AS count FROM referrals WHERE referrer_id=%s", (uid,))
+            count=int(cur.fetchone()["count"] or 0)
+            cur.execute("SELECT locked_coins FROM users WHERE telegram_id=%s", (uid,))
+            locked=int(cur.fetchone()["locked_coins"] or 0)
+        conn.commit()
+        return jsonify({"ok":True,"referral_code":"ref_"+uid,"referral_link":"https://t.me/CricketCardArenaBot?startapp=ref_"+uid,"successful_referrals":count,"locked_coins":locked,"reward_per_referral":2})
+    finally: conn.close()
+
+@app.get("/api/tasks")
+@require_telegram
+def get_tasks():
+    uid=str(request.telegram_user["id"])
+    conn=db()
+    try:
+        ensure_user(conn, request.telegram_user)
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("""SELECT t.id,t.title,t.description,t.task_type,t.target,t.reward_coins,t.active,
+                         EXISTS(SELECT 1 FROM user_tasks ut WHERE ut.task_id=t.id AND ut.telegram_id=%s) AS completed
+                         FROM tasks t WHERE t.active=TRUE ORDER BY t.created_at ASC""", (uid,))
+            rows=cur.fetchall()
+        conn.commit()
+        return jsonify({"ok":True,"tasks":rows})
+    finally: conn.close()
+
+def task_is_complete(cur, task, uid):
+    typ=task["task_type"]
+    target=int(task["target"] or 1)
+    if typ == "JOIN_CHANNEL":
+        if not BOT_TOKEN: return False
+        try:
+            qs=urlencode({"chat_id":REQUIRED_CHANNEL,"user_id":uid})
+            req=Request("https://api.telegram.org/bot%s/getChatMember?%s"%(BOT_TOKEN,qs),method="GET")
+            with urlopen(req,timeout=8) as resp: data=json.loads(resp.read().decode("utf-8"))
+            if not data.get("ok"): return False
+            m=data.get("result",{}); st=m.get("status")
+            return st in ("creator","administrator","member") or (st=="restricted" and bool(m.get("is_member")))
+        except Exception: return False
+    if typ == "JOIN_GROUP":
+        if not BOT_TOKEN or not REQUIRED_GROUP_ID: return False
+        try:
+            qs=urlencode({"chat_id":REQUIRED_GROUP_ID,"user_id":uid})
+            req=Request("https://api.telegram.org/bot%s/getChatMember?%s"%(BOT_TOKEN,qs),method="GET")
+            with urlopen(req,timeout=8) as resp: data=json.loads(resp.read().decode("utf-8"))
+            if not data.get("ok"): return False
+            m=data.get("result",{}); st=m.get("status")
+            return st in ("creator","administrator","member") or (st=="restricted" and bool(m.get("is_member")))
+        except Exception: return False
+    if typ == "REFER_COUNT":
+        cur.execute("SELECT COUNT(*) AS c FROM referrals WHERE referrer_id=%s", (uid,))
+        return int(cur.fetchone()["c"] or 0) >= target
+    if typ == "OPEN_PACK_COUNT":
+        cur.execute("SELECT pack_open_count FROM users WHERE telegram_id=%s", (uid,))
+        return int(cur.fetchone()["pack_open_count"] or 0) >= target
+    return False
+
+@app.post("/api/tasks/<task_id>/claim")
+@require_telegram
+def claim_task(task_id):
+    uid=str(request.telegram_user["id"]); conn=db()
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                ensure_user(conn, request.telegram_user)
+                cur.execute("SELECT * FROM tasks WHERE id=%s AND active=TRUE FOR UPDATE", (task_id,)); task=cur.fetchone()
+                if not task: return jsonify({"ok":False,"error":"Task not found"}),404
+                cur.execute("SELECT 1 FROM user_tasks WHERE telegram_id=%s AND task_id=%s", (uid,task_id))
+                if cur.fetchone(): return jsonify({"ok":False,"error":"Task already claimed"}),400
+                if not task_is_complete(cur,task,uid): return jsonify({"ok":False,"error":"Task requirement not completed yet"}),400
+                reward=int(task["reward_coins"])
+                cur.execute("UPDATE users SET locked_coins=locked_coins+%s,updated_at=NOW() WHERE telegram_id=%s RETURNING locked_coins", (reward,uid))
+                bal=int(cur.fetchone()["locked_coins"])
+                cur.execute("INSERT INTO user_tasks (telegram_id,task_id) VALUES (%s,%s)", (uid,task_id))
+                return jsonify({"ok":True,"reward":reward,"locked_coins":bal})
+    finally: conn.close()
+
 @app.get("/api/membership")
 @require_telegram
 def membership():
@@ -346,7 +489,7 @@ def get_state():
     try:
         ensure_user(conn, request.telegram_user)
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT telegram_id, username, first_name, last_name, coins FROM users WHERE telegram_id=%s", (uid,))
+            cur.execute("SELECT telegram_id, username, first_name, last_name, coins, locked_coins, pack_open_count FROM users WHERE telegram_id=%s", (uid,))
             user=cur.fetchone()
             cur.execute("SELECT card_json FROM user_cards WHERE telegram_id=%s ORDER BY created_at DESC", (uid,))
             cards=[r["card_json"] for r in cur.fetchall()]
@@ -368,16 +511,22 @@ def open_pack_server():
         with conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
                 ensure_user(conn, request.telegram_user)
-                cur.execute("SELECT coins FROM users WHERE telegram_id=%s FOR UPDATE", (uid,))
+                cur.execute("SELECT coins, locked_coins FROM users WHERE telegram_id=%s FOR UPDATE", (uid,))
                 u=cur.fetchone()
-                if int(u["coins"]) < cfg["price"]:
-                    return jsonify({"ok":False,"error":"Not enough coins"}),400
+                normal=int(u["coins"] or 0)
+                locked=int(u["locked_coins"] or 0)
+                # Referral/task coins are usable only for packs, in 30-coin blocks.
+                locked_use=min(cfg["price"], (locked//30)*30)
+                normal_use=cfg["price"]-locked_use
+                if normal < normal_use:
+                    return jsonify({"ok":False,"error":f"Need {normal_use} normal coins + {locked_use} locked coins for this pack"}),400
                 new_cards=make_pack_cards(pack)
-                cur.execute("UPDATE users SET coins=coins-%s, updated_at=NOW() WHERE telegram_id=%s RETURNING coins", (cfg["price"],uid))
-                new_coins=int(cur.fetchone()["coins"])
+                cur.execute("""UPDATE users SET coins=coins-%s, locked_coins=locked_coins-%s, pack_open_count=pack_open_count+1, updated_at=NOW() WHERE telegram_id=%s RETURNING coins, locked_coins""", (normal_use,locked_use,uid))
+                balances=cur.fetchone()
+                new_coins=int(balances["coins"]); new_locked=int(balances["locked_coins"])
                 for c in new_cards:
                     cur.execute("INSERT INTO user_cards (id,telegram_id,card_json) VALUES (%s,%s,%s)", (c["id"],uid,json.dumps(c)))
-                return jsonify({"ok":True,"coins":new_coins,"cards":new_cards})
+                return jsonify({"ok":True,"coins":new_coins,"locked_coins":new_locked,"used_locked_coins":locked_use,"used_normal_coins":normal_use,"cards":new_cards})
     finally:
         conn.close()
 
