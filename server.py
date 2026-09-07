@@ -164,6 +164,10 @@ def init_db():
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
             """)
+            cur.execute("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS chat_id TEXT")
+            cur.execute("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS chat_link TEXT")
+            cur.execute("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS chat_title TEXT")
+            cur.execute("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS chat_kind TEXT")
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS user_tasks (
                     telegram_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
@@ -388,6 +392,65 @@ def get_referrals():
         return jsonify({"ok":True,"referral_code":"ref_"+uid,"referral_link":"https://t.me/CricketCardArenaBot?startapp=ref_"+uid,"successful_referrals":count,"locked_coins":locked,"reward_per_referral":2})
     finally: conn.close()
 
+def telegram_api(method, params):
+    if not BOT_TOKEN:
+        return None
+    try:
+        qs = urlencode(params)
+        req = Request(f"https://api.telegram.org/bot{BOT_TOKEN}/{method}?{qs}", method="GET")
+        with urlopen(req, timeout=8) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+
+
+def normalize_chat_id(value):
+    value = str(value or "").strip()
+    if not value:
+        return ""
+    if value.startswith("https://t.me/"):
+        part = value.rstrip("/").split("/")[-1]
+        if not part.startswith("+"):
+            value = "@" + part
+    elif value.startswith("t.me/"):
+        part = value.rstrip("/").split("/")[-1]
+        if not part.startswith("+"):
+            value = "@" + part
+    elif value.startswith("@"): 
+        pass
+    elif value.lstrip("-").isdigit():
+        pass
+    else:
+        value = "@" + value
+    return value
+
+
+def bot_is_admin_in_chat(chat_id):
+    me = telegram_api("getMe", {})
+    if not me or not me.get("ok"):
+        return False, "Bot token is invalid or unavailable"
+    bot_id = str(me.get("result", {}).get("id") or "")
+    if not bot_id:
+        return False, "Could not identify the bot"
+    data = telegram_api("getChatMember", {"chat_id": chat_id, "user_id": bot_id})
+    if not data or not data.get("ok"):
+        return False, "Bot cannot access this chat. Check the chat ID and make sure the bot is in the chat."
+    member = data.get("result", {})
+    status = member.get("status")
+    if status not in ("creator", "administrator"):
+        return False, "Bot must be an administrator in this channel/group before adding this task"
+    return True, "OK"
+
+
+def check_user_in_chat(chat_id, uid):
+    data = telegram_api("getChatMember", {"chat_id": chat_id, "user_id": uid})
+    if not data or not data.get("ok"):
+        return False
+    member = data.get("result", {})
+    status = member.get("status")
+    return status in ("creator", "administrator", "member") or (status == "restricted" and bool(member.get("is_member")))
+
+
 @app.get("/api/tasks")
 @require_telegram
 def get_tasks():
@@ -397,9 +460,21 @@ def get_tasks():
         ensure_user(conn, request.telegram_user)
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("""SELECT t.id,t.title,t.description,t.task_type,t.target,t.reward_coins,t.active,
+                         t.chat_id,t.chat_link,t.chat_title,t.chat_kind,
                          EXISTS(SELECT 1 FROM user_tasks ut WHERE ut.task_id=t.id AND ut.telegram_id=%s) AS completed
                          FROM tasks t WHERE t.active=TRUE ORDER BY t.created_at ASC""", (uid,))
             rows=cur.fetchall()
+            for row in rows:
+                if row.get("task_type") == "JOIN_CHAT" and row.get("chat_id"):
+                    row["eligible"] = check_user_in_chat(row["chat_id"], uid)
+                elif row.get("task_type") == "REFER_COUNT":
+                    cur.execute("SELECT COUNT(*) AS c FROM referrals WHERE referrer_id=%s", (uid,))
+                    row["eligible"] = int(cur.fetchone()["c"] or 0) >= int(row.get("target") or 1)
+                elif row.get("task_type") == "OPEN_PACK_COUNT":
+                    cur.execute("SELECT pack_open_count FROM users WHERE telegram_id=%s", (uid,))
+                    row["eligible"] = int(cur.fetchone()["pack_open_count"] or 0) >= int(row.get("target") or 1)
+                else:
+                    row["eligible"] = False
         conn.commit()
         return jsonify({"ok":True,"tasks":rows})
     finally: conn.close()
@@ -407,26 +482,13 @@ def get_tasks():
 def task_is_complete(cur, task, uid):
     typ=task["task_type"]
     target=int(task["target"] or 1)
+    if typ == "JOIN_CHAT":
+        chat_id=str(task.get("chat_id") or "").strip()
+        return bool(chat_id) and check_user_in_chat(chat_id, uid)
     if typ == "JOIN_CHANNEL":
-        if not BOT_TOKEN: return False
-        try:
-            qs=urlencode({"chat_id":REQUIRED_CHANNEL,"user_id":uid})
-            req=Request("https://api.telegram.org/bot%s/getChatMember?%s"%(BOT_TOKEN,qs),method="GET")
-            with urlopen(req,timeout=8) as resp: data=json.loads(resp.read().decode("utf-8"))
-            if not data.get("ok"): return False
-            m=data.get("result",{}); st=m.get("status")
-            return st in ("creator","administrator","member") or (st=="restricted" and bool(m.get("is_member")))
-        except Exception: return False
+        return check_user_in_chat(REQUIRED_CHANNEL, uid)
     if typ == "JOIN_GROUP":
-        if not BOT_TOKEN or not REQUIRED_GROUP_ID: return False
-        try:
-            qs=urlencode({"chat_id":REQUIRED_GROUP_ID,"user_id":uid})
-            req=Request("https://api.telegram.org/bot%s/getChatMember?%s"%(BOT_TOKEN,qs),method="GET")
-            with urlopen(req,timeout=8) as resp: data=json.loads(resp.read().decode("utf-8"))
-            if not data.get("ok"): return False
-            m=data.get("result",{}); st=m.get("status")
-            return st in ("creator","administrator","member") or (st=="restricted" and bool(m.get("is_member")))
-        except Exception: return False
+        return bool(REQUIRED_GROUP_ID) and check_user_in_chat(REQUIRED_GROUP_ID, uid)
     if typ == "REFER_COUNT":
         cur.execute("SELECT COUNT(*) AS c FROM referrals WHERE referrer_id=%s", (uid,))
         return int(cur.fetchone()["c"] or 0) >= target
@@ -434,6 +496,7 @@ def task_is_complete(cur, task, uid):
         cur.execute("SELECT pack_open_count FROM users WHERE telegram_id=%s", (uid,))
         return int(cur.fetchone()["pack_open_count"] or 0) >= target
     return False
+
 
 @app.post("/api/tasks/<task_id>/claim")
 @require_telegram
@@ -977,6 +1040,70 @@ def admin_battles():
                 for k in ('created_at','finished_at','claimed_at'):
                     if r[k]:r[k]=r[k].isoformat()
             return jsonify({'ok':True,'battles':rows})
+    finally: conn.close()
+
+
+@app.get("/api/admin/tasks")
+@require_admin
+def admin_tasks():
+    conn=db()
+    try:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            cur.execute("""SELECT id,title,description,task_type,target,reward_coins,active,chat_id,chat_link,chat_title,chat_kind,created_at
+                         FROM tasks ORDER BY active DESC, created_at DESC""")
+            rows=cur.fetchall()
+            for r in rows:
+                if r.get("created_at"): r["created_at"]=r["created_at"].isoformat()
+            return jsonify({"ok":True,"tasks":rows})
+    finally: conn.close()
+
+
+@app.post("/api/admin/tasks")
+@require_admin
+def admin_create_task():
+    data=request.get_json(silent=True) or {}
+    title=str(data.get("title") or "").strip()[:120]
+    description=str(data.get("description") or "").strip()[:500]
+    task_type=str(data.get("task_type") or "").strip().upper()
+    chat_id=normalize_chat_id(data.get("chat_id"))
+    chat_link=str(data.get("chat_link") or "").strip()[:500]
+    try: target=int(data.get("target") or 1); reward=int(data.get("reward_coins") or 0)
+    except (TypeError,ValueError): target=0; reward=0
+    if not title or not description: return jsonify({"ok":False,"error":"Title and description are required"}),400
+    if task_type not in ("JOIN_CHAT","REFER_COUNT","OPEN_PACK_COUNT"): return jsonify({"ok":False,"error":"Invalid task type"}),400
+    if target<=0 or reward<=0: return jsonify({"ok":False,"error":"Target and reward must be positive"}),400
+    chat_title=None; chat_kind=None
+    if task_type=="JOIN_CHAT":
+        if not chat_id: return jsonify({"ok":False,"error":"Channel/group Chat ID or @username is required"}),400
+        if not chat_link: return jsonify({"ok":False,"error":"Join link is required"}),400
+        ok,msg=bot_is_admin_in_chat(chat_id)
+        if not ok: return jsonify({"ok":False,"error":msg}),400
+        chat=telegram_api("getChat", {"chat_id":chat_id})
+        if chat and chat.get("ok"):
+            info=chat.get("result",{}); chat_title=info.get("title") or info.get("first_name") or info.get("username")
+            chat_kind=info.get("type")
+    task_id="TASK-"+uuid.uuid4().hex[:12].upper()
+    conn=db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""INSERT INTO tasks (id,title,description,task_type,target,reward_coins,active,chat_id,chat_link,chat_title,chat_kind)
+                         VALUES (%s,%s,%s,%s,%s,%s,TRUE,%s,%s,%s,%s)""",(task_id,title,description,task_type,target,reward,chat_id or None,chat_link or None,chat_title,chat_kind))
+        conn.commit()
+        return jsonify({"ok":True,"task_id":task_id,"message":"Task added successfully"})
+    finally: conn.close()
+
+
+@app.post("/api/admin/tasks/<task_id>/remove")
+@require_admin
+def admin_remove_task(task_id):
+    conn=db()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("UPDATE tasks SET active=FALSE WHERE id=%s RETURNING id",(task_id,))
+            row=cur.fetchone()
+            if not row: return jsonify({"ok":False,"error":"Task not found"}),404
+        conn.commit()
+        return jsonify({"ok":True,"message":"Task removed"})
     finally: conn.close()
 
 
