@@ -5,6 +5,8 @@ import json
 import uuid
 import random
 from datetime import datetime, timezone
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 from functools import wraps
 
 from flask import Flask, send_from_directory, jsonify, request
@@ -16,6 +18,8 @@ app = Flask(__name__)
 
 ADMIN_ID = "7035868085"
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+REQUIRED_CHANNEL = "@Cricketcardarena"
+REQUIRED_GROUP_ID = os.environ.get("REQUIRED_GROUP_ID", "").strip()
 DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 
@@ -56,27 +60,6 @@ def init_db():
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                     reviewed_at TIMESTAMPTZ
                 )
-            """)
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS withdrawals (
-                    id TEXT PRIMARY KEY,
-                    telegram_id TEXT NOT NULL REFERENCES users(telegram_id),
-                    coins INTEGER NOT NULL CHECK (coins >= 20),
-                    upi_id TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'PENDING'
-                        CHECK (status IN ('PENDING','APPROVED','REJECTED')),
-                    admin_id TEXT,
-                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                    reviewed_at TIMESTAMPTZ
-                )
-            """)
-            cur.execute("""
-                CREATE INDEX IF NOT EXISTS withdrawals_user_idx
-                ON withdrawals (telegram_id, created_at DESC)
-            """)
-            cur.execute("""
-                CREATE INDEX IF NOT EXISTS withdrawals_status_idx
-                ON withdrawals (status, created_at DESC)
             """)
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS user_cards (
@@ -125,20 +108,6 @@ def init_db():
             cur.execute("ALTER TABLE battles ADD COLUMN IF NOT EXISTS player1_cards JSONB")
             cur.execute("ALTER TABLE battles ADD COLUMN IF NOT EXISTS player2_cards JSONB")
             cur.execute("CREATE INDEX IF NOT EXISTS battles_players_idx ON battles (player1_id, player2_id, created_at DESC)")
-            cur.execute("""
-                CREATE TABLE IF NOT EXISTS wallet_adjustments (
-                    id TEXT PRIMARY KEY,
-                    telegram_id TEXT NOT NULL REFERENCES users(telegram_id) ON DELETE CASCADE,
-                    admin_id TEXT NOT NULL,
-                    action TEXT NOT NULL CHECK (action IN ('ADD','CUT')),
-                    coins INTEGER NOT NULL CHECK (coins > 0),
-                    balance_before INTEGER NOT NULL,
-                    balance_after INTEGER NOT NULL,
-                    reason TEXT,
-                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-                )
-            """)
-            cur.execute("CREATE INDEX IF NOT EXISTS wallet_adjustments_user_idx ON wallet_adjustments (telegram_id, created_at DESC)")
             conn.commit()
     finally:
         conn.close()
@@ -313,6 +282,41 @@ def make_pack_cards(pack):
         cards.append(card)
     return cards
 
+
+@app.get("/api/membership")
+@require_telegram
+def membership_status():
+    """Check compulsory channel + group membership for the current Telegram user."""
+    uid = str(request.telegram_user.get("id"))
+    if not REQUIRED_GROUP_ID:
+        return jsonify({"ok": False, "configured": False, "error": "REQUIRED_GROUP_ID is not configured"}), 503
+
+    def check_member(chat_id):
+        try:
+            query = urlencode({"chat_id": chat_id, "user_id": uid}).encode()
+            req = Request(
+                f"https://api.telegram.org/bot{BOT_TOKEN}/getChatMember",
+                data=query,
+                method="POST",
+            )
+            with urlopen(req, timeout=8) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            if not data.get("ok"):
+                return False, data.get("description", "Telegram membership check failed")
+            status = (data.get("result") or {}).get("status", "")
+            return status in {"creator", "administrator", "member"} or (status == "restricted" and (data.get("result") or {}).get("is_member", False)), status
+        except Exception as exc:
+            return False, str(exc)
+
+    channel_ok, channel_detail = check_member(REQUIRED_CHANNEL)
+    group_ok, group_detail = check_member(REQUIRED_GROUP_ID)
+    return jsonify({
+        "ok": True,
+        "configured": True,
+        "channel": {"joined": channel_ok, "detail": channel_detail},
+        "group": {"joined": group_ok, "detail": group_detail},
+        "can_enter": bool(channel_ok and group_ok),
+    })
 
 @app.get("/api/state")
 @require_telegram
@@ -728,116 +732,6 @@ def admin_battles():
     finally: conn.close()
 
 
-@app.post("/api/withdrawals")
-@require_telegram
-def create_withdrawal():
-    data = request.get_json(silent=True) or {}
-    upi_id = str(data.get("upi_id") or "").strip()[:120]
-    try:
-        amount = int(data.get("coins"))
-    except (TypeError, ValueError):
-        amount = 0
-    if amount < 20:
-        return jsonify({"ok": False, "error": "Minimum withdrawal is 20 coins"}), 400
-    if not upi_id:
-        return jsonify({"ok": False, "error": "UPI ID is required"}), 400
-    if "@" not in upi_id or len(upi_id) < 5:
-        return jsonify({"ok": False, "error": "Enter a valid UPI ID"}), 400
-    uid = str(request.telegram_user["id"])
-    conn = db()
-    try:
-        with conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                ensure_user(conn, request.telegram_user)
-                cur.execute("SELECT coins FROM users WHERE telegram_id=%s FOR UPDATE", (uid,))
-                u = cur.fetchone()
-                balance = int(u["coins"] or 0)
-                if amount > balance:
-                    return jsonify({"ok": False, "error": f"Insufficient balance. Available: {balance} coins"}), 400
-                # Reserve the requested coins immediately so they cannot be spent twice.
-                cur.execute("UPDATE users SET coins=coins-%s, updated_at=NOW() WHERE telegram_id=%s RETURNING coins", (amount, uid))
-                new_balance = int(cur.fetchone()["coins"])
-                wid = "WDR-" + uuid.uuid4().hex[:12].upper()
-                cur.execute("""INSERT INTO withdrawals
-                    (id, telegram_id, coins, upi_id) VALUES (%s,%s,%s,%s)""",
-                    (wid, uid, amount, upi_id))
-                return jsonify({"ok": True, "id": wid, "coins": amount, "upi_id": upi_id, "status": "PENDING", "balance": new_balance})
-    finally:
-        conn.close()
-
-
-@app.get("/api/withdrawals")
-@require_telegram
-def my_withdrawals():
-    uid = str(request.telegram_user["id"])
-    conn = db()
-    try:
-        ensure_user(conn, request.telegram_user)
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""SELECT id, coins, upi_id, status, created_at, reviewed_at
-                          FROM withdrawals WHERE telegram_id=%s ORDER BY created_at DESC LIMIT 50""", (uid,))
-            rows = cur.fetchall()
-            for r in rows:
-                for k in ("created_at", "reviewed_at"):
-                    if r[k]: r[k] = r[k].isoformat()
-        conn.commit()
-        return jsonify({"ok": True, "withdrawals": rows})
-    finally:
-        conn.close()
-
-
-@app.get("/api/admin/withdrawals")
-@require_admin
-def admin_withdrawals():
-    conn = db()
-    try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""SELECT w.id,w.telegram_id,w.coins,w.upi_id,w.status,w.created_at,w.reviewed_at,
-                               u.username,u.first_name,u.last_name
-                        FROM withdrawals w JOIN users u ON u.telegram_id=w.telegram_id
-                        ORDER BY CASE WHEN w.status='PENDING' THEN 0 ELSE 1 END, w.created_at DESC LIMIT 500""")
-            rows = cur.fetchall()
-            for r in rows:
-                for k in ("created_at", "reviewed_at"):
-                    if r[k]: r[k] = r[k].isoformat()
-            return jsonify({"ok": True, "withdrawals": rows})
-    finally:
-        conn.close()
-
-
-def _review_withdrawal(wid, approved):
-    conn = db()
-    try:
-        with conn:
-            with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                cur.execute("SELECT * FROM withdrawals WHERE id=%s FOR UPDATE", (wid,))
-                w = cur.fetchone()
-                if not w:
-                    return jsonify({"ok": False, "error": "Withdrawal not found"}), 404
-                if w["status"] != "PENDING":
-                    return jsonify({"ok": False, "error": "Withdrawal already reviewed"}), 400
-                if approved:
-                    cur.execute("UPDATE withdrawals SET status='APPROVED', admin_id=%s, reviewed_at=NOW() WHERE id=%s", (ADMIN_ID, wid))
-                    return jsonify({"ok": True, "status": "APPROVED", "coins": int(w["coins"])})
-                cur.execute("UPDATE users SET coins=coins+%s, updated_at=NOW() WHERE telegram_id=%s", (int(w["coins"]), w["telegram_id"]))
-                cur.execute("UPDATE withdrawals SET status='REJECTED', admin_id=%s, reviewed_at=NOW() WHERE id=%s", (ADMIN_ID, wid))
-                return jsonify({"ok": True, "status": "REJECTED", "refunded_coins": int(w["coins"])})
-    finally:
-        conn.close()
-
-
-@app.post("/api/admin/withdrawals/<wid>/approve")
-@require_admin
-def approve_withdrawal(wid):
-    return _review_withdrawal(wid, True)
-
-
-@app.post("/api/admin/withdrawals/<wid>/reject")
-@require_admin
-def reject_withdrawal(wid):
-    return _review_withdrawal(wid, False)
-
-
 @app.get("/api/admin/stats")
 @require_admin
 def admin_stats():
@@ -848,14 +742,11 @@ def admin_stats():
             u = cur.fetchone()
             cur.execute("SELECT COUNT(*) AS pending_deposits FROM deposits WHERE status='PENDING'")
             d = cur.fetchone()
-            cur.execute("SELECT COUNT(*) AS pending_withdrawals FROM withdrawals WHERE status='PENDING'")
-            w = cur.fetchone()
             return jsonify({
                 "ok": True,
                 "total_users": int(u["total_users"] or 0),
                 "total_coins": int(u["total_coins"] or 0),
-                "pending_deposits": int(d["pending_deposits"] or 0),
-                "pending_withdrawals": int(w["pending_withdrawals"] or 0)
+                "pending_deposits": int(d["pending_deposits"] or 0)
             })
     finally:
         conn.close()
@@ -882,67 +773,6 @@ def admin_users():
                 for k in ("created_at", "updated_at"):
                     if r[k]: r[k] = r[k].isoformat()
             return jsonify({"ok": True, "users": rows})
-    finally:
-        conn.close()
-
-
-@app.post("/api/admin/wallet/adjust")
-@require_admin
-def admin_wallet_adjust():
-    data = request.get_json(silent=True) or {}
-    uid = str(data.get("telegram_id") or "").strip()
-    action = str(data.get("action") or "").upper().strip()
-    reason = str(data.get("reason") or "").strip()[:300]
-    try:
-        amount = int(data.get("coins"))
-    except (TypeError, ValueError):
-        amount = 0
-    if not uid:
-        return jsonify({"ok": False, "error": "Telegram User ID is required"}), 400
-    if action not in ("ADD", "CUT"):
-        return jsonify({"ok": False, "error": "Action must be ADD or CUT"}), 400
-    if amount <= 0:
-        return jsonify({"ok": False, "error": "Coins must be greater than 0"}), 400
-    conn = db()
-    try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("SELECT coins FROM users WHERE telegram_id=%s FOR UPDATE", (uid,))
-            user = cur.fetchone()
-            if not user:
-                return jsonify({"ok": False, "error": "User not found"}), 404
-            before = int(user["coins"] or 0)
-            after = before + amount if action == "ADD" else before - amount
-            if after < 0:
-                return jsonify({"ok": False, "error": f"Insufficient balance. Current balance: {before} coins"}), 400
-            cur.execute("UPDATE users SET coins=%s, updated_at=NOW() WHERE telegram_id=%s", (after, uid))
-            adj_id = "WAL-" + uuid.uuid4().hex[:12].upper()
-            cur.execute("""INSERT INTO wallet_adjustments
-                (id, telegram_id, admin_id, action, coins, balance_before, balance_after, reason)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
-                (adj_id, uid, ADMIN_ID, action, amount, before, after, reason or None))
-            conn.commit()
-            return jsonify({"ok": True, "id": adj_id, "telegram_id": uid, "action": action, "coins": amount, "balance": after})
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        conn.close()
-
-
-@app.get("/api/admin/wallet/history")
-@require_admin
-def admin_wallet_history():
-    conn = db()
-    try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""SELECT w.id,w.telegram_id,w.admin_id,w.action,w.coins,w.balance_before,w.balance_after,w.reason,w.created_at,
-                               u.username,u.first_name,u.last_name
-                        FROM wallet_adjustments w JOIN users u ON u.telegram_id=w.telegram_id
-                        ORDER BY w.created_at DESC LIMIT 200""")
-            rows = cur.fetchall()
-            for r in rows:
-                if r["created_at"]: r["created_at"] = r["created_at"].isoformat()
-            return jsonify({"ok": True, "history": rows})
     finally:
         conn.close()
 

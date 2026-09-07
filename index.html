@@ -139,8 +139,33 @@ h1 span{color:#fff}
 @media(max-width:800px){.cardPhoto{height:145px}.revealCard img{height:160px}}
 </style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style id="mandatoryJoinGateStyles">
+#joinGate{position:fixed;inset:0;z-index:99999;background:radial-gradient(circle at 50% 0%,#1b1405 0,#050505 38%,#000 100%);display:flex;align-items:center;justify-content:center;padding:20px}
+#joinGate.hidden{display:none}
+.joinGateBox{width:min(430px,100%);background:linear-gradient(145deg,#11100b,#050505);border:1px solid #735511;border-radius:18px;padding:24px;box-shadow:0 0 45px #000,0 0 25px #d49a2420;text-align:center}
+.joinGateTitle{color:#ffd85a;font-size:24px;font-weight:1000;letter-spacing:.5px}
+.joinGateSub{color:#999;font-size:12px;line-height:1.6;margin:9px 0 20px}
+.joinItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin:9px 0;border:1px solid #30250e;border-radius:11px;background:#090909;text-align:left}
+.joinItem b{color:#fff;font-size:12px}.joinStatus{font-size:10px;color:#ffd85a;margin-top:3px}
+.joinBtn{border:1px solid #8b6819;background:#ffd85a;color:#080808;border-radius:8px;padding:8px 12px;font-size:10px;font-weight:1000;text-decoration:none;white-space:nowrap}
+#joinCheck{width:100%;margin-top:12px;padding:12px;border:1px solid #8b6819;border-radius:10px;background:#ffd85a;color:#080808;font-weight:1000}
+#joinGateMsg{font-size:10px;color:#aaa;margin-top:10px;min-height:14px}
+</style>
 </head>
 <body>
+<div id="joinGate">
+  <div class="joinGateBox">
+    <div style="font-size:34px">🏏</div>
+    <div class="joinGateTitle">JOIN THE ARENA</div>
+    <div class="joinGateSub">Channel aur group dono join karna compulsory hai. Join karne ke baad CHECK MEMBERSHIP dabao.</div>
+    <div class="joinItem"><div><b>CRICKET CARD ARENA</b><div class="joinStatus" id="channelJoinStatus">Checking...</div></div><a class="joinBtn" href="https://t.me/Cricketcardarena" target="_blank">JOIN CHANNEL</a></div>
+    <div class="joinItem"><div><b>OFFICIAL GROUP</b><div class="joinStatus" id="groupJoinStatus">Checking...</div></div><a class="joinBtn" href="https://t.me/+2DYMWzPRqyRhODRl" target="_blank">JOIN GROUP</a></div>
+    <button id="joinCheck" onclick="checkMandatoryMembership()">CHECK MEMBERSHIP</button>
+    <div id="joinGateMsg">Verifying your membership...</div>
+  </div>
+</div>
+
+
 
 <div id="dbStatus" style="position:fixed;right:10px;bottom:10px;z-index:40;
 border:1px solid #5d4711;background:#080808;color:#ffd85a;border-radius:20px;
@@ -187,7 +212,7 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 <div class="sectionTitle">YOUR ACCOUNT</div>
 <div class="grid3">
 <div class="panel"><h3 style="color:#ffd85a">YOUR ACCOUNT</h3><p>👤 <b>PLAYER</b></p><p class="muted">Rank: <b style="color:#ffd85a">ROOKIE</b></p><p class="muted">Total Cards: <b id="homeCards">0</b></p></div>
-<div class="panel"><h3 style="color:#ffd85a">YOUR BALANCE</h3><div class="balance"><div class="balanceIcon">🪙</div><div class="bigCoin" id="homeCoins">0</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px"><button class="goldBtn" style="width:100%;padding:11px 8px" onclick="show('deposit')">＋ ADD COINS</button><button class="goldBtn" style="width:100%;padding:11px 8px" onclick="show('withdraw')">WITHDRAW</button></div></div>
+<div class="panel"><h3 style="color:#ffd85a">YOUR BALANCE</h3><div class="balance"><div class="balanceIcon">🪙</div><div class="bigCoin" id="homeCoins">0</div></div><button class="goldBtn" style="width:100%" onclick="show('deposit')">＋ ADD COINS</button></div>
 <div class="panel"><h3 style="color:#ffd85a">BATTLE & WIN</h3><p class="muted">Play fair live matches and win 1 opponent card.</p><button class="goldBtn" style="width:100%" onclick="show('battle')">PLAY BATTLE</button></div>
 </div>
 </section>
@@ -352,33 +377,6 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
   </div>
 </div>
 </section>
-
-<section class="page" id="withdraw">
-<div class="sectionTitle">WITHDRAW COINS</div>
-<div class="depositGrid">
-  <div class="panel">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2 style="color:#ffd85a;margin:0">💸 WITHDRAWAL REQUEST</h2>
-      <span style="border:1px solid #6f5312;border-radius:20px;padding:6px 10px;color:#ffd85a;font-size:9px">MIN 20</span>
-    </div>
-    <p class="muted" style="margin-top:12px">Enter the coins you want to withdraw and your UPI ID. The requested coins will be reserved from your balance until admin reviews the request.</p>
-    <div class="panel" style="margin-top:12px;background:#070707">
-      <div class="muted">AVAILABLE COINS</div>
-      <div class="bigCoin" id="withdrawBalance" style="margin:6px 0 14px">0</div>
-      <div class="muted">WITHDRAW COINS</div>
-      <input class="input" id="withdrawCoins" type="number" min="20" step="1" placeholder="Minimum 20 coins">
-      <div class="muted" style="margin-top:8px">UPI ID</div>
-      <input class="input" id="withdrawUpi" maxlength="120" placeholder="example@upi">
-      <button class="goldBtn" style="width:100%;margin-top:8px" onclick="submitWithdrawal()">SUBMIT WITHDRAWAL</button>
-      <div id="withdrawResult" class="muted" style="margin-top:10px;text-align:center"></div>
-    </div>
-  </div>
-  <div class="panel">
-    <h2 style="color:#ffd85a;margin-top:0">📋 WITHDRAWAL HISTORY</h2>
-    <div id="withdrawHistory" class="list"></div>
-  </div>
-</div>
-</section>
 </main>
 
 <footer class="footer">CRICKET CARD ARENA • COLLECT • UPGRADE • DOMINATE</footer>
@@ -492,7 +490,7 @@ function save(){
  update();
 }
 function update(){
- document.querySelectorAll('#coins,#homeCoins,#depositBalance,#withdrawBalance').forEach(e=>e.textContent=coins.toLocaleString());
+ document.querySelectorAll('#coins,#homeCoins,#depositBalance').forEach(e=>e.textContent=coins.toLocaleString());
  document.getElementById('homeCards').textContent=cards.length;
  document.getElementById('collectionCount').textContent=cards.length;
  renderCards();
@@ -734,40 +732,6 @@ async function loadServerDeposits(){
   try{const r=await fetch('/api/deposits',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'}); const d=await r.json(); if(!d.ok)return; depositRequests=d.deposits.map(x=>({id:x.id,paymentAmount:x.amount,coinsRequested:x.coins,utr:x.utr,status:x.status,createdAt:x.created_at})); renderDepositHistory();}catch(e){}
 }
 
-async function submitWithdrawal(){
-  if(!telegramInitData && !setupTelegram()) return toast('Open this app inside Telegram');
-  const amount=Number(document.getElementById('withdrawCoins').value);
-  const upi=document.getElementById('withdrawUpi').value.trim();
-  const result=document.getElementById('withdrawResult');
-  if(!Number.isInteger(amount) || amount < 20) return toast('Minimum withdrawal is 20 coins');
-  if(amount > Number(coins)) return toast('Insufficient balance');
-  if(!upi) return toast('Enter your UPI ID');
-  if(!upi.includes('@')) return toast('Enter a valid UPI ID');
-  try{
-    result.textContent='Submitting...';
-    const r=await fetch('/api/withdrawals',{method:'POST',headers:{'Content-Type':'application/json','X-Telegram-Init-Data':telegramInitData},body:JSON.stringify({coins:amount,upi_id:upi})});
-    const d=await r.json();
-    if(!r.ok || !d.ok) throw new Error(d.error||'Withdrawal request failed');
-    result.textContent='✓ Request submitted • Pending admin approval';
-    document.getElementById('withdrawCoins').value='';
-    document.getElementById('withdrawUpi').value='';
-    await loadServerAccount();
-    await loadWithdrawals();
-    toast('Withdrawal request submitted');
-  }catch(e){ result.textContent='❌ '+e.message; toast('❌ '+e.message); }
-}
-
-async function loadWithdrawals(){
-  if(!telegramInitData && !setupTelegram()) return;
-  try{
-    const r=await fetch('/api/withdrawals',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});
-    const d=await r.json(); if(!r.ok || !d.ok) return;
-    const box=document.getElementById('withdrawHistory'); if(!box)return;
-    if(!d.withdrawals.length){box.innerHTML='<div class="muted" style="padding:10px 0">No withdrawal requests yet.</div>';return;}
-    box.innerHTML=d.withdrawals.map(w=>{const c=w.status==='APPROVED'?'#48df62':w.status==='REJECTED'?'#ff3b35':'#ffd85a';return `<div class="row" style="grid-template-columns:1fr auto"><div><b style="color:#ffd85a">${escapeHtml(w.id)}</b><br><span class="muted">${Number(w.coins).toLocaleString()} coins • ${escapeHtml(w.upi_id)}</span><br><span class="muted">${escapeHtml(w.created_at||'')}</span></div><div style="text-align:right;color:${c};font-weight:1000">${escapeHtml(w.status)}</div></div>`}).join('');
-  }catch(e){}
-}
-
 function renderDepositHistory(){
   const box=document.getElementById('depositHistory');
   if(!depositRequests.length){
@@ -790,16 +754,54 @@ function escapeHtml(s){
 }
 
 
+let mandatoryMembershipPassed=false;
+async function checkMandatoryMembership(){
+  if(!telegramInitData){ setupTelegram(); }
+  const msg=document.getElementById('joinGateMsg');
+  const cs=document.getElementById('channelJoinStatus');
+  const gs=document.getElementById('groupJoinStatus');
+  if(!telegramInitData){ if(msg)msg.textContent='Open this app inside Telegram.'; return false; }
+  if(msg)msg.textContent='Checking membership...';
+  try{
+    const r=await fetch('/api/membership',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});
+    const d=await r.json();
+    if(!r.ok || !d.ok){
+      if(msg)msg.textContent=d.error||'Membership service unavailable.';
+      return false;
+    }
+    const co=!!d.channel?.joined, go=!!d.group?.joined;
+    if(cs)cs.textContent=co?'✓ Joined':'✕ Not joined';
+    if(gs)gs.textContent=go?'✓ Joined':'✕ Not joined';
+    mandatoryMembershipPassed=!!d.can_enter;
+    const gate=document.getElementById('joinGate');
+    if(mandatoryMembershipPassed){
+      if(msg)msg.textContent='Membership verified. Welcome to the Arena.';
+      gate?.classList.add('hidden');
+      return true;
+    }
+    if(msg)msg.textContent='Join both required chats, then check again.';
+    gate?.classList.remove('hidden');
+    return false;
+  }catch(e){
+    if(msg)msg.textContent='Could not verify membership. Try again.';
+    return false;
+  }
+}
+function enforceMembership(){
+  if(!mandatoryMembershipPassed){ checkMandatoryMembership(); return false; }
+  return true;
+}
+
 update();
 if(typeof renderDepositHistory==='function')renderDepositHistory();
-if(typeof loadWithdrawals==='function')loadWithdrawals();
 loadPlayerDatabase();
 setupTelegram();
-setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); loadWithdrawals(); } },500);
-setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); loadWithdrawals(); } },1500);
-window.addEventListener('load',()=>{ setupTelegram(); loadServerAccount(); loadServerDeposits(); loadWithdrawals(); });
-setInterval(()=>{ if(document.visibilityState==='visible' && setupTelegram()){ loadServerAccount(); loadServerDeposits(); loadWithdrawals(); } },3000);
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){ setupTelegram(); loadServerAccount(); loadServerDeposits(); loadWithdrawals(); } });
+setTimeout(()=>{ if(setupTelegram()){ checkMandatoryMembership(); } },300);
+setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },700);
+setTimeout(()=>{ if(setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },1500);
+window.addEventListener('load',()=>{ setupTelegram(); loadServerAccount(); loadServerDeposits(); });
+setInterval(()=>{ if(document.visibilityState==='visible' && setupTelegram()){ loadServerAccount(); loadServerDeposits(); } },3000);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){ setupTelegram(); loadServerAccount(); loadServerDeposits(); } });
 </script>
 
 </body>
