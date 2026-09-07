@@ -370,9 +370,14 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
       </div>
     </div>
 
+    <button class="goldBtn" style="width:100%;margin-top:12px" onclick="openWithdraw()">💸 WITHDRAW COINS</button>
     <div class="panel" style="margin-top:14px">
       <h2 style="color:#ffd85a;margin-top:0">📋 DEPOSIT HISTORY</h2>
       <div id="depositHistory" class="list"></div>
+    </div>
+    <div class="panel" style="margin-top:14px">
+      <h2 style="color:#ffd85a;margin-top:0">💸 WITHDRAWAL HISTORY</h2>
+      <div id="withdrawHistory" class="list"></div>
     </div>
   </div>
 </div>
@@ -381,6 +386,8 @@ padding:6px 10px;font-size:8px;box-shadow:0 0 15px #d49a2422">PLAYER DB: LOADING
 
 <footer class="footer">CRICKET CARD ARENA • COLLECT • UPGRADE • DOMINATE</footer>
 </div>
+
+<div class="modal" id="withdrawModal" style="display:none"><div class="modalBox"><button class="close" onclick="closeWithdraw()">×</button><h2 style="color:#ffd85a">💸 WITHDRAW COINS</h2><p class="muted">Enter coins and your UPI ID. Coins are held until admin review.</p><div class="panel" style="background:#070707"><div class="muted">AVAILABLE COINS</div><div class="bigCoin" id="withdrawBalance">0</div><div class="muted" style="margin-top:10px">COINS TO WITHDRAW</div><input class="input" id="withdrawCoins" type="number" min="1" step="1" placeholder="Enter coin amount"><div class="muted" style="margin-top:10px">UPI ID</div><input class="input" id="withdrawUpi" maxlength="120" placeholder="example@upi"><button class="goldBtn" style="width:100%;margin-top:12px" onclick="submitWithdrawal()">SUBMIT WITHDRAWAL</button></div></div></div>
 
 <div class="modal" id="packModal"><div class="modalBox"><button class="close" onclick="closeModal('packModal')">×</button><h2 style="color:#ffd85a">🎁 PACK OPENED</h2><p class="muted" id="packInfo"></p><div class="cardGrid" id="revealed"></div><button class="goldBtn" style="width:100%;margin-top:14px" onclick="closeModal('packModal')">CONTINUE</button></div></div>
 <div class="toast" id="toast"></div>
@@ -648,6 +655,11 @@ function depositRequest(){
  if(!v){toast('Enter a coin amount');return;}
  toast('Deposit request created for '+v.toLocaleString()+' coins');
 }
+function openWithdraw(){if(!telegramInitData&&!setupTelegram())return toast('Open this app inside Telegram');document.getElementById('withdrawBalance').textContent=coins.toLocaleString();document.getElementById('withdrawModal').style.display='flex';loadServerWithdrawals();}
+function closeWithdraw(){const m=document.getElementById('withdrawModal');if(m)m.style.display='none';}
+async function submitWithdrawal(){if(!telegramInitData&&!setupTelegram())return toast('Open this app inside Telegram');const amount=Number(document.getElementById('withdrawCoins').value),upi=document.getElementById('withdrawUpi').value.trim();if(!Number.isInteger(amount)||amount<=0)return toast('Enter a valid coin amount');if(amount>coins)return toast('Insufficient coins');if(!upi)return toast('Enter your UPI ID');if(!confirm(`Withdraw ${amount.toLocaleString()} coins to ${upi}?`))return;try{const r=await fetch('/api/withdrawals',{method:'POST',headers:{'X-Telegram-Init-Data':telegramInitData,'Content-Type':'application/json'},body:JSON.stringify({coins:amount,upi_id:upi})});const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Withdrawal failed');coins=Number(d.balance);update();document.getElementById('withdrawCoins').value='';document.getElementById('withdrawUpi').value='';document.getElementById('withdrawBalance').textContent=coins.toLocaleString();toast('Withdrawal submitted • Waiting for approval');await loadServerWithdrawals();}catch(e){toast('❌ '+e.message)}}
+async function loadServerWithdrawals(){if(!telegramInitData&&!setupTelegram())return;try{const r=await fetch('/api/withdrawals',{headers:{'X-Telegram-Init-Data':telegramInitData},cache:'no-store'});const d=await r.json();if(!r.ok||!d.ok)return;renderWithdrawHistory(d.withdrawals||[]);}catch(e){}}
+function renderWithdrawHistory(list){const box=document.getElementById('withdrawHistory');if(!box)return;if(!list.length){box.innerHTML='<div class="muted" style="padding:10px 0">No withdrawal requests yet.</div>';return}box.innerHTML=list.slice(0,8).map(x=>`<div class="row" style="grid-template-columns:1fr auto"><div><b style="color:#ffd85a">${escapeHtml(x.id)}</b><br><span class="muted">${Number(x.coins).toLocaleString()} coins • ${escapeHtml(x.upi_id)}</span><br><span class="muted">${escapeHtml(x.created_at||'')}</span></div><div style="text-align:right;color:${x.status==='APPROVED'?'#48df62':x.status==='REJECTED'?'#ff5750':'#ffd85a'};font-weight:1000">${escapeHtml(x.status)}</div></div>`).join('');}
 function closeModal(id){document.getElementById(id)?.classList.remove('show')}
 function toast(t){
  const x=document.getElementById('toast');
